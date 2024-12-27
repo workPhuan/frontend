@@ -211,6 +211,15 @@ export const mainRoutes = [
 				meta: {title:'menu.management_sticker_group',icon:'users',permission: '1C541H', parents:'management'},
 				component: () => import('@/views/management/sticker/group.vue'),
 			}],
+		},{
+			path: '/management/client',
+			redirect: '/management/client/client',
+			meta: {title:'menu.management_client',permission: '7L4BR7', parents:'management'},
+			children: [{
+				path: '/management/client/client',
+				meta: {title:'menu.management_client_client',icon:'users',permission: 'UH1QB6', parents:'management'},
+				component: () => import('@/views/management/client/client.vue'),
+			}],
 		}],
 	},{
 		path: '/site',
@@ -251,13 +260,21 @@ export const mainRoutes = [
 		redirect: '',
         meta: {title:'menu.package_management',icon:'grid-2',permission: 'S7ACRO', parents:'package'},
         children: [{
-			path: '/package/manage',
-			redirect: '/package/manage/packagelist',
-			meta: {title:'menu.package_management',permission: 'CTIBUZ', parents:'package'},
+			path: '/package/order',
+			redirect: '/package/order/setting',
+			meta: {title:'menu.package_order',permission: 'CTIBUZ', parents:'package'},
 			children: [{
-				path: '/package/manage/packagelist',
-				meta: {title:'menu.package_list',icon:'box',permission: '863KM8', parents:'package'},
-				component: () => import('@/views/package/manage/packagelist.vue'),
+				path: '/package/order/setting',
+				meta: {title:'menu.package_order_setting',icon:'box',permission: '863KM8', parents:'package'},
+				component: () => import('@/views/package/order/setting.vue'),
+			},{
+				path: '/package/order/assign',
+				meta: {title:'menu.package_order_assign',icon:'box',permission: '863KM8', parents:'package'},
+				component: () => import('@/views/package/order/assign.vue'),
+			},{
+				path: '/package/order/summary',
+				meta: {title:'menu.package_order_summary',icon:'box',permission: '863KM8', parents:'package'},
+				component: () => import('@/views/package/order/summary.vue'),
 			}],
 		}]
 		,

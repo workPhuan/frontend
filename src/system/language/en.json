@@ -279,6 +279,12 @@
 		"resetRedis":							"Reset Redis",
 		"clearRedis": 							"Clear Redis"
 	},"menu":{
+		"package_order":                        "Order List",
+		"package_order_assign":                 "Order Assign",
+		"package_order_setting":                "Order Settings",
+		"package_order_summary":                "Order Summary",
+		"management_client":                   	"Client Management",
+		"management_client_client":             "Client List",
 		"home":                                	"Home",
 		"dashboard":                           	"Dashboard",
 		"dashboard_index":                     	"Home",
