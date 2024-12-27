@@ -1,0 +1,19 @@
+.circular-menu .floating-btn{
+    background-color: hsl(217, 89%, 61%) !important;
+    box-shadow: 0 0px 15px -12px hsla(217, 89%, 61%, 0.42) !important;
+}
+
+.circular-menu::after{
+    background-color: hsl(217, 89%, 61%) !important;
+    box-shadow: 0 0px 15px -12px hsla(217, 89%, 61%, 0.42) !important;
+}
+
+.active > .floating-btn{
+    background-color: hsl(217, 89%, 64%) !important;
+    box-shadow: 0 4px 8px 0px rgba(0, 0, 0,0.3) !important;
+}
+
+.menu-item > img{
+    display: initial !important;
+    margin-top: -5px !important;
+}

@@ -1,0 +1,18 @@
+.status-switch-prepend {
+    padding: 0 10px;
+    box-shadow: 1px 0 0 0 var(--el-border-color) inset,0 1px 0 0 var(--el-border-color) inset,0 -1px 0 0 var(--el-border-color) inset;
+    background-color: var(--el-fill-color-light);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    white-space: nowrap;
+}
+
+.status-switch-prepend-box {
+    display: flex;
+    align-items: center;
+    height: 2.5rem;
+    margin-top: 4px;
+    flex-grow: 1;
+}

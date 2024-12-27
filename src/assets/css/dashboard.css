@@ -1,0 +1,329 @@
+.dashboard-tile {
+    flex: 1;
+    display: inline-block;
+    width: 100%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    transition: all 0.3s;
+    font-family: "Roboto", sans-serif;
+}
+
+.dashboard-tile .tile-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dashboard-tile .tile-head h3 {
+    font-family: "Montserrat", sans-serif;
+    color: #283252;
+    font-weight: 400;
+    font-size: 17px;
+}
+
+.v-icon.is-primary {
+    background: #dcf3e9;
+}
+
+.dashboard-tile .tile-body {
+    font-size: 2rem;
+    padding: 4px 0 8px 0;
+}
+
+.dashboard-tile .tile-body span {
+    color: #283252;
+    font-weight: 500;
+    font-size: 30px;
+}
+
+.dashboard-tile .tile-foot span:first-child {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.text-h-green {
+    color: #93e088 !important;
+}
+
+.text-h-red {
+    color: #f92b60 !important;
+}
+
+.dashboard-tile .tile-foot span:nth-child(2) {
+    color: #a2a5b9;
+    font-size: 0.9rem;
+}
+
+.dashboard-card{
+    flex: 1;
+    display: inline-block;
+    width: 100%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    transition: all 0.3s;
+    height: 100%;
+    margin-bottom: 20px;
+}
+
+.dashboard-card .card-head h3 {
+    font-family: "Montserrat", sans-serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: #283252;
+}
+
+.dashboard-card .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dashboard-card .revenue-stats .revenue-stat {
+    margin-right: 30px;
+}
+
+.dashboard-card .revenue-stats .revenue-stat span:first-child {
+    color: #a2a5b9;
+    font-size: 0.9rem;
+}
+
+.dashboard-card .revenue-stats .revenue-stat span.current {
+    color: #41b883;
+}
+
+.dashboard-card .radial-wrap .radial-stats {
+    margin-top: auto;
+    display: flex;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5;
+    border-top-color: rgb(229, 229, 229);
+}
+
+.dashboard-card .radial-wrap .radial-stats .radial-stat {
+    width: 50%;
+    text-align: center;
+}
+
+.dashboard-card .radial-wrap .radial-stats .radial-stat:first-child {
+    border-right: 1px solid #e5e5e5;
+    border-right-color: rgb(229, 229, 229);
+}
+
+.dashboard-card .radial-wrap .radial-stats .radial-stat span:first-child {
+    color: #a2a5b9;
+    font-size: 14px;
+}
+
+.dashboard-card .radial-wrap .radial-stats .radial-stat span:nth-child(2) {
+    color: #283252;
+    font-size: 19px;
+    font-weight: 600;
+}
+
+.dashboard-card .radial-wrap .radial-stats .radial-stat span {
+    display: block;
+}
+
+.dashboard-card .radial-wrap {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 44px);
+}
+
+.dashboard-card .progress-block {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 44px);
+    font-family: "Roboto", sans-serif;
+}
+
+.dashboard-card .progress-block .progress-foot{
+    font-size: 14px;
+}
+
+.dashboard-card .progress-block .progress-foot span:nth-child(2) {
+    color: #a2a5b9;
+    font-size: 0.9rem;
+    font-size: 13px;
+}
+
+.dashboard-white-wrraper{
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.dashboard-name{
+    font-size: 18px;
+    font-weight: 700;
+    font-family: "Montserrat", sans-serif;
+    color: hsl(226,34%,24%);
+}
+
+.dashboard-job{
+    color: hsl(232,14%,70%);
+    letter-spacing: 0.015rem;
+    font-weight: 480;
+    font-size: 0.8rem;
+}
+
+.dashboard-job:hover{
+    cursor: pointer;
+}
+
+.dashboard-date{
+    display: flex;
+    font-size: 1.1rem;
+    align-items: center;
+    font-weight: 500;
+    font-family: "Montserrat", sans-serif;
+}
+
+.dashboard-date-day{
+    font-weight: 700;
+    letter-spacing: 0.015rem;
+    margin-right: 10px;
+    padding: 10px 7px;
+    color: hsl(222, 82%, 50%);
+    background-color: hsl(222, 82%, 90%);
+    border-radius: 8px;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+}
+
+.dashboard-date-label{
+    font-weight: 600;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+}
+
+.dashboard-avatar{
+    width: 50px;
+    height: 50px;
+    border-radius: 100px;
+    margin-right: 20px;
+}
+
+.dashboard-avatar > .el-image{
+    border-radius: 100px;
+    height: 100%;
+    width: 100%;
+}
+
+.dashboard-label{
+    font-family: "Montserrat", sans-serif;
+}
+
+.box-card-icon{
+    color: hsl(0,0%,50%);
+    background: hsl(0,0%,90%);
+    width: 35px;
+    height: 35px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border-radius: 100%;
+    font-size: 18px;
+    padding: 0px 10px;
+}
+
+.box-card-icon-yellow{
+    color: hsl(50,90%,50%);
+    background: hsl(50,90%,90%);
+}
+
+.box-card-icon-green{
+    color: hsl(120,43%,50%);
+    background: hsl(120,43%,90%);
+}
+
+.box-card-icon-blue{
+    color: hsl(200,97%,50%);
+    background: hsl(200,97%,90%);
+}
+
+.box-card-icon-purple{
+    color: hsl(261,32%,50%);
+    background: hsl(261,32%,90%);
+}
+
+.box-card-text{
+    font-size: 15px;
+    font-weight: 500;
+    font-family: "Montserrat", sans-serif;
+    width: 100%;
+}
+
+.dashboard-card-amount{
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 15px;
+}
+
+.dashboard-calendar .fc-theme-standard td, .dashboard-calendar .fc-theme-standard th, .dashboard-calendar .fc .fc-scrollgrid{
+    border: 0 !important;
+}
+
+.dashboard-calendar .fc-scrollgrid-sync-inner a{
+    color: hsl(222, 82%, 60%);
+}
+
+.dashboard-calendar .fc .fc-daygrid-day-top{
+    justify-content: center !important;
+    flex-direction: unset !important;
+}
+
+.dashboard-calendar .fc .fc-daygrid-day-number{
+    color: hsl(0,0%,50%);
+}
+
+.dashboard-calendar .fc .fc-daygrid-day-frame{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-calendar .fc .fc-daygrid-day.fc-day-today{
+    border-radius: 8px;
+}
+
+.dashboard-calendar .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame .fc-daygrid-day-top .fc-daygrid-day-number{
+    color: hsl(222, 82%, 50%) !important;
+    font-weight: 670;
+}
+
+.dashboard-calendar .fc .fc-toolbar{
+    margin-bottom: 10px !important;
+}
+
+.dashboard-calendar .fc .fc-toolbar-title{
+    font-size: 1.2rem;
+    font-family: "Montserrat", sans-serif;
+    color: hsl(226,34%,24%);
+}
+
+.dashboard-calendar .fc .fc-button-primary{
+    font-size: 1rem;
+    font-family: "Montserrat", sans-serif;
+    background-color: transparent !important;
+    border: 0px;
+}
+
+.dashboard-calendar .fc .fc-button{
+    color: hsl(0, 0%, 60%) !important;
+}
+
+.streamer-token{
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}

@@ -1,0 +1,268 @@
+.el-card{
+	color: #666;
+}
+
+.el-table{
+	z-index: 0;
+}
+
+.bg-green{
+	background-color: #009688;
+}
+
+.bg-grey{
+	background-color: #909399;
+}
+
+.bg-purple{
+	background-color: #822BFF;
+}
+
+.bg-coffee{
+	background-color: #A47C66;
+}
+
+.bg-blue{ background-color: #112ea6; }
+.bg-yellow{ background-color: #eec354; }
+.bg-green{ background-color: #479373; }
+.bg-purple2{ background-color: #bf9bf2; }
+.bg-yellow2{ background-color: #f7cf6a; }
+.bg-green2{ background-color: #27d98e; }
+
+.text-white-transparent{
+	color: rgba(255, 255, 255, 0.4);
+}
+
+.text-white{
+	color: #fff !important;
+}
+
+.text-primary-2{
+	color: #2494f2;
+}
+
+.border-round-10{
+	border-radius: 10% !important;
+}
+
+.border-round{
+	border-radius: 100% !important;
+}
+
+.custom-button{
+	white-space: nowrap;
+    text-align: center;
+	border-radius: 2px;
+    cursor: pointer;
+	padding: 0 1rem;
+    font-size: 0.8rem;
+}
+
+.custom-button.plain{
+	border: 1px solid #C9C9C9;
+    background-color: #fff;
+    color: #555;
+}
+
+.custom-button.primary{
+	border: 1px solid #1E9FFF;
+    background-color: #1E9FFF;
+    color: #fff;
+}
+
+.custom-button.success{
+	border: 1px solid #009688;
+	background-color: #009688;
+	color: #fff;
+}
+
+.custom-button.warning{
+	border: 1px solid #FFB800;
+	background-color: #FFB800;
+	color: #fff;
+}
+
+.custom-button.danger{
+	border: 1px solid #FF5722;
+    background-color: #FF5722;
+    color: #fff;
+}
+
+.custom-input,
+.el-select.custom-input .el-input,
+.el-date-editor.custom-input .el-input,
+.el-date-editor.custom-input.el-input__wrapper,
+.el-date-editor.custom-input .el-range-input{
+	font-size: 0.8rem;
+	line-height: 2.5rem;
+	height: 2.5rem;
+}
+
+.custom-input.fixed-width-100{
+	width: 8rem;
+}
+
+.custom-input.fixed-width-200{
+	width: 16rem;
+}
+
+.custom-input.fixed-width-300{
+	width: 24rem;
+}
+
+.custom-input .el-input-group__append, .custom-input .el-input-group__prepend{
+	padding: 0 10px;
+}
+
+.custom-table{
+	font-size: 0.7rem;
+	border: 1px solid #e6e6e6;
+}
+
+.custom-table.two{
+	border: none !important;
+}
+
+.custom-table th.el-table__cell{
+	background-color: #f2f2f2 !important;
+	color: #666;
+	font-weight: normal;
+}
+
+.custom-table.two th.el-table__cell{
+	background-color: #dddddd !important;
+	color: #666;
+	font-weight: normal;
+}
+
+.custom-table.product-table .el-table__header .el-checkbox{
+	display: none;
+}
+
+.el-table .el-table__cell{
+	z-index: 1 !important;
+}
+
+.custom-tree-node{
+	color: #555;
+	font-size: 0.7rem;
+}
+
+.overflow-x-auto{
+	overflow-x: auto;
+}
+
+.captcha-container{
+	background: #eee;
+	margin: 0 auto;
+	padding: 0.1rem 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: auto;
+	color: #f37140;
+	letter-spacing: 14px;
+}
+
+.upload-icon{
+	font-size: 3rem;
+}
+
+.upload-text{
+	font-size: 0.9rem;
+}
+
+.upload-tips{
+	font-size: 0.7rem;
+	color: #999;
+}
+
+.upload-frame{
+	border-radius: 0.3rem;
+	border: 1px solid #ddd;
+	padding: 0.5rem 3rem;
+	text-align: center;
+	margin-top: 0.5rem;
+}
+
+.upload-selected{
+	display: flex;
+	border-radius: 0.3rem;
+	border: 1px solid #ddd;
+	padding: 0.5rem;
+	margin-top: 1rem;
+	position: relative;
+	transition: 1s ease-in-out;
+}
+
+.upload-selected-name{
+	height: 100%;
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-left: 1rem;
+	text-overflow: ellipsis;
+	width: 100%;
+}
+
+.upload-selected-cancel{
+	position: absolute;
+	top: 0.1rem;
+	right: 0.5rem;
+}
+
+.upload-display-image{
+	width: 120px;
+	height: auto
+}
+
+.upload-display-image-2x{
+	width: 240px;
+	height: auto
+}
+
+.dashboard-box-skeleton{
+	height: 90px !important;
+}
+
+.dashboard-chart-skeleton{
+	height: 100px !important;
+}
+
+.placement-container{
+	border: 1px solid #e6e6e6;
+	width: 100%;
+	min-height: 70vh;
+}
+
+.placement-node {
+	width: 15rem;
+	padding: 8px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	color: #393d49;
+	background-color: #fbdc1b;
+	border-radius: 3px;
+	border: 1px solid #e6e6e6;
+}
+
+.placement-node .name{
+	font-weight: bold;
+	font-size: 0.8rem;
+}
+
+.font-weight-bold{
+	font-weight: bold !important;
+}
+
+.bg-row-warning{
+	background-color: #fdf6ec !important;
+}
+
+.bg-row-danger{
+	background-color: #fde2e2 !important;
+}
+
+.vac-message-wrapper .vac-message-current{
+	background-color: #fde2e2 !important;
+}

@@ -1,0 +1,39 @@
+.chat-info{
+    width: 25rem;
+    padding: 0 1rem;
+}
+
+.chat-info-tab{
+    min-height: 30%;
+    border-bottom: 0.1rem solid #c6c9cc;
+}
+
+.chat-info-reply .el-collapse-item__header{
+    font-size: 0.75rem !important;
+    height: 2rem;
+}
+
+.chat-info-reply .el-collapse-item__content{
+    padding-bottom: 0.5rem !important;
+}
+
+.reply-item{
+    font-size: 0.73rem !important;
+    padding-left: 0.5rem;
+    padding-top: 0.3rem;
+    background-color: #f0f9eb;
+    transition: 0.5s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reply-item:hover{
+    background-color: #e1f3d8;
+}
+
+@media(max-width:430px){
+    .chat-info{
+        display: none;
+    }
+}
