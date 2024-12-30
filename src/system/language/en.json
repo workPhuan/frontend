@@ -899,6 +899,8 @@
 		"table_your_security": 		   			"Your Security",
 		"table_rank": 		   					"Rank",
 		"table_package": 		   				"Package",
+		"table_product": 		   				"Product",
+		"table_loan_amount": 		   			"Loan Amount",
 		"table_is_current": 		   			"Is Current",
 		"table_is_system_auto": 		   		"System Auto",
 		"table_security_password": 		   		"Security",

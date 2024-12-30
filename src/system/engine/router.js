@@ -218,7 +218,7 @@ export const mainRoutes = [
 			children: [{
 				path: '/management/client/client',
 				meta: {title:'menu.management_client_client',icon:'users',permission: 'UH1QB6', parents:'management'},
-				component: () => import('@/views/management/client/client.vue'),
+				component: () => import('@/views/management/user/member.vue'),
 			}],
 		}],
 	},{
@@ -262,18 +262,18 @@ export const mainRoutes = [
         children: [{
 			path: '/package/order',
 			redirect: '/package/order/setting',
-			meta: {title:'menu.package_order',permission: 'CTIBUZ', parents:'package'},
+			meta: {title:'menu.package_order',permission: 'S7ACRO', parents:'package'},
 			children: [{
 				path: '/package/order/setting',
-				meta: {title:'menu.package_order_setting',icon:'box',permission: '863KM8', parents:'package'},
+				meta: {title:'menu.package_order_setting',icon:'box',permission: 'S7ACRO', parents:'package'},
 				component: () => import('@/views/package/order/setting.vue'),
 			},{
 				path: '/package/order/assign',
-				meta: {title:'menu.package_order_assign',icon:'box',permission: '863KM8', parents:'package'},
+				meta: {title:'menu.package_order_assign',icon:'box',permission: 'S7ACRO', parents:'package'},
 				component: () => import('@/views/package/order/assign.vue'),
 			},{
 				path: '/package/order/summary',
-				meta: {title:'menu.package_order_summary',icon:'box',permission: '863KM8', parents:'package'},
+				meta: {title:'menu.package_order_summary',icon:'box',permission: 'S7ACRO', parents:'package'},
 				component: () => import('@/views/package/order/summary.vue'),
 			}],
 		}]
