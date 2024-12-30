@@ -49,7 +49,7 @@
 							</template>
 							
 							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getMemberRow(scope.row.id)">{{$t('button.info')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
 							</template>
@@ -579,45 +579,17 @@ export default{
 			}
 			
 			this.initial()
-		},roomPaginationChange(value){
-			if(value.page != ""){
-				this.roomSearchData.pagination = value.page
-			}
-
-			if(value.limit != ""){
-				this.roomSearchData.limit = value.limit
-			}
-			
-			this.initial()
-		},decoder (str) {
-			var value = str;
-			if(value){
-				value = str.replace(/&quot/g,"'")	
-			}
-			
-			return value
-		},initialImage(){
-			this.imagePickerFile = ''
-			this.imagePickerFileUrl = ''
-			document.getElementById('imgFile').value = ''
-		},openImage(){
-			document.getElementById('imgFile').click()
-		},imageChange(){
-			this.imagePickerFile = document.getElementById('imgFile').files[0];
-			this.imagePickerFileUrl = URL.createObjectURL(document.getElementById('imgFile').files[0])
-		},initialCover(){
-			this.coverPickerFile = ''
-			this.coverPickerFileUrl = ''
-			document.getElementById('coverFile').value = ''
-		},openCover(){
-			document.getElementById('coverFile').click()
-		},coverChange(){
-			this.coverPickerFile = document.getElementById('coverFile').files[0];
-			this.coverPickerFileUrl = URL.createObjectURL(document.getElementById('coverFile').files[0])
+		},getAgentRow(id) {
+			this.$router.push('/management/admin/agentorder');
+			// this.$m.setItem('group_id',id)
+			storeTempID.group_id = id
 		}
 	},created(){
         this.postData.language = this.$m.getItem('currentLang')??'en'
 		this.securityCheck = this.$m.getItem('securityCheck')
+		if(storeTempID.group_id == "" || storeTempID.group_id == undefined){
+			this.$router.push('/management/admin/agent');
+		}
 		this.getInitial()
 	}
 }

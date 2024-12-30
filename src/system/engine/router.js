@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import part from '@/views/part/index.vue';
 import * as NProgress from 'nprogress'
+import { component } from 'v-viewer';
 
 export const mainRoutes = [
     {
@@ -13,7 +14,8 @@ export const mainRoutes = [
 		name: 'Authenticate',
 		component: ()=> import('@/views/common/authenticate.vue'),
 		hidden: true
-	},{
+	},
+	{
         path: '/dashboard',
 		component: part,
 		redirect: '/dashboard/index',
@@ -126,6 +128,10 @@ export const mainRoutes = [
 				path: '/management/admin/agent',
 				meta: {title:'menu.management_admin_agent',icon:'user-tie',permission: 'RZYSSQ', parents:'management'},
 				component: () => import('@/views/management/admin/agent.vue'),
+			},{
+				path: '/management/admin/agentorder',
+				meta: {title:'menu.management_admin_agent',icon:'user-tie',permission: 'RZYSSQ', parents:'management'},
+				component: () => import('@/views/management/admin/agentorder.vue'),
 			},{
 				path: '/management/admin/assistant',
 				meta: {title:'menu.management_admin_assistant',icon:'user-visor',permission: 'RZYSSQ', parents:'management'},
