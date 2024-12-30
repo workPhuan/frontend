@@ -5,7 +5,7 @@
 				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{$t('menu.management_admin_agent')}}
 			</label>
 			<div class="page-toolbar">
-				<el-button class="custom-button plain" @click="getAddRow()" :loading="loading" v-if="$p.permissionChecker('adminAgentAdd')">{{$t('menu.management_admin_agent_add')}}</el-button>
+				<el-button class="custom-button plain" @click="getAddRow()" :loading="loading" v-if="$p.permissionChecker('userChatRoleEdit')">{{$t('menu.management_admin_agent_add')}}</el-button>
 			</div>
 		</div>
 		
