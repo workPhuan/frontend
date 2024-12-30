@@ -754,6 +754,11 @@
 		"table_username":                       "Username",
 		"table_password":                       "Password"
 	},"mix":{
+		"table_total_order":					"Total Order",
+		"table_total_client":					"Total Client",
+		"table_total_loan":						"Total Loan",
+		"table_total_repay":					"Total Repayment",
+		"table_total_overdue":					"Total Overdue",
 		"table_coin_symbol":					"USDT",
 		"table_power_symbol":					"Power",
 		"table_honey_symbol":					"Honey",

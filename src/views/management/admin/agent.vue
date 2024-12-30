@@ -14,24 +14,15 @@
 				<div class="page-filter">
 					<legend>{{$t('mix.table_filter')}}</legend>
 					<div class="p-3 d-flex flex-wrap">
-						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.login" :placeholder="$t('mix.table_please_enter')+$t('mix.table_username')" @keyup.enter.native="initial()">
-							<template #prepend>
-								<label>{{$t('mix.table_username')}}</label>
-							</template>
-						</el-input>
+
+						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.agent_id" :placeholder="$t('menu.management_agent_agent')" clearable @change="initial()" size="large">
+							<el-option v-for="item in searchAgentList" :label="item.login" :value="item.master_id">{{item.login}}</el-option>
+						</el-select>
 						
 						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.status" :placeholder="$t('mix.table_status')" clearable @change="initial()" size="large">
 							<el-option :label="$t('mix.table_enabled')" value="normal">{{$t('mix.table_enabled')}}</el-option>
 							<el-option :label="$t('mix.table_disabled')" value="suspended">{{$t('mix.table_disabled')}}</el-option>
 						</el-select>
-
-						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.role_id" :placeholder="$t('mix.table_role')" clearable @change="initial()" size="large">
-							<el-option v-for="item in searchRoleList" :label="item.name" :value="item.id">{{item.name}}</el-option>
-						</el-select>
-						
-						<div class="fixed-width-200">
-							<el-date-picker class="custom-input fixed-width-200 m-2" v-model="searchData.date_range" type="daterange" range-separator="-" :start-placeholder="$t('general.date_start')" :end-placeholder="$t('general.date_end')" @change="initial()" />
-						</div>
 						
 						<el-button class="custom-button plain m-2 h-r-2-5 pe-4 ps-4" @click="initial()" :loading="loading"><i class="fa-light fa-search me-2"></i>{{$t('button.search')}}</el-button>
 					</div>
@@ -56,31 +47,11 @@
 									<el-tag v-else type="danger">{{$t('mix.table_suspended')}}</el-tag>
 								</p>
 							</template>
-
-							<template v-if="title.prop == 'service_url'" #default="scope">
-								<small class="p-0 m-0 text-primary pointer" @click="$m.openBrowser(scope.row.service_url)">{{scope.row.service_url}}</small>
-							</template>
-
-							<template v-if="title.prop == 'last_login'" #default="scope">
-								<p><small>IP: {{scope.row.last_ip}}</small></p>
-								<p><small>{{ $t('mix.table_date') }}: {{scope.row.last_login}}</small></p>
-							</template>
 							
 							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('adminAgentEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.master_id)">{{$t('menu.management_admin_agent_edit')}}</el-button>
-								<!-- <el-button v-if="$p.permissionChecker('adminAgentRoom') && scope.row.is_streamer == true" class="custom-button success m-1" @click="storeTempID = scope.row.master_id,$router.push('/management/admin/room')">{{$t('menu.management_admin_agent_room')}}</el-button> -->
-								<el-button v-if="$p.permissionChecker('adminAgentPassword')" class="custom-button primary m-1" @click="getPasswordRow(scope.row.master_id, scope.row.login)">{{$t('menu.management_admin_agent_password')}}</el-button>
-								<el-button v-if="$p.permissionChecker('adminAgentSecurity') && securityCheck == 1" class="custom-button primary m-1" @click="getSecurityRow(scope.row.master_id, scope.row.login)">{{$t('menu.management_admin_agent_security')}}</el-button>
-								<el-button v-if="$p.permissionChecker('adminAgentPermission')" class="custom-button warning m-1" @click="getPermissionRow(scope.row.master_id, scope.row.login)">{{$t('menu.management_admin_agent_permission')}}</el-button>
-								<el-button v-if="$p.permissionChecker('adminAgentStatus')" class="custom-button m-1 " :class="(scope.row.status == 'normal') ? 'danger' : 'success'" @click="statusRow(scope.row.master_id)">
-									<template v-if="scope.row.status == 'normal'">
-										{{$t('menu.management_user_member_suspended')}}
-									</template>
-									
-									<template v-else>
-										{{$t('menu.management_user_member_normal')}}
-									</template>
-								</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getMemberRow(scope.row.id)">{{$t('button.info')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
 							</template>
 						</el-table-column>
 					</template>
@@ -313,36 +284,40 @@ export default{
 			ajaxTitles:[{
                 prop:"no",
                 label:this.$t('mix.table_id'),
-                width:'60',
+                width:'50',
 			},{
                 prop:"login",
                 label:this.$t('mix.table_username'),
                 width:'100',
 			},{
-                prop:"name",
-                label:this.$t('mix.table_name'),
-                width:'100',
-			},{
-                prop:"affiliate_id",
-                label:this.$t('mix.table_service_url')+' ID',
+                prop:"status",
+                label:this.$t('mix.table_status'),
                 width:'120',
 			},{
-                prop:"role_id",
-                label:this.$t('mix.table_role'),
+                prop:"total_order",
+                label:this.$t('mix.table_total_order'),
                 width:'100',
 			},{
-                prop:"last_login",
-                label:this.$t('mix.table_last_login'),
-                width:'250',
+                prop:"total_client",
+                label:this.$t('mix.table_total_client'),
+                width:'100',
 			},{
-                prop:"status",
-                label:this.$t('mix.table_account_status'),
-                width:'150',
+                prop:"total_loan",
+                label:this.$t('mix.table_total_loan'),
+                width:'100',
+			},{
+                prop:"total_repay",
+                label:this.$t('mix.table_total_repay'),
+                width:'120',
+			},{
+                prop:"total_overdue",
+                label:this.$t('mix.table_total_overdue'),
+                width:'100',
 			},{
                 prop:"action",
                 label:this.$t('mix.table_action'),
-                width:'250',
-				align: 'right'
+                width:'150',
+				align: 'center'
 			}],
 			postForm:{
 				sponsor:'',
@@ -371,10 +346,8 @@ export default{
 				label: 'name'
 			},
             defaultRole: '',
-            isAgent: false,
-            roomList: [],
-            roleList: [],
-            searchRoleList: [],
+            agentList: [],
+            searchAgentList: [],
             streamerList: [],
 			modalList:{},
 			securityCheck: 0,
@@ -385,12 +358,12 @@ export default{
 			this.loading = true
 			
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/admin/agent',this.postData)
+			var result = this.$m.postMethod('management/agent/agent',this.postData)
 			result.then((value) => {
 				var data = value.data
 
 				if(value.valid){
-					this.searchRoleList = data.roleList
+					this.searchAgentList = data.agentList
 					this.initial()
 				}
 				this.loading = false
@@ -399,7 +372,7 @@ export default{
 			this.loading = true
 			
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/admin/agent/ajaxTable',this.postData)
+			var result = this.$m.postMethod('management/agent/agent/ajaxTable',this.postData)
 			result.then((value) => {
 				var data = value.data
 
@@ -438,7 +411,7 @@ export default{
 			if(this.$p.permissionChecker('adminAgentAdd') && this.loading == false){
 				this.loading = true
 				this.postData.data = JSON.stringify(this.postForm)
-				var result = this.$m.postMethod('management/admin/agent/add',this.postData)
+				var result = this.$m.postMethod('management/agent/agent/add',this.postData)
 				result.then((value)=>{
 					var data = value.data
 
@@ -457,7 +430,7 @@ export default{
                 
                 this.postData.data = JSON.stringify(this.postForm)
 
-                var result = this.$m.postMethod('management/admin/agent/DBadd',this.postData)
+                var result = this.$m.postMethod('management/agent/agent/DBadd',this.postData)
 
                 result.then((value) => {
                     var data = value.data
@@ -485,7 +458,7 @@ export default{
 
 				this.submitForm.master_id = masterID
 				this.postData.data = JSON.stringify(this.submitForm)
-				var result = this.$m.postMethod('management/admin/agent/edit',this.postData)
+				var result = this.$m.postMethod('management/agent/agent/edit',this.postData)
 				result.then((value) => {
 					var data = value.data
 
@@ -504,7 +477,7 @@ export default{
                 
                 this.postData.data = JSON.stringify(this.postForm)
 
-                var result = this.$m.postMethod('management/admin/agent/DBedit',this.postData)
+                var result = this.$m.postMethod('management/agent/agent/DBedit',this.postData)
 
                 result.then((value) => {
                     var data = value.data
@@ -539,7 +512,7 @@ export default{
                 
                 this.postData.data = JSON.stringify(this.postForm)
 
-                var result = this.$m.postMethod('management/admin/agent/DBpassword',this.postData)
+                var result = this.$m.postMethod('management/agent/agent/DBpassword',this.postData)
 
                 result.then((value) => {
                     var data = value.data
@@ -574,7 +547,7 @@ export default{
                 
                 this.postData.data = JSON.stringify(this.postForm)
 
-                var result = this.$m.postMethod('management/admin/agent/DBsecurity',this.postData)
+                var result = this.$m.postMethod('management/agent/agent/DBsecurity',this.postData)
 
                 result.then((value) => {
                     var data = value.data
@@ -612,7 +585,7 @@ export default{
 					this.postForm.master_id = masterID
 					this.postData.data = JSON.stringify(this.postForm)
 
-					var result = this.$m.postMethod('management/admin/agent/DBstatus',this.postData)
+					var result = this.$m.postMethod('management/agent/agent/DBstatus',this.postData)
 
 					result.then((value) => {
 						var data = value.data
@@ -642,7 +615,7 @@ export default{
 				this.postForm.username = login
 				this.postPermission.master_id = id
 				this.postData.data = JSON.stringify(this.submitForm);
-				var result = this.$m.postMethod("management/admin/agent/permission", this.postData)
+				var result = this.$m.postMethod("management/agent/agent/permission", this.postData)
 				result.then((value) => {
 					var data = value.data
 
@@ -670,7 +643,7 @@ export default{
 					this.preloader(true);
 					this.postPermission.security = value
 					this.postData.data = JSON.stringify(this.postPermission)
-					var result = this.$m.postMethod("management/admin/agent/DBpermission", this.postData)
+					var result = this.$m.postMethod("management/agent/agent/DBpermission", this.postData)
 
 					result.then((value) => {
 						var data = value.data
