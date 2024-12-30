@@ -296,7 +296,7 @@ let searchForm = {
 	limit: 10,
 }
 			
-export default{
+export default {
     inject:['preloader'],
 	data(){
 		return {
@@ -328,14 +328,6 @@ export default{
                 prop:"name",
                 label:this.$t('mix.table_name'),
                 width:'100',
-			},{
-                prop:"phone_mobile",
-                label:this.$t('mix.table_phone_mobile'),
-                width:'100',
-			},{
-                prop:"email",
-                label:this.$t('mix.table_email'),
-                width:'200',
 			},{
                 prop:"role_id",
                 label:this.$t('mix.table_role'),
