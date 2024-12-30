@@ -1,0 +1,15 @@
+.checkbox-container {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-label {
+    margin-right: 10px;
+}
+
+.percentage-input {
+    width: 100px;
+    margin-left: 15px; 
+}
+

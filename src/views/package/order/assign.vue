@@ -58,8 +58,19 @@
 							<template #header>
 								<p class="search-label">{{title.label}}</p>
 							</template>
-					
+
+                            <template v-if="title.prop == 'code'" #default="scope">
+                                <span>{{scope.row.code}}</span>
+                                <el-tooltip content="Copy" placement="top">
+                                    <el-icon class="ml-3 clickable-icon" @click="copyToClipboard(scope.row.code)">
+                                        <CopyDocument />
+                                    </el-icon>
+                                </el-tooltip>
+                            </template>
+
+
 							<template v-if="title.prop == 'action'" #default="scope">
+                                <!-- <el-checkbox v-model="selectedRows" :label="scope.row.product_name"@change="handleCheckboxChange(scope.row.id)"></el-checkbox> -->
 								<el-button v-if="$p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="assignRow(scope.row.id)">{{$t('button.assign')}}</el-button>
 							</template>
 						</el-table-column>
@@ -69,155 +80,13 @@
 				<pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
 			</el-card>
 		</div>
-		
-		<el-dialog v-model="modalList.assignRow" :title="$t('menu.management_chat_group_add')" :before-close="clearPostForm">
-			<el-form label-position="top" label-width="auto" @submit.native.prevent>
-				<el-row :gutter="20">
-                    <el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_code')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.code"  :placeholder="$t('mix.table_code')">
-							<template #prepend>
-									<el-button @click="genCode('code')" class="m-1"><i class="fa-regular fa-circle-plus"></i></el-button>
-							</template>
-						</el-input>
-					</el-col>
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_chat_group_id')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.group_id"  :placeholder="$t('mix.table_chat_group_id')" />
-					</el-col>
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.name"  :placeholder="$t('mix.table_name')" />
-					</el-col>
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_user')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.username"  :placeholder="$t('mix.table_user')" />
-					</el-col>
-                    <el-col :sm="12" class="mb-3">
-  <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_account_package')}}</label>
-  <el-select 
-    size="large" 
-    class="custom-input mt-1 w-100" 
-    v-model="postForm.account_package_id" 
-    :placeholder="$t('msg.msg_select')" 
-    filterable
-  >
-    <el-option 
-      v-for="(list, index) in packageList" 
-      :key="index" 
-      :label="list.code" 
-      :value="list.id"
-    >
-      {{ list.code }}
-    </el-option>
-  </el-select>
-</el-col>
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-						<el-select class="custom-input w-100 mt-1" v-model="postForm.status" size="large">
-							<el-option :label="$t('mix.table_enabled')" :value="1">{{$t('mix.table_enabled')}}</el-option>
-							<el-option :label="$t('mix.table_disabled')" :value="0">{{$t('mix.table_disabled')}}</el-option>
-						</el-select>
-					</el-col>
-					<el-col :span="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_image')}}</label>
-						<div class="upload-frame pointer" @click="openImage()">
-							<i class="fa-duotone fa-cloud-arrow-up upload-icon"></i>
-							<div class="upload-text">{{$t('msg.msg_upload_2')}}</div>
-						</div>
-						<div class="upload-selected" v-if="imagePickerFileUrl">
-							<el-image class="upload-display-image" fit="fill" :src="imagePickerFileUrl"></el-image>
-							<div class="upload-selected-name">{{imagePickerFile.name}}</div>
-							<div class="upload-selected-cancel pointer" @click="initialImage()"><i class="fa-light fa-xmark"></i></div>
-						</div>
-						
-						<input type="file" id="file" accept=".png,.jpg,.jpeg,.webp,.gif" style="display:none" v-if="modalList.addRow" @change="imageChange(index)"/>
-					</el-col>
-					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
-					</el-col>
-				</el-row>
-			</el-form>
-			
-			<template #footer>
-				<div class="d-flex justify-content-center align-item-center">
-					<el-button class="custom-button success font-8 pt-3 pb-3" @click="addRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.addRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
-				</div>
-			</template>
-		</el-dialog>
-		
-		<el-dialog v-model="modalList.editRow" :title="$t('menu.management_chat_group_edit')" :before-close="clearPostForm">
-			<el-form label-position="top" label-width="auto" @submit.native.prevent>
-				<el-row :gutter="20">
-                    <el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_code')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.code"  :placeholder="$t('mix.table_code')">
-							<template #prepend>
-									<el-button @click="genCode('code')" class="m-1"><i class="fa-regular fa-circle-plus"></i></el-button>
-							</template>
-						</el-input>
-					</el-col>
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_chat_group_id')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.group_id"  :placeholder="$t('mix.table_chat_group_id')" disabled />
-					</el-col>
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.name"  :placeholder="$t('mix.table_name')" />
-					</el-col>
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_username')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.username"  :placeholder="$t('mix.table_name')" />
-					</el-col>
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_account_package')}}</label>
-						<el-select size="large" class="custom-input mt-1 w-100" v-model="postForm.account_package_id" :placeholder="$t('msg.msg_select')" filterable>
-							<el-option v-for="(list,index) in packageList" :key="index" :label="list.code" :value="list.id">{{list.code}}</el-option>
-						</el-select>
-					</el-col>
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-						<el-select class="custom-input w-100 mt-1" v-model="postForm.status" size="large">
-							<el-option :label="$t('mix.table_enabled')" :value="1">{{$t('mix.table_enabled')}}</el-option>
-							<el-option :label="$t('mix.table_disabled')" :value="0">{{$t('mix.table_disabled')}}</el-option>
-						</el-select>
-					</el-col>
-					<el-col :span="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_image')}}</label>
-						<div class="upload-frame pointer" @click="openImage()">
-							<i class="fa-duotone fa-cloud-arrow-up upload-icon"></i>
-							<div class="upload-text">{{$t('msg.msg_upload_2')}}</div>
-							<small class="text-danger">* {{$t('msg.msg_upload_edit')}}</small>
-						</div>
-						<div class="upload-selected" v-if="imagePickerFileUrl">
-							<el-image class="upload-display-image" fit="fill" :src="imagePickerFileUrl"></el-image>
-							<div class="upload-selected-name">{{imagePickerFile.name}}</div>
-							<div class="upload-selected-cancel pointer" @click="initialImage()"><i class="fa-light fa-xmark"></i></div>
-						</div>
-						
-						<input type="file" id="file" accept=".png,.jpg,.jpeg,.webp,.gif" style="display:none" v-if="modalList.editRow" @change="imageChange(index)"/>
-					</el-col>
-					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
-					</el-col>
-				</el-row>
-			</el-form>
-			
-			<template #footer>
-				<div class="d-flex justify-content-center align-item-center">
-					<el-button class="custom-button success font-8 pt-3 pb-3" @click="editRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
-				</div>
-			</template>
-		</el-dialog>
 	</div>
 </template>
 
 <script setup>
 import pagination from '@/components/pagination/index.vue'
+import { CopyDocument } from '@element-plus/icons-vue';
+
 </script>
 
 <script>
@@ -227,6 +96,9 @@ let searchForm = {
 }
 
 export default {
+    components: {
+        CopyDocument,
+    },
     inject:['preloader'],
 	data() {
 		return {
@@ -248,6 +120,12 @@ export default {
 				limit: 10
 			},
 			ajaxTitles: [{
+                prop: 'checkbox',
+                label: '',
+                fix_width: '55',
+                align: 'left',
+                type: "selection"
+            },{
 				prop:"created_at",
 				label:this.$t("mix.table_created_at"),
 				width: "100",
@@ -549,7 +427,13 @@ export default {
 			this.$m.setItem('storeAjaxTableDetail', JSON.stringify(this.searchData))
 
 			this.initial()
-		},paginationChange(value){
+		},copyToClipboard(value) {
+            navigator.clipboard.writeText(value).then(() => {
+                this.$message.success('Copied successfully!'); 
+            }).catch(() => {
+                this.$message.error('Failed to copy!');
+            });
+        },paginationChange(value){
 			if(value.page != ""){
 				this.searchData.pagination = value.page
 			}
