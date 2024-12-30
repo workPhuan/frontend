@@ -105,6 +105,11 @@
 						</el-select>
 					</el-col>
 					
+					<el-col :sm="12" class="mb-3 d-flex justify-content-between">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_is_view_other')}}</label>
+						<el-switch v-model="postForm.is_view_other" active-value="1" inactive-value="0"></el-switch>
+					</el-col>
+					
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_repayment_method')}}</label>
 						<el-select class="custom-input mt-1 w-100" v-model="postForm.repayment_method" :placeholder="$t('menu.management_agent_repayment_method')" size="large">
@@ -112,17 +117,9 @@
 						</el-select>
 					</el-col>
 
-					<el-col :sm="12" class="mb-3" >
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-						<el-select class="custom-input mt-1 w-100" v-model="postForm.status" :placeholder="$t('msg.msg_select')" filterable size="large">
-							<el-option :label="$t('mix.table_enabled')" :value=1>{{$t('mix.table_enabled')}}</el-option>
-							<el-option :label="$t('mix.table_disabled')" :value=0>{{$t('mix.table_disabled')}}</el-option>
-						</el-select>
-					</el-col>
-					
 					<el-col :sm="12" class="mb-3 d-flex justify-content-between">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_is_view_other')}}</label>
-						<el-switch v-model="postForm.is_view_other"></el-switch>
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
+						<el-switch v-model="postForm.status" active-value="1" inactive-value="0"></el-switch>
 					</el-col>
 
 					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
