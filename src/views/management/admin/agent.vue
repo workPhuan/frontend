@@ -87,7 +87,7 @@
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.package_setting_product')}}</label>
 						<div v-for="(list,index) in productList" :key="index" :label="list.name" :value="list.id">
-							<el-checkbox :label="list.name" v-model="postForm.productList[index]['status']"/>
+							<el-checkbox v-model="checked3" :label="list.name" />
 						</div>
 						
 						<template #footer>
@@ -101,7 +101,7 @@
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_payment_method')}}</label>
 						<el-select class="custom-input mt-1 w-100" v-model="postForm.payment_method" :placeholder="$t('menu.management_agent_payment_method')" size="large">
-							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.id">{{list.name}}</el-option>
+							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.value">{{list.name}}</el-option>
 						</el-select>
 					</el-col>
 					
@@ -113,7 +113,7 @@
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_repayment_method')}}</label>
 						<el-select class="custom-input mt-1 w-100" v-model="postForm.repayment_method" :placeholder="$t('menu.management_agent_repayment_method')" size="large">
-							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.id">{{list.name}}</el-option>
+							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.value">{{list.name}}</el-option>
 						</el-select>
 					</el-col>
 
@@ -123,8 +123,8 @@
 					</el-col>
 
 					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_your_security')}}</label>
+						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_your_security')" />
 					</el-col>
 				</el-row>
 			</el-form>
@@ -305,27 +305,27 @@ export default{
 			},{
                 prop:"status",
                 label:this.$t('mix.table_status'),
-                width:'110',
+                width:'120',
 			},{
                 prop:"total_order",
                 label:this.$t('mix.table_total_order'),
-                width:'90',
+                width:'100',
 			},{
                 prop:"total_client",
                 label:this.$t('mix.table_total_client'),
-                width:'90',
+                width:'100',
 			},{
                 prop:"total_loan",
                 label:this.$t('mix.table_total_loan'),
-                width:'90',
+                width:'100',
 			},{
                 prop:"total_repay",
                 label:this.$t('mix.table_total_repay'),
-                width:'110',
+                width:'120',
 			},{
                 prop:"total_overdue",
                 label:this.$t('mix.table_total_overdue'),
-                width:'90',
+                width:'100',
 			},{
                 prop:"action",
                 label:this.$t('mix.table_action'),
@@ -333,21 +333,31 @@ export default{
 				align: 'center'
 			}],
 			postForm:{
-				name: '',
-				agent_id: '',
-				password: '',
-				confirm_password: '',
-				payment_method: '',
-				repayment_method: '',
-				is_view_other: 0,
-				productList:[],
-				security: '',
-				status: 1
+				sponsor:'',
+				member:'',
+				remark:'',
+				username:'',
+				name:'',
+				manage:[],
+				status:'normal',
+				new_password:'',
+				new_security:''
 			},
+			permissionList:[],
+			postPermission:{
+				master_id:'',
+				permission:[],
+			},
+			defaultProps:{
+				id: 'id',
+				children: 'children',
+				label: 'name'
+			},
+            defaultRole: '',
 			productList: [],
-			paymentList: [],
             agentList: [],
             searchAgentList: [],
+            streamerList: [],
 			modalList:{},
 			securityCheck: 0,
 		}
@@ -384,20 +394,24 @@ export default{
 				this.loading = false
 			})
 		},clearPostForm(done){
-			this.name = ''
-			this.agent_id = ''
-			this.password = ''
-			this.confirm_password = ''
-			this.payment_method = ''
-			this.repayment_method = ''
-			this.is_view_other = ''
-			this.productList = []
-			this.paymentList = []
-			this.status = ''
+			this.postForm.sponsor=''
+			this.postForm.login=''
+			this.postForm.name=''
+			this.postForm.username=''
+			this.postForm.service_url=''
+			this.postForm.service_text=''
+			this.postForm.password=''
+			this.postForm.security=''
+			this.postForm.room_id=''
+			this.postForm.is_live=1
+			this.postForm.manage=[]
+			this.postForm.status='normal'
 			
 			this.postForm.new_password=''
 			this.postForm.new_security=''
 
+			this.postPermission.master_id = ''
+			this.postPermission.permission = []
 			
 			if(done != undefined){
 				done()
@@ -412,8 +426,6 @@ export default{
 
 					if(value.valid){
 						this.productList = data.productList
-						this.postForm.productList = data.productList
-						this.paymentList = data.paymentList
 						this.modalList.addRow = true
 						this.loading = false
 					}
@@ -447,6 +459,106 @@ export default{
                     this.loading = false
                     this.preloader(false)
                 })
+			}
+		},statusRow(masterID){
+			if(this.$p.permissionChecker('userMemberStatus') && this.loading == false){
+				this.loading = true
+				this.$confirm(this.$t('msg.msg_confirmation'), this.$t('msg.prompt'), {
+					confirmButtonText: this.$t('button.yes'),
+					cancelButtonText: this.$t('button.no'),
+					customClass: 'input-dialog',
+					showInput: (this.securityCheck == 1), 
+					inputPlaceholder: this.$t('mix.table_security'),
+					inputType: 'password',
+				}).then(({value}) => {
+					this.preloader(true)
+					this.postForm.security = value
+					this.postForm.master_id = masterID
+					this.postData.data = JSON.stringify(this.postForm)
+
+					var result = this.$m.postMethod('management/agent/agent/DBstatus',this.postData)
+
+					result.then((value) => {
+						var data = value.data
+
+						if(value.valid){
+							this.$message({
+								message: data.returnMsg,
+								type: 'success'
+							})
+							this.initial()
+						}else{					
+							this.$m.popupErrorMessage(data.returnMsg,this)
+						}
+						
+						this.loading = false
+						this.preloader(false)
+					})
+				}).catch(() => {
+					this.loading = false          
+				})
+			}
+			
+		},getPermissionRow(id, login) {
+			if(this.$p.permissionChecker('adminAgentPermission') && this.loading == false){
+				this.loading = true;
+				this.submitForm.master_id = id
+				this.postForm.username = login
+				this.postPermission.master_id = id
+				this.postData.data = JSON.stringify(this.submitForm);
+				var result = this.$m.postMethod("management/agent/agent/permission", this.postData)
+				result.then((value) => {
+					var data = value.data
+
+					if (value.valid) {
+						this.postPermission.permission = data.permission
+						this.permissionList = data.permissionList
+						
+						this.modalList.permissionRow = true
+					}
+					
+					this.loading = false
+				});
+			}
+		},permissionRow() {
+			if(this.$p.permissionChecker('adminAgentPermission') && this.loading == false){
+				this.loading = true;
+				this.$confirm(this.$t('msg.msg_confirmation'), this.$t('msg.prompt'), {
+					confirmButtonText: this.$t('button.yes'),
+					cancelButtonText: this.$t('button.no'),
+					customClass: 'input-dialog',
+					showInput: (this.securityCheck == 1), 
+					inputPlaceholder: this.$t('mix.table_security'),
+					inputType: 'password',
+				}).then(({value}) => {
+					this.preloader(true);
+					this.postPermission.security = value
+					this.postData.data = JSON.stringify(this.postPermission)
+					var result = this.$m.postMethod("management/agent/agent/DBpermission", this.postData)
+
+					result.then((value) => {
+						var data = value.data
+
+						if (value.valid) {
+							this.$message({
+								message: data.returnMsg,
+								type: "success"
+							});
+							
+							this.clearPostForm()
+							this.modalList.permissionRow = false
+							this.initial()
+						} else {
+							this.$m.popupErrorMessage(data.returnMsg,this)
+						}
+
+						this.loading = false
+						this.preloader(false)
+					})
+				})
+				.catch(() => {
+					this.loading = false
+				});
 			}
 		},handleCheckChange(node, checked){
 			if(checked){
