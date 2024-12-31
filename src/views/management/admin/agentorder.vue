@@ -22,44 +22,119 @@
                         <el-descriptions-item :label="$t('mix.table_total_overdue')">{{ agentDetail.total_overdue }}</el-descriptions-item>
                     </el-descriptions>
                 </div>
-                <el-tabs type="border-card">
+                <el-tabs type="border-card" @tab-click="loadTable">
                     <el-tab-pane key="order" :label="$t('menu.agent_order')">
                         <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
-                        <template #empty v-if="tableData.length=='0'">
-                            <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
-                            <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-                            <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-                        </template>
-                        
-                        <template v-for="title in ajaxTitles" :key="title.prop">
-                            <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
-                                <template #header>
-                                    <p class="search-label">{{title.label}}</p>
-                                </template>
+                            <template #empty v-if="tableData.length=='0'">
+                                <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                            </template>
+                            
+                            <template v-for="title in ajaxTitles" :key="title.prop">
+                                <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+                                    <template #header>
+                                        <p class="search-label">{{title.label}}</p>
+                                    </template>
 
-                                <template v-if="title.prop == 'status'" #default="scope">
-                                    <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
-                                    {{scope.row.status}}
-                                    </div>
-                                </template>
-                                
-                                <template v-if="title.prop == 'action'" #default="scope">
-                                    <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
-                                    <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
-                                </template>
-                            </el-table-column>
-                        </template>
-                    </el-table>
-                    <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+                                    <template v-if="title.prop == 'status'" #default="scope">
+                                            <el-tag :type="scope.row.status_color">{{scope.row.status}}</el-tag>
+                                    </template>
+                                    
+                                    <template v-if="title.prop == 'action'" #default="scope">
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
+                                    </template>
+                                </el-table-column>
+                            </template>
+                        </el-table>
+                        <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
                     </el-tab-pane>
+                        
                     <el-tab-pane key="client" :label="$t('menu.management_client_client')">
-                        
+                        <el-table :data="tableData1" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+                            <template #empty v-if="tableData.length=='0'">
+                                <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                            </template>
+                            
+                            <template v-for="title in ajaxTitles1" :key="title.prop">
+                                <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+                                    <template #header>
+                                        <p class="search-label">{{title.label}}</p>
+                                    </template>
+
+                                    <template v-if="title.prop == 'status'" #default="scope">
+                                        <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
+                                        {{scope.row.status}}
+                                        </div>
+                                    </template>
+                                    
+                                    <template v-if="title.prop == 'action'" #default="scope">
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
+                                    </template>
+                                </el-table-column>
+                            </template>
+                        </el-table>
                     </el-tab-pane>
+
                     <el-tab-pane key="system" :label="$t('menu.app')">
-                        
+                        <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+                            <template #empty v-if="tableData.length=='0'">
+                                <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                            </template>
+                            
+                            <template v-for="title in ajaxTitles" :key="title.prop">
+                                <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+                                    <template #header>
+                                        <p class="search-label">{{title.label}}</p>
+                                    </template>
+
+                                    <template v-if="title.prop == 'status'" #default="scope">
+                                        <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
+                                        {{scope.row.status}}
+                                        </div>
+                                    </template>
+                                    
+                                    <template v-if="title.prop == 'action'" #default="scope">
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
+                                    </template>
+                                </el-table-column>
+                            </template>
+                        </el-table>
                     </el-tab-pane>
+
                     <el-tab-pane key="expense" :label="$t('menu.agent_expense')">
-                        
+                        <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+                            <template #empty v-if="tableData.length=='0'">
+                                <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                            </template>
+                            
+                            <template v-for="title in ajaxTitles" :key="title.prop">
+                                <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+                                    <template #header>
+                                        <p class="search-label">{{title.label}}</p>
+                                    </template>
+
+                                    <template v-if="title.prop == 'status'" #default="scope">
+                                        <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
+                                        {{scope.row.status}}
+                                        </div>
+                                    </template>
+                                    
+                                    <template v-if="title.prop == 'action'" #default="scope">
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
+                                    </template>
+                                </el-table-column>
+                            </template>
+                        </el-table>
                     </el-tab-pane>
                 </el-tabs>
             </el-card>
@@ -87,6 +162,7 @@ export default {
 			loading: true,
 			errors: [],
             tableData: [],
+            tableData1: [],
             total: 0,
             searchData:Object.assign({}, searchForm),
 			submitForm: {
@@ -130,6 +206,40 @@ export default {
                 width:'150',
 				align: 'center'
 			}],
+			ajaxTitles1:[{
+                prop:"login",
+                label:this.$t('mix.table_name'),
+                width:'120',
+			},{
+                prop:"phone_mobile",
+                label:this.$t('mix.table_phone'),
+                width:'120',
+			},{
+                prop:"icpass",
+                label:this.$t('mix.table_icpass'),
+                width:'120',
+			},{
+                prop:"loan_time",
+                label:this.$t('mix.table_loan_time'),
+                width:'120',
+			},{
+                prop:"total_overdue",
+                label:this.$t('mix.table_total_overdue'),
+                width:'120',
+			},{
+                prop:"total_loan",
+                label:this.$t('mix.table_total_loan'),
+                width:'120',
+			},{
+                prop:"total_repay",
+                label:this.$t('mix.table_total_repay'),
+                width:'120',
+			},{
+                prop:"action",
+                label:this.$t('mix.table_action'),
+                width:'150',
+				align: 'center'
+			}],
 			postForm:{},
 			modalList:{},
             agentDetail:[],
@@ -158,7 +268,7 @@ export default {
             this.loading = true
 			this.searchData.agent_id = storeTempID.agent_id
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/agent/agentorder/ajaxTable',this.postData)
+			var result = this.$m.postMethod('management/agent/agentorder/ajaxTableOrder',this.postData)
 			result.then((value) => {
 				var data = value.data
 
@@ -195,43 +305,36 @@ export default {
 			this.postPageForm.content = []
 			
 			if(done != undefined){
-				done()
+                done()
 			}
-		},editRow(){
-			if(this.$p.permissionChecker('toolSystemEdit')){
-				this.postEditForm = {}
-				const keys = Object.keys(this.postOriginalForm);
-				keys.forEach((key) => {
-					if(this.postOriginalForm[key] != this.postForm[key]){
-						this.postEditForm[key] = this.postForm[key]
-					}
-				});
+		},loadTable(tab){
+            this.loading = true
+			this.postData.data = JSON.stringify(this.searchData)
+            this.searchData.agent_id = storeTempID.agent_id
+            let table;
+            if(tab.index == 0){
+                table = 'management/agent/agentorder/ajaxTableOrder';
+            }else if(tab.index == 1){
+                table = 'management/agent/agentorder/ajaxTableClient';
+            }else if(tab.index == 2){
+                table = 'management/agent/agentorder/ajaxTableSetting';
+            }else if(tab.index == 3){
+                table = 'management/agent/agentorder/ajaxTableExpense';
+            }
+            var result = this.$m.postMethod(table,this.postData)
+            
+			result.then((value) => {
+				var data = value.data
 
-				this.loading = true
-				this.preloader(true)
-				this.postData.data = JSON.stringify(this.postEditForm)
-				var result = this.$m.postMethod('app/tools/systems/DBedit',this.postData)
-
-				result.then((value) => {
-					var data = value.data
-
-					if(value.valid){
-						this.$message({
-							message: data.returnMsg,
-							type: 'success'
-						})
-
-						this.clearPostForm()
-						this.initial()
-					}else{					
-                       this.$m.popupErrorMessage(data.returnMsg,this)
-					}
-					
-					this.loading = false
-					this.preloader(false)
-				})
-			}
-		},toAgentPage(){
+				if(value.valid){
+					this.tableData1 = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },toAgentPage(){
 			this.$router.push('/management/admin/agent');
 		},getPageRow(id){
 			if(this.$p.permissionChecker('toolSystemPage')){

@@ -105,9 +105,11 @@
 						</el-select>
 					</el-col>
 					
-					<el-col :sm="12" class="mb-3 d-flex justify-content-between">
+					<el-col :sm="12" class="mt-4">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_is_view_other')}}</label>
-						<el-switch v-model="postForm.is_view_other" active-value="1" inactive-value="0"></el-switch>
+						<div>
+							<el-switch v-model="postForm.is_view_other" active-value="1" inactive-value="0"></el-switch>
+						</div>
 					</el-col>
 					
 					<el-col :sm="12" class="mb-3">
@@ -117,9 +119,11 @@
 						</el-select>
 					</el-col>
 
-					<el-col :sm="12" class="mb-3 d-flex justify-content-between">
+					<el-col :sm="12" class="mt-4">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-						<el-switch v-model="postForm.status" active-value="1" inactive-value="0"></el-switch>
+						<div>
+							<el-switch v-model="postForm.status" active-value="1" inactive-value="0"></el-switch>
+						</div>
 					</el-col>
 
 					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">

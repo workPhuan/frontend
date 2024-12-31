@@ -767,6 +767,7 @@
 		"table_total_loan":						"Total Loan",
 		"table_total_repay":					"Total Repayment",
 		"table_total_overdue":					"Total Overdue",
+		"table_loan_time":						"Loan Time",
 		"table_coin_symbol":					"USDT",
 		"table_power_symbol":					"Power",
 		"table_honey_symbol":					"Honey",
