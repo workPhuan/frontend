@@ -9,9 +9,9 @@
 		<div class="page-body p-3">
             <el-card shadow="never">
                 <div>
-                    <h5>{{$t('mix.table_agent_info')}}</h5>
+                    <h5 class="mb-3">{{$t('mix.table_agent_info')}}</h5>
                     <el-descriptions>
-                        <el-descriptions-item :label="$t('mix.table_account')">{{ agentDetail.master_id }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_account')">{{ agentDetail.master_id }}    <el-button type="info" size="small"  @click="getEditRow(agentDetail.master_id),modalList.editRow = true" >{{$t('general.forgetpasswordchange')}}</el-button></el-descriptions-item> 
                         <el-descriptions-item :label="$t('mix.table_total_order')">{{ agentDetail.total_order }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_total_loan')">{{ agentDetail.total_loan }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_name')">{{ agentDetail.login }}</el-descriptions-item>
@@ -37,12 +37,19 @@
                                         <p class="search-label">{{title.label}}</p>
                                     </template>
 
+                                    <template v-if="title.prop == 'no'" #default="scope">
+                                        <el-link type="primary" @click="getOrderRow(scope.row.product_no)">{{ scope.row.no }}</el-link>
+                                    </template>
+
+                                    <template v-if="title.prop == 'master_id'" #default="scope">
+                                        <el-link type="primary" @click="getClientRow(scope.row.master_id)">{{ scope.row.master_id }}</el-link>
+                                    </template>
+
                                     <template v-if="title.prop == 'status'" #default="scope">
-                                            <el-tag :type="scope.row.status_color">{{scope.row.status}}</el-tag>
+                                        <el-tag :type="scope.row.status_color">{{scope.row.status}}</el-tag>
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
                                     </template>
                                 </el-table-column>
                             </template>
@@ -51,7 +58,7 @@
                     </el-tab-pane>
                         
                     <el-tab-pane key="client" :label="$t('menu.management_client_client')">
-                        <el-table :data="tableData1" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+                        <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
                             <template #empty v-if="tableData.length=='0'">
                                 <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
                                 <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
@@ -62,6 +69,10 @@
                                 <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
                                     <template #header>
                                         <p class="search-label">{{title.label}}</p>
+                                    </template>
+
+                                    <template v-if="title.prop == 'login'" #default="scope">
+                                        <el-link type="primary" @click="getClientRow(scope.row.master_id)">{{ scope.row.login }}</el-link>
                                     </template>
 
                                     <template v-if="title.prop == 'status'" #default="scope">
@@ -116,7 +127,7 @@
                                 <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
                             </template>
                             
-                            <template v-for="title in ajaxTitles" :key="title.prop">
+                            <template v-for="title in ajaxTitles3" :key="title.prop">
                                 <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
                                     <template #header>
                                         <p class="search-label">{{title.label}}</p>
@@ -126,6 +137,10 @@
                                         <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
                                         {{scope.row.status}}
                                         </div>
+                                    </template>
+
+                                    <template v-if="title.prop == 'master_id'" #default="scope">
+                                        <el-link type="primary" @click="getClientRow(scope.row.master_id)">{{ scope.row.master_id }}</el-link>
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
@@ -139,7 +154,33 @@
                 </el-tabs>
             </el-card>
 		</div>
-		
+		<el-dialog v-model="modalList.editRow" :title="$t('menu.management_chat_group_edit')" :before-close="clearPostForm">
+			<el-form label-position="top" label-width="auto" @submit.native.prevent>
+				<el-row :gutter="20">
+					<el-col :sm="12" class="mb-3">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_password')}}</label>
+						<el-input class="custom-input mt-1" v-model="postForm.password"  :placeholder="$t('mix.table_new_password')" />
+					</el-col>
+					<el-col :sm="12" class="mb-3">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_password_confirm')}}</label>
+						<el-input class="custom-input mt-1" v-model="postForm.confirm_password"  :placeholder="$t('mix.table_new_password_confirm')" />
+					</el-col>
+					
+
+					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
+						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
+					</el-col>
+				</el-row>
+			</el-form>
+			
+			<template #footer>
+				<div class="d-flex justify-content-center align-item-center">
+					<el-button class="custom-button success font-8 pt-3 pb-3" @click="editRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
+					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
+				</div>
+			</template>
+		</el-dialog>
 		
 	</div>
 </template>
@@ -163,6 +204,8 @@ export default {
 			errors: [],
             tableData: [],
             tableData1: [],
+            tableData2: [],
+            tableData3: [],
             total: 0,
             searchData:Object.assign({}, searchForm),
 			submitForm: {
@@ -200,15 +243,39 @@ export default {
                 prop:"status",
                 label:this.$t('mix.table_status'),
                 width:'90',
-			},{
-                prop:"action",
-                label:this.$t('mix.table_action'),
-                width:'150',
-				align: 'center'
 			}],
 			ajaxTitles1:[{
                 prop:"login",
                 label:this.$t('mix.table_name'),
+                width:'120',
+			},{
+                prop:"phone_mobile",
+                label:this.$t('mix.table_phone'),
+                width:'120',
+			},{
+                prop:"icpass",
+                label:this.$t('mix.table_icpass'),
+                width:'120',
+			},{
+                prop:"loan_time",
+                label:this.$t('mix.table_loan_time'),
+                width:'120',
+			},{
+                prop:"total_overdue",
+                label:this.$t('mix.table_total_overdue'),
+                width:'120',
+			},{
+                prop:"total_loan",
+                label:this.$t('mix.table_total_loan'),
+                width:'120',
+			},{
+                prop:"total_repay",
+                label:this.$t('mix.table_total_repay'),
+                width:'120',
+			}],
+            ajaxTitles2:[{
+                prop:"created_at",
+                label:this.$t('mix.table_created_at'),
                 width:'120',
 			},{
                 prop:"phone_mobile",
@@ -240,6 +307,35 @@ export default {
                 width:'150',
 				align: 'center'
 			}],
+            ajaxTitles3:[{
+                prop:"created_at",
+                label:this.$t('mix.table_name'),
+                width:'120',
+			},{
+                prop:"status",
+                label:this.$t('mix.table_consumption_type'),
+                width:'120',
+			},{
+                prop:"master_id",
+                label:this.$t('mix.table_name'),
+                width:'120',
+			},{
+                prop:"value",
+                label:this.$t('mix.table_expense'),
+                width:'120',
+			},{
+                prop:"after_amount",
+                label:this.$t('mix.table_expense'),
+                width:'120',
+			}],
+            postForm:{
+				password: "",
+                confirm_password: "",
+				security: "",
+				userDetails: "",
+				name:[],
+				selectedIds:[],
+			},
 			postForm:{},
 			modalList:{},
             agentDetail:[],
@@ -281,37 +377,71 @@ export default {
 				this.loading = false
 			})
 		},clearPostForm(done){
-			this.postForm = {}
-			this.postEditForm = {}
-			this.postOriginalForm = {}
-			this.currentImageID = ''
-			
-			this.postPageForm.id = ''
-			this.postPageForm.multiple_language = 0
-			this.postPageForm.single_title = ''
-			this.postPageForm.single_content = ''
-			this.postPageForm.title = []
-			this.postPageForm.content = []
+			this.postForm.code = ""
+			this.postForm.group_id = ""
+			this.postForm.group_name = ""
+			this.postForm.username = ""
+			this.postForm.account_package_id = ""
+			this.postForm.status = 1
+			this.postForm.img_url = ''
+			this.imagePickerFileUrl = ''
+			this.imagePickerFile = ''
+			this.postForm.security = ""
+			this.postForm.userDetails = ""
 			
 			if(done != undefined){
 				done()
 			}
-		},clearPageForm(done){
-			this.postPageForm.id = ''
-			this.postPageForm.multiple_language = 0
-			this.postPageForm.single_title = ''
-			this.postPageForm.single_content = ''
-			this.postPageForm.title = []
-			this.postPageForm.content = []
-			
-			if(done != undefined){
-                done()
+		},getEditRow(id) {
+			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
+				this.loading = true;
+				this.submitForm.id = id
+				this.postData.data = JSON.stringify(this.submitForm);
+				var result = this.$m.postMethod("management/agent/agentorder/resetPassword", this.postData);
+				result.then((value) => {
+					var data = value.data;
+
+					if (value.valid) {
+						
+						this.modalList.editRow = true
+					}
+					this.loading = false
+				});
+			}
+		},editRow() {
+			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
+				this.loading = true
+				this.preloader(true)
+                this.postData.data = JSON.stringify(this.postForm)
+				var result = this.$m.postMethod("management/agent/agentorder/DBresetPassword",this.postData)
+
+				result.then((value) => {
+					var data = value.data
+
+					if (value.valid) {
+						this.$message({
+							message: data.returnMsg,
+							type: "success"
+						});
+						
+						this.modalList.editRow = false
+						this.clearPostForm()
+						this.initial()
+					} else {
+						this.$m.popupErrorMessage(data.returnMsg,this)
+					}
+
+					this.loading = false
+					this.preloader(false)
+				});
 			}
 		},loadTable(tab){
             this.loading = true
 			this.postData.data = JSON.stringify(this.searchData)
             this.searchData.agent_id = storeTempID.agent_id
+            this.searchData.master_id = storeTempID.master_id
             let table;
+            let data;
             if(tab.index == 0){
                 table = 'management/agent/agentorder/ajaxTableOrder';
             }else if(tab.index == 1){
@@ -327,7 +457,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
-					this.tableData1 = data.datatable.data
+					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
 					this.listQuery.limit = parseInt(data.datatable.limit)
@@ -359,7 +489,11 @@ export default {
 					this.loading = false
 				})
 			}
-		},paginationChange(value){
+		},getOrderRow(){
+            
+        },getClientRow(){
+
+        },paginationChange(value){
 			if(value.page != ""){
 				this.searchData.pagination = value.page
 			}

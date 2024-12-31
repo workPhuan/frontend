@@ -808,6 +808,8 @@
 		"table_join_at": 						"Join at",
 		"table_group_name": 					"Group Name",
 		"table_type": 		       	     		"Type",
+		"table_consumption_type":				"Consumption Type",
+		"table_expense":						"Expense Amount",
 		"table_enabled": 		       	     	"Enable",
 		"table_disabled": 		       	     	"Disable",
 		"table_dropdown_item": 		       	    "Dropdown item",
