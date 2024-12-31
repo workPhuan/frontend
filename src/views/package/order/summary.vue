@@ -55,14 +55,18 @@
 								<p class="search-label">{{title.label}}</p>
 							</template>
 
-                            <template v-if="title.prop == 'code'" #default="scope">
-                                <span>{{scope.row.code}}</span>
-                                <el-tooltip content="Copy" placement="top">
-                                    <el-icon class="ml-3 clickable-icon" @click="copyToClipboard(scope.row.code)">
-                                        <CopyDocument />
-                                    </el-icon>
-                                </el-tooltip>
-                            </template>
+							<template v-if="title.prop == 'code'" #default="scope">
+								<el-link type="primary" @click="setTempID(scope.row.id)">{{ scope.row.code }}</el-link>
+								<el-tooltip content="Copy" placement="top">
+									<el-icon class="ml-3 clickable-icon" @click="copy($m.getItem('system_id')), $m.copyMessage($t('msg.msg_copy_success'))"></el-icon>
+								</el-tooltip>
+							</template>
+
+							<template v-else-if="title.prop == 'status_name'" #default="scope">
+								<div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
+								{{scope.row.status_name}}
+								</div>
+							</template>
 
 
 							<template v-if="title.prop == 'action'" #default="scope">
@@ -82,6 +86,8 @@
 <script setup>
 import pagination from '@/components/pagination/index.vue'
 import { CopyDocument } from '@element-plus/icons-vue';
+import { accountDetail } from '@/system/store/state.js'
+import { storeTempID } from '@/system/store/state.js'
 
 </script>
 
@@ -227,6 +233,10 @@ export default {
 					this.loading = false
 				}
 			});
+		},setTempID(id) {
+		storeTempID.value = id;  
+		console.log(storeTempID.value);
+		this.$router.push('/package/order/detail');  
 		},
 		clearPostForm(done){
 			this.postForm.code = []

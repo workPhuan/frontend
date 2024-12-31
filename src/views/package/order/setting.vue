@@ -66,8 +66,8 @@
         inject:['preloader'],
         data() {
             return {
-                switchState: 1,
-                checkboxState: 0,
+                switchState: 0,
+                sequenceCheckBox: 0,
                 percentageCheckBox: 0,
                 percentage: '',
                 loading: true,
@@ -318,11 +318,11 @@
                 }
             },onPercentageAssignChange() {
                 if (this.percentageCheckBox) {
-                    this.percentageCheckBox = 0;
+                    this.sequenceCheckBox = false;
                 }
             },onSequenceAssignChange() {
                 if (this.sequenceCheckBox) {
-                    this.sequenceCheckBox = 0;
+                    this.percentageCheckBox = false;
                 }
                 },
             },initialImage(){

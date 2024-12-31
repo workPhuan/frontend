@@ -181,6 +181,7 @@
 	},"button":{
 		"login":								"Log In",
 		"logout":								"Log Out",
+		"assign":								"Assign",
 		"forgetpassword":						"Forget Password",
 		"change_security":						"Change Security",
 		"suspend":								"Suspend",

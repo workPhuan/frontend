@@ -282,6 +282,11 @@ export const mainRoutes = [
 				path: '/package/order/summary',
 				meta: {title:'menu.package_order_summary',icon:'box',permission: 'S7ACRO', parents:'package'},
 				component: () => import('@/views/package/order/summary.vue'),
+			},{
+				path: '/package/order/detail',
+				meta: {title:'menu.package_order_summary',icon:'box',permission: 'S7ACRO', parents:'package'},
+				component: () => import('@/views/package/order/detail.vue'),
+				hidden: true
 			}],
 		}]
 		,

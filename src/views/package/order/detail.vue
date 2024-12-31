@@ -20,24 +20,20 @@
 								<label>{{$t('mix.table_code')}}</label>
 							</template>
 						</el-input>
-						<el-select class="custom-input fixed-width-200 m-2" size="large" v-model="searchData.product_id" :placeholder="$t('mix.table_product')" clearable filterable @change="initial()">
-							<el-option v-for="item in searchProductList" :label="item.name" :value="item.id">{{item.name}}</el-option>
-						</el-select>
 						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.name" :placeholder="$t('mix.table_please_enter')+$t('mix.table_name')" @keyup.enter.native="initial()">
 							<template #prepend>
 								<label>{{$t('mix.table_name')}}</label>
 							</template>
 						</el-input>
-                        <el-input class="custom-input fixed-width-200 m-2" v-model="searchData.phone_mobile" :placeholder="$t('mix.table_please_enter')+$t('mix.table_phone_mobile')" @keyup.enter.native="initial()">
-							<template #prepend>
-								<label>{{$t('mix.table_phone')}}</label>
-							</template>
-						</el-input>
-                        <el-input class="custom-input fixed-width-200 m-2" v-model="searchData.icpass" :placeholder="$t('mix.table_please_enter')+$t('mix.table_icpass')" @keyup.enter.native="initial()">
-							<template #prepend>
-								<label>{{$t('mix.table_icpass')}}</label>
-							</template>
-						</el-input>
+                        <el-select class="custom-input fixed-width-200 m-2" size="large" v-model="searchData.product_id" :placeholder="$t('mix.table_product')" clearable filterable @change="initial()">
+							<el-option v-for="item in searchProductList" :label="item.name" :value="item.id">{{item.name}}</el-option>
+						</el-select>
+                        <el-select class="custom-input fixed-width-200 m-2" size="large" v-model="searchData.status" :placeholder="$t('mix.table_status')" clearable filterable @change="initial()">
+							<el-option v-for="item in searchStatusList" :label="item.name" :value="item.id">{{item.name}}</el-option>
+						</el-select>
+                        <el-select class="custom-input fixed-width-200 m-2" size="large" v-model="searchData.agent_id" :placeholder="$t('mix.table_agent')" clearable filterable @change="initial()">
+							<el-option v-for="item in searchAgentList" :label="item.name" :value="item.id">{{item.name}}</el-option>
+						</el-select>
 						
 						<el-button class="custom-button plain m-2 h-r-2-5 pe-4 ps-4" @click="initial()" :loading="loading"><i class="fa-light fa-search me-2"></i>{{$t('button.search')}}</el-button>
 						<el-button class="custom-button plain m-2 h-r-2-5 pe-4 ps-4" @click="clearSearchForm()" :loading="loading"><i class="fa-light fa-brush me-2"></i>{{$t('button.clear')}}</el-button>
@@ -59,17 +55,18 @@
 								<p class="search-label">{{title.label}}</p>
 							</template>
 
-
-							<template v-if="title.prop == 'code'" #default="scope">
-								<el-link type="primary" @click="setTempID(scope.row.id)">{{ scope.row.code }}</el-link>
-								<el-tooltip content="Copy" placement="top">
-									<el-icon class="ml-3 clickable-icon" @click="copy($m.getItem('system_id')), $m.copyMessage($t('msg.msg_copy_success'))"></el-icon>
-								</el-tooltip>
-							</template>
+                            <template v-if="title.prop == 'code'" #default="scope">
+                                <span>{{scope.row.code}}</span>
+                                <el-tooltip content="Copy" placement="top">
+                                    <el-icon class="ml-3 clickable-icon" @click="copyToClipboard(scope.row.code)">
+                                        <CopyDocument />
+                                    </el-icon>
+                                </el-tooltip>
+                            </template>
 
 
 							<template v-if="title.prop == 'action'" #default="scope">
-                                <!-- <el-checkbox v-model="selectedRows" @change="handleCheckboxChange(scope.row.id)"></el-checkbox> -->
+                                <!-- <el-checkbox v-model="selectedRows" :label="scope.row.product_name"@change="handleCheckboxChange(scope.row.id)"></el-checkbox> -->
 								<el-button v-if="$p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="assignRow(scope.row.id)">{{$t('button.assign')}}</el-button>
 							</template>
 						</el-table-column>
@@ -85,9 +82,10 @@
 <script setup>
 import pagination from '@/components/pagination/index.vue'
 import { CopyDocument } from '@element-plus/icons-vue';
+import { accountDetail } from '@/system/store/state.js'
 import { storeTempID } from '@/system/store/state.js'
-import { useClipboard } from '@vueuse/core'
-const { copy } = useClipboard()
+
+
 
 </script>
 
@@ -141,18 +139,18 @@ export default {
 				label:this.$t("mix.table_name"),
 				width: "100",
 			},{
-				prop:"phone_mobile",
-				label:this.$t("mix.table_phone_mobile"),
-				width: "150",
-				align:'center'
-			},{
-				prop:"icpass",
-				label:this.$t("mix.table_icpass"),
-				width: "150",
-				align:'center'
-			},{
 				prop:"loan_amount",
 				label:this.$t("mix.table_loan_amount"),
+				width: "150",
+				align:'center'
+			},{
+				prop:"status_name",
+				label:this.$t("mix.table_status"),
+				width: "150",
+				align:'center'
+			},{
+				prop:"agent_name",
+				label:this.$t("mix.table_agent"),
 				width: "150",
 				align:'center'
 			},{
@@ -175,13 +173,11 @@ export default {
 				label:this.$t("mix.table_status")
 			}],
 			postForm: {
-				status: 1,
+				status: "",
 				security: "",
 				code: "",
-				domain_url: '',
 				master_id: '',
-				img_url: '',
-				username: '',
+				name: '',
 				account_package_id: '',
 				selectedIds: [],
 				name: []
@@ -195,6 +191,10 @@ export default {
 			modalList:{},
 			searchProductList: [],
 			productList: [],
+            searchAgentList: [],
+			agentList: [],
+            searchStatusList: [],
+			statusList: [],
 			securityCheck: 0,
 			imagePickerFile:'',
 			imagePickerFileUrl:'',
@@ -205,35 +205,37 @@ export default {
             this.searchData.pagination = 1
 			this.loading = true
 			this.postData.data = JSON.stringify(this.postForm)
-			var result = this.$m.postMethod('package/order/assign',this.postData)
+			var result = this.$m.postMethod('package/order/detail',this.postData)
 			result.then((value)=>{
 				var data = value.data
 				if(value.valid){
                     this.searchProductList = data.productList
+                    this.searchStatusList = data.statusList
+                    this.searchAgentList = data.agentList
 					this.multiActionMax = data.multiActionMax
 				}
 				this.initial()
 			})
-		},initial() {
-			this.loading = true;
-			this.postData.data = JSON.stringify(this.searchData);
-			var result = this.$m.postMethod("package/order/assign/ajaxTable", this.postData);
-			result.then((value) => {
-				var data = value.data;
+		},initial(){
+			this.searchData.id = storeTempID;
+			this.loading = true
+                
+			this.postData.data = JSON.stringify(this.searchData)
 
-				if (value.valid) {
+			var result = this.$m.postMethod('package/order/detail/ajaxTable',this.postData)
+			result.then((value) => {
+				var data = value.data
+				
+				if(value.valid){
+					this.postData.labelName = data.labelName
 					this.tableData = data.datatable.data
-					this.total = parseInt(data.datatable.total_number)
+					this.memberTotal = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
 					this.listQuery.limit = parseInt(data.datatable.limit)
 					this.loading = false
 				}
-			});
-		},setTempID(id) {
-
-			storeTempID.value = id;  
-			console.log(storeTempID.value);
-			this.$router.push('/package/order/detail');  
+				this.loading = false
+		})
 		},
 		clearPostForm(done){
 			this.postForm.code = []
@@ -450,7 +452,11 @@ export default {
 	},created(){
         this.postData.language = this.$m.getItem('currentLang')??'en'
 		this.securityCheck = this.$m.getItem('securityCheck')
-		this.getInitial()
+        if(storeTempID.value != '' && storeTempID.value != undefined){
+            this.getInitial()
+        }else{
+            this.$router.push('/package/order/detail')
+        }
 	}
 };
 </script>
