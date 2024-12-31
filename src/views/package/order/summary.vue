@@ -67,12 +67,7 @@
 								{{scope.row.status_name}}
 								</div>
 							</template>
-
-
-							<template v-if="title.prop == 'action'" #default="scope">
-                                <!-- <el-checkbox v-model="selectedRows" :label="scope.row.product_name"@change="handleCheckboxChange(scope.row.id)"></el-checkbox> -->
-								<el-button v-if="$p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="assignRow(scope.row.id)">{{$t('button.assign')}}</el-button>
-							</template>
+							
 						</el-table-column>
 					</template>
 				</el-table>
@@ -155,11 +150,6 @@ export default {
 				label:this.$t("mix.table_agent"),
 				width: "150",
 				align:'center'
-			},{
-				prop:"action",
-				label:this.$t("mix.table_action"),
-				width: "270",
-				align:'right'
 			}],
 			ajaxSearch: [{
 				prop:"name",

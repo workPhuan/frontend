@@ -1,13 +1,9 @@
 <template>
 	<div class="page-container">
 		<div class="page-header">
-			<label>
-				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{$t('menu.management_chat_group')}}
-			</label>
-			<div class="page-toolbar">
-				<el-button class="custom-button plain" @click="getAddRow(),modalList.addRow = true, genCode()" :loading="loading" v-if="$p.permissionChecker('userChatLogAdd')">{{$t('menu.management_chat_group_add')}}</el-button>
-				<el-button class="custom-button plain" @click="deleteRow('multiple')" :loading="loading" v-if="$p.permissionChecker('userChatGroupDelete')">{{$t('menu.management_chat_group_delete')}}</el-button>
-			</div>
+			<el-button style="cursor: pointer;" class="custom-button" type="info" @click="returnToPage()">
+				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{"Back to " + $t('menu.package_order_summary')}}
+			</el-button>
 		</div>
 		
 		<div class="page-body p-3">
@@ -15,7 +11,7 @@
 				<div class="page-filter">
                     <div>
                     <br>
-                    <h5>{{$t('mix.table_agent_info')}}</h5>
+                    <h5>{{$t('menu.package_order_details')}}</h5>
                     <br>
                     <el-descriptions>
                         <el-descriptions-item :label="$t('mix.table_code')">{{ orderDetail.code }}</el-descriptions-item>
@@ -31,36 +27,19 @@
                      </div>
 				</div>
                 <el-tabs type="border-card">
-                    <el-tab-pane key="order" :label="$t('mix.table_application_details')">   
-                        <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
-                        <template #empty v-if="tableData.length=='0'">
-                            <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
-                            <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-                            <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-                        </template>
-                        
-                        <template v-for="title in ajaxTitles" :key="title.prop">
-                            <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
-                                <template #header>
-                                    <p class="search-label">{{title.label}}</p>
-                                </template>
+                    <el-tab-pane key="application" :label="$t('mix.table_application_details')">   
+                        <el-button class="custom-button plain" @click="basicAjaxTable(),modalList.basicAjaxTable = true" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.basic_information')}}</el-button>
+                        <el-button class="custom-button plain" @click="jobAjaxTable(),modalList.basicAjaxTable = true" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.basic_information')}}</el-button>
 
-                                <template v-if="title.prop == 'status'" #default="scope">
-                                    <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
-                                    {{scope.row.status}}
-                                    </div>
-                                </template>
-                                
-                                <template v-if="title.prop == 'action'" #default="scope">
-                                    <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
-                                    <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
-                                </template>
-                            </el-table-column>
-                        </template>
-                    </el-table>
-                    <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+                        <el-button plain>{{$t('button.job_information')}}</el-button>
+                        <el-button plain>{{$t('button.bank_information')}}</el-button>
+                        <el-button plain>{{$t('button.contact_information')}}</el-button>
+                        <el-button plain>{{$t('button.newsletter')}}</el-button>
+                        <el-button plain>{{$t('button.location_information')}}</el-button>
+
                     </el-tab-pane>
-                    <el-tab-pane key="client" :label="$t('mix.table_order_records')">
+
+                    <el-tab-pane key="record" :label="$t('mix.table_order_records')">
                         
                     </el-tab-pane>
                 </el-tabs>
@@ -223,7 +202,6 @@ export default {
 				var data = value.data
 				
 				if(value.valid){
-					this.postData.labelName = data.labelName
 					this.tableData = data.datatable.data
 					this.memberTotal = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -232,6 +210,39 @@ export default {
 				}
 				this.loading = false
 		})
+		},loadTable(tab){
+            this.loading = true
+			this.postData.data = JSON.stringify(this.searchData)
+            this.searchData.agent_id = storeTempID.agent_id
+            let table;
+            if(tab.index == 0){
+                table = 'package/order/detail/basicAjaxTable';
+            }else if(tab.index == 1){
+                table = 'package/order/detail/jobAjaxTable';
+            }else if(tab.index == 2){
+                table = 'package/order/detail/bankAjaxTable';
+            }else if(tab.index == 3){
+                table = 'package/order/detail/contactAjaxTable';
+            }else if(tab.index == 4){
+                table = 'package/order/detail/newsAjaxTable';
+            }else if(tab.index == 5){
+                table = 'package/order/detail/locationAjaxTable';
+            }
+            var result = this.$m.postMethod(table,this.postData)
+            
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData1 = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },returnToPage(){
+			this.$router.push('/package/order/summary');
 		},
 		clearPostForm(done){
 			this.postForm.code = []
