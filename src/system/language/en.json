@@ -315,6 +315,7 @@
 		"app_tools_memberpackage_edit":			"Edit Member Package",
 		"app_tools_memberpackage_delete":			"Delete Member Package",
 		
+		
 		"management_chat_role":					"Chat Role",
 		"management_chat_log":					"Chat History",
 		"management_chat_group":				"Chat Group",
@@ -769,6 +770,8 @@
 		"table_coin_symbol":					"USDT",
 		"table_power_symbol":					"Power",
 		"table_honey_symbol":					"Honey",
+		"table_application_details":			"Application Details",
+		"table_order_records":					"Order Records",
 		"table_system_statistic":               "System Statistics",
 		"table_recently_statistic":             "Recently {day} Days Data Statistics",
 		"table_name":             				"Name",
@@ -817,6 +820,7 @@
 		"table_withdraw": 		       			"Withdraw",
 		"table_network_fee": 		       		"Network Fee",
 		"table_period": 		       			"Period (Days)",
+		"table_payment_period": 		       	"Payment Period",
 		"table_invest": 		       			"Invest",
 		"table_min_deposit": 		       		"Min Deposit Amount",
 		"table_min_withdraw": 		       		"Min Withdraw Amount",

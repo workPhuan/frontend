@@ -13,65 +13,57 @@
 		<div class="page-body p-3">
 			<el-card shadow="never">
 				<div class="page-filter">
-					<legend>{{$t('mix.table_filter')}}</legend>
-					<div class="p-3 d-flex flex-wrap">
-						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.code" :placeholder="$t('mix.table_please_enter')+$t('mix.table_code')" @keyup.enter.native="initial()">
-							<template #prepend>
-								<label>{{$t('mix.table_code')}}</label>
-							</template>
-						</el-input>
-						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.name" :placeholder="$t('mix.table_please_enter')+$t('mix.table_name')" @keyup.enter.native="initial()">
-							<template #prepend>
-								<label>{{$t('mix.table_name')}}</label>
-							</template>
-						</el-input>
-                        <el-select class="custom-input fixed-width-200 m-2" size="large" v-model="searchData.product_id" :placeholder="$t('mix.table_product')" clearable filterable @change="initial()">
-							<el-option v-for="item in searchProductList" :label="item.name" :value="item.id">{{item.name}}</el-option>
-						</el-select>
-                        <el-select class="custom-input fixed-width-200 m-2" size="large" v-model="searchData.status" :placeholder="$t('mix.table_status')" clearable filterable @change="initial()">
-							<el-option v-for="item in searchStatusList" :label="item.name" :value="item.id">{{item.name}}</el-option>
-						</el-select>
-                        <el-select class="custom-input fixed-width-200 m-2" size="large" v-model="searchData.agent_id" :placeholder="$t('mix.table_agent')" clearable filterable @change="initial()">
-							<el-option v-for="item in searchAgentList" :label="item.name" :value="item.id">{{item.name}}</el-option>
-						</el-select>
-						
-						<el-button class="custom-button plain m-2 h-r-2-5 pe-4 ps-4" @click="initial()" :loading="loading"><i class="fa-light fa-search me-2"></i>{{$t('button.search')}}</el-button>
-						<el-button class="custom-button plain m-2 h-r-2-5 pe-4 ps-4" @click="clearSearchForm()" :loading="loading"><i class="fa-light fa-brush me-2"></i>{{$t('button.clear')}}</el-button>
+                    <div>
+                    <br>
+                    <h5>{{$t('mix.table_agent_info')}}</h5>
+                    <br>
+                    <el-descriptions>
+                        <el-descriptions-item :label="$t('mix.table_code')">{{ orderDetail.code }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_created_at')">{{ orderDetail.created_at }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_status')">{{ orderDetail.status_name }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_product')">{{ orderDetail.product_name }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_period')">{{ orderDetail.period }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_agent')">{{ orderDetail.name }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ orderDetail.loan_amount }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_payment_period')"></el-descriptions-item>
 
-					</div>
+                    </el-descriptions>
+                     </div>
 				</div>
+                <el-tabs type="border-card">
+                    <el-tab-pane key="order" :label="$t('mix.table_application_details')">   
+                        <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+                        <template #empty v-if="tableData.length=='0'">
+                            <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                            <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                            <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                        </template>
+                        
+                        <template v-for="title in ajaxTitles" :key="title.prop">
+                            <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+                                <template #header>
+                                    <p class="search-label">{{title.label}}</p>
+                                </template>
 
-				<el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange">
-					<template #empty v-if="tableData.length=='0'">
-						<img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
-						<div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-						<div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-					</template>
-					
-					<el-table-column type="selection" width="55" ></el-table-column>
-					<template v-for="title in ajaxTitles" :key="title.prop">
-						<el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
-							<template #header>
-								<p class="search-label">{{title.label}}</p>
-							</template>
-
-                            <template v-if="title.prop == 'code'" #default="scope">
-                                <span>{{scope.row.code}}</span>
-                                <el-tooltip content="Copy" placement="top">
-                                    <el-icon class="ml-3 clickable-icon" @click="copyToClipboard(scope.row.code)">
-                                        <CopyDocument />
-                                    </el-icon>
-                                </el-tooltip>
-                            </template>
-
-
-							<template v-if="title.prop == 'action'" #default="scope">
-                                <!-- <el-checkbox v-model="selectedRows" :label="scope.row.product_name"@change="handleCheckboxChange(scope.row.id)"></el-checkbox> -->
-								<el-button v-if="$p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="assignRow(scope.row.id)">{{$t('button.assign')}}</el-button>
-							</template>
-						</el-table-column>
-					</template>
-				</el-table>
+                                <template v-if="title.prop == 'status'" #default="scope">
+                                    <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
+                                    {{scope.row.status}}
+                                    </div>
+                                </template>
+                                
+                                <template v-if="title.prop == 'action'" #default="scope">
+                                    <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
+                                    <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
+                                </template>
+                            </el-table-column>
+                        </template>
+                    </el-table>
+                    <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+                    </el-tab-pane>
+                    <el-tab-pane key="client" :label="$t('mix.table_order_records')">
+                        
+                    </el-tab-pane>
+                </el-tabs>
 
 				<pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
 			</el-card>
@@ -194,6 +186,7 @@ export default {
             searchAgentList: [],
 			agentList: [],
             searchStatusList: [],
+            orderDetail: [],
 			statusList: [],
 			securityCheck: 0,
 			imagePickerFile:'',
@@ -204,7 +197,9 @@ export default {
 		getInitial(){
             this.searchData.pagination = 1
 			this.loading = true
-			this.postData.data = JSON.stringify(this.postForm)
+			this.postData.id = storeTempID;
+            console.log()
+			this.postData.data = JSON.stringify(this.postData)
 			var result = this.$m.postMethod('package/order/detail',this.postData)
 			result.then((value)=>{
 				var data = value.data
@@ -212,6 +207,7 @@ export default {
                     this.searchProductList = data.productList
                     this.searchStatusList = data.statusList
                     this.searchAgentList = data.agentList
+                    this.orderDetail = data.orderDetail
 					this.multiActionMax = data.multiActionMax
 				}
 				this.initial()
@@ -219,7 +215,7 @@ export default {
 		},initial(){
 			this.searchData.id = storeTempID;
 			this.loading = true
-                
+
 			this.postData.data = JSON.stringify(this.searchData)
 
 			var result = this.$m.postMethod('package/order/detail/ajaxTable',this.postData)
