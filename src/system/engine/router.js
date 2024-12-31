@@ -288,6 +288,15 @@ export const mainRoutes = [
 				component: () => import('@/views/package/order/detail.vue'),
 				hidden: true
 			}],
+		},{
+			path: '/package/product',
+			redirect: '/package/product/',
+			meta: {title:'menu.product_management',permission: 'ASTCJU', parents:'package'},
+			children: [{
+				path: '/package/product/item',
+				meta: {title:'menu.product_item_list',icon:'passport',permission: 'I5L2N3', parents:'package'},
+				component: () => import('@/views/package/product/item.vue'),
+			}],
 		}]
 		,
 	},{

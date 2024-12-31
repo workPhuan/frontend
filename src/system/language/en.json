@@ -755,7 +755,9 @@
 		"site_content_carousel":				"Carousel Management",
 		"site_content_carousel_add":			"Add Carousel",
 		"site_content_carousel_edit":			"Edit Carousel",
-		"site_content_carousel_delete":			"Delete Carousel"
+		"site_content_carousel_delete":			"Delete Carousel",
+		"product_management":					"Product Management",
+		"product_item_list":					"Product Item List"
 	},"login":{
 		"table_signin":                         "Sign In",
 		"table_welcome_back":                   "{appname} management platform",
@@ -1318,7 +1320,11 @@
 		"table_is_online":						"Is Online",
 		"table_last_seen":						"Last Seen",
 		"table_is_typing":						"Is Typing",
-		"table_cancel_select_message":			"Cancel Selected Message"
+		"table_cancel_select_message":			"Cancel Selected Message",
+		"table_product_name":					"Product Name",
+		"table_loan_period":					"Loan Period",
+		"table_is_all_agent":					"Add to all agent",
+		"table_is_eligible":					"Limited to customers who have borrowed twice or more without default"
 		
 	}
 	

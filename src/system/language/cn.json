@@ -666,7 +666,9 @@
 		"site_banner_lists":					"轮播图列表",
 		"site_banner_lists_add":				"添加轮播图",
 		"site_banner_lists_edit":				"编辑轮播图",
-		"site_banner_lists_delete":				"删除轮播图"
+		"site_banner_lists_delete":				"删除轮播图",
+		"product_management":					"产品管理",
+		"product_item_list":					"产品列表"
 	},"login":{
 		"table_signin":							"登入",
 		"table_welcome_back":					"欢迎回到{appname}管理平台",
@@ -1058,6 +1060,10 @@
 		"table_purchase_card":					"购买银行卡",
 		"table_close_ticketing":				"关帖",
 		"table_trash_ticketing":				"标记为垃圾帖",
-		"table_service_text":					"默认发送文字"
+		"table_service_text":					"默认发送文字",
+		"table_product_name":					"产品名称",
+		"table_loan_period":					"借款天数",
+		"table_is_all_agent":					"添加给目前所有代理",
+		"table_is_eligible":					"限已借两次以上没违约中客户"
 	}
 }
