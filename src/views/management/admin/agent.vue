@@ -49,7 +49,7 @@
 							</template>
 							
 							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.agent_id)">{{$t('button.info')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
 							</template>
@@ -582,14 +582,11 @@ export default{
 		},getAgentRow(id) {
 			this.$router.push('/management/admin/agentorder');
 			// this.$m.setItem('group_id',id)
-			storeTempID.group_id = id
+			storeTempID.agent_id = id
 		}
 	},created(){
         this.postData.language = this.$m.getItem('currentLang')??'en'
 		this.securityCheck = this.$m.getItem('securityCheck')
-		if(storeTempID.group_id == "" || storeTempID.group_id == undefined){
-			this.$router.push('/management/admin/agent');
-		}
 		this.getInitial()
 	}
 }

@@ -132,6 +132,7 @@ export const mainRoutes = [
 				path: '/management/admin/agentorder',
 				meta: {title:'menu.management_admin_agent',icon:'user-tie',permission: 'RZYSSQ', parents:'management'},
 				component: () => import('@/views/management/admin/agentorder.vue'),
+				hidden: true
 			},{
 				path: '/management/admin/assistant',
 				meta: {title:'menu.management_admin_assistant',icon:'user-visor',permission: 'RZYSSQ', parents:'management'},
