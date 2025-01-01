@@ -41,18 +41,13 @@
 								<p class="search-label">{{title.label}}</p>
 							</template>
 
-							<template v-if="title.prop == 'login'" #default="scope">
-								<el-link type="primary" @click="getAgentRow(scope.row.agent_id,scope.row.master_id)">{{ scope.row.login }}</el-link>
-							</template>
-
 							<template v-if="title.prop == 'status'" #default="scope">
-								<p class="p-0 m-0 mb-2">{{$t('mix.table_account_status')}}: 
-									<el-tag v-if="scope.row.status == 'normal'" type="success">{{$t('mix.table_normal')}}</el-tag>
-									<el-tag v-else type="danger">{{$t('mix.table_suspended')}}</el-tag>
-								</p>
+								<el-tag v-if="scope.row.status == 'normal'" type="success">{{$t('mix.table_normal')}}</el-tag>
+								<el-tag v-else type="danger">{{$t('mix.table_suspended')}}</el-tag>
 							</template>
 							
 							<template v-if="title.prop == 'action'" #default="scope">
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.agent_id,scope.row.master_id)">{{$t('button.info')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
 							</template>
@@ -304,35 +299,45 @@ export default{
 			ajaxTitles:[{
                 prop:"no",
                 label:this.$t('mix.table_id'),
-                width:'70',
+                width:'50',
 			},{
                 prop:"login",
                 label:this.$t('mix.table_username'),
-                width:'100',
+                width:'90',
 			},{
                 prop:"status",
                 label:this.$t('mix.table_status'),
-                width:'120',
+                width:'80',
 			},{
                 prop:"total_order",
                 label:this.$t('mix.table_total_order'),
-                width:'100',
+                width:'90',
+				align: 'center',
 			},{
                 prop:"total_client",
                 label:this.$t('mix.table_total_client'),
-                width:'100',
+                width:'90',
+				align: 'center'
 			},{
                 prop:"total_loan",
-                label:this.$t('mix.table_total_loan'),
+                label:this.$t('mix.table_total_loan')+' NT$',
                 width:'100',
+				align: 'center'
 			},{
                 prop:"total_repay",
-                label:this.$t('mix.table_total_repay'),
-                width:'120',
+                label:this.$t('mix.table_total_repay')+' NT$',
+                width:'130',
+				align: 'center'
 			},{
                 prop:"total_overdue",
                 label:this.$t('mix.table_total_overdue'),
                 width:'100',
+				align: 'center'
+			},{
+                prop:"action",
+                label:this.$t('mix.table_action'),
+                width:'150',
+				align: 'center'
 			}],
 			postForm:{
 				sponsor:'',

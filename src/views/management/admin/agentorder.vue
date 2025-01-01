@@ -11,14 +11,19 @@
                 <div>
                     <h5 class="mb-3">{{$t('mix.table_agent_info')}}</h5>
                     <el-descriptions>
-                        <el-descriptions-item :label="$t('mix.table_account')">{{ agentDetail.master_id }}    <el-button type="info" size="small"  @click="getEditRow(agentDetail.master_id),modalList.editRow = true" >{{$t('general.forgetpasswordchange')}}</el-button></el-descriptions-item> 
+                        <el-descriptions-item :label="$t('mix.table_account')">{{ agentDetail.name }}    <el-button type="info" size="small"  @click="resetPasswordRow(agentDetail.master_id),modalList.editRow = true" >{{$t('general.forgetpasswordchange')}}</el-button></el-descriptions-item> 
                         <el-descriptions-item :label="$t('mix.table_total_order')">{{ agentDetail.total_order }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_total_loan')">{{ agentDetail.total_loan }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_name')">{{ agentDetail.login }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_total_client')">{{ agentDetail.total_client }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_total_repay')">{{ agentDetail.total_repay }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_status')">{{ agentDetail.status }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('menu.management_agent_is_view_other')">{{ agentDetail.is_view_other_agent }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_status')">
+                            {{ agentDetail.status }}
+                            <el-switch v-model="agentDetail.status" active-value="normal" inactive-value="suspense" @change="userStatusRow(agentDetail.master_id,agentDetail.status)"></el-switch>
+                        </el-descriptions-item>
+                        <el-descriptions-item :label="$t('menu.management_agent_is_view_other')">
+                            <el-switch v-model="agentDetail.is_view_other" active-value="1" inactive-value="0" @click="viewOtherRow(agentDetail.master_id,agentDetail.is_view_other)"></el-switch>
+                        </el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_total_overdue')">{{ agentDetail.total_overdue }}</el-descriptions-item>
                     </el-descriptions>
                 </div>
@@ -37,19 +42,13 @@
                                         <p class="search-label">{{title.label}}</p>
                                     </template>
 
-                                    <template v-if="title.prop == 'no'" #default="scope">
-                                        <el-link type="primary" @click="getOrderRow(scope.row.product_no)">{{ scope.row.no }}</el-link>
-                                    </template>
-
-                                    <template v-if="title.prop == 'master_id'" #default="scope">
-                                        <el-link type="primary" @click="getClientRow(scope.row.master_id)">{{ scope.row.master_id }}</el-link>
-                                    </template>
-
                                     <template v-if="title.prop == 'status'" #default="scope">
                                         <el-tag :type="scope.row.status_color">{{scope.row.status}}</el-tag>
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getOrderRow(scope.row.code)">{{$t('button.info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientRow(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
                                     </template>
                                 </el-table-column>
                             </template>
@@ -71,10 +70,6 @@
                                         <p class="search-label">{{title.label}}</p>
                                     </template>
 
-                                    <template v-if="title.prop == 'login'" #default="scope">
-                                        <el-link type="primary" @click="getClientRow(scope.row.master_id)">{{ scope.row.login }}</el-link>
-                                    </template>
-
                                     <template v-if="title.prop == 'status'" #default="scope">
                                         <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
                                         {{scope.row.status}}
@@ -82,7 +77,6 @@
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
                                         <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
                                     </template>
                                 </el-table-column>
@@ -91,32 +85,96 @@
                     </el-tab-pane>
 
                     <el-tab-pane key="system" :label="$t('menu.app')">
-                        <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
-                            <template #empty v-if="tableData.length=='0'">
-                                <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
-                                <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-                                <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-                            </template>
-                            
-                            <template v-for="title in ajaxTitles" :key="title.prop">
-                                <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
-                                    <template #header>
-                                        <p class="search-label">{{title.label}}</p>
-                                    </template>
+                        <div class="page-toolbar">
+                            <el-button class="custom-button plain" @click="getAddRow()" :loading="loading" v-if="$p.permissionChecker('adminAdminAdd')">{{$t('menu.management_admin_admin_add')}}</el-button>
+                        </div>
+                        
+                        <div class="page-body p-3">
+                            <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+                                <template #empty v-if="tableData.length=='0'">
+                                    <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                    <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                    <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                                </template>
+                                
+                            <template v-for="title in ajaxTitles2" :key="title.prop">
+                                    <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+                                        <template #header>
+                                            <p class="search-label">{{title.label}}</p>
+                                        </template>
 
-                                    <template v-if="title.prop == 'status'" #default="scope">
-                                        <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
-                                        {{scope.row.status}}
+                                        <template v-if="title.prop == 'status'" #default="scope">
+                                            <!-- <el-switch v-model="scope.row.status" active-value="1" inactive-value="0" @change="statusRow(scope.row)"></el-switch> -->
+                                        </template>
+
+                                        <template v-if="title.prop == 'action'" #default="scope">
+                                            <el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.master_id)">{{$t('menu.management_admin_admin_edit')}}</el-button>
+                                        </template>
+                                    </el-table-column>
+                                </template>
+                            </el-table>
+
+                            <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+                        </div>
+
+                        <el-dialog v-model="modalList.addRow" :title="$t('menu.management_admin_admin_add')" :before-close="clearPostForm" class="dialog-md">
+                            <el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
+                                <el-row :gutter="20">
+                                    <el-col :sm="24" class="mt-4">
+                                        <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_code')}}</label>
+                                        <el-input v-model="postForm.code" :placeholder="$t('mix.table_code')" />
+                                    </el-col>
+                                    <el-col :sm="12" class="mt-4">
+                                        <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_loan_period')}}</label>
+                                        <el-input-number class="w-100" v-model="postForm.period" :step="1" :min="0"/>
+                                    </el-col>
+                                    <el-col :sm="12" class="mt-4">
+                                        <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
+                                        <div>
+                                            <el-switch v-model="postForm.status" :active-value="1" :inactive-value="0" :loading="loading"></el-switch>
                                         </div>
-                                    </template>
-                                    
-                                    <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
-                                    </template>
-                                </el-table-column>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="20" class="mt-4">
+                                    <el-col :sm="24" :md="12" class="mb-3" v-for="item in postForm.attribute_list" :key="item.id">
+                                        <label class="text-theme font-8 fw-bold"><span class="text-danger"> * </span>{{ item.name }}</label>
+                                        <el-input-number class="w-100" v-model="item.value" :step="1" :min="0"/>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="20">
+                                    <el-col :sm="12" class="mt-2">
+                                        <el-checkbox v-model="postForm.is_all_agent">{{$t('mix.table_is_all_agent')}}</el-checkbox>
+                                    </el-col>
+                                    <el-col :sm="12" class="mt-2">
+                                        <el-checkbox v-model="postForm.is_eligible">{{$t('mix.table_is_eligible')}}</el-checkbox>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="20">
+                                    <el-col :xs="24" :sm="24">
+                                        <template v-if="postForm.multiple_language === 0">
+                                            <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
+                                            <el-input class="custom-input mt-1" v-model="postForm.single_name" :placeholder="$t('mix.table_name')" />
+                                        </template>
+                                        
+                                        <template v-else>
+                                            <el-tabs type="border-card" class="mt-3 mb-4">
+                                                <el-tab-pane v-for="item in languageList" :key="item.id" :item="item" :label="item.name">
+                                                    <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
+                                                    <el-input class="custom-input mt-1" v-model="postForm.name[item.id]" :placeholder="$t('mix.table_name')" />
+                                                </el-tab-pane>
+                                            </el-tabs>
+                                        </template>
+                                    </el-col>
+                                </el-row>
+                            </el-form>
+                            
+                            <template #footer>
+                                <div class="d-flex justify-content-center align-item-center">
+                                    <el-button class="custom-button success font-8 pt-3 pb-3" @click="addRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
+                                    <el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.addRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
+                                </div>
                             </template>
-                        </el-table>
+                        </el-dialog>
                     </el-tab-pane>
 
                     <el-tab-pane key="expense" :label="$t('menu.agent_expense')">
@@ -138,13 +196,8 @@
                                         {{scope.row.status}}
                                         </div>
                                     </template>
-
-                                    <template v-if="title.prop == 'master_id'" #default="scope">
-                                        <el-link type="primary" @click="getClientRow(scope.row.master_id)">{{ scope.row.master_id }}</el-link>
-                                    </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.info')}}</el-button>
                                         <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
                                     </template>
                                 </el-table-column>
@@ -154,7 +207,7 @@
                 </el-tabs>
             </el-card>
 		</div>
-		<el-dialog v-model="modalList.editRow" :title="$t('menu.management_chat_group_edit')" :before-close="clearPostForm">
+		<el-dialog v-model="modalList.editRow" :title="$t('general.forgetpasswordchange')" :before-close="clearPostForm">
 			<el-form label-position="top" label-width="auto" @submit.native.prevent>
 				<el-row :gutter="20">
 					<el-col :sm="12" class="mb-3">
@@ -209,7 +262,10 @@ export default {
             total: 0,
             searchData:Object.assign({}, searchForm),
 			submitForm: {
-				id:''
+				id:'',
+				master_id:'',
+                status:'',
+                is_view_other:''
 			},
 			postData: {
 				data: '',
@@ -222,15 +278,16 @@ export default {
 			ajaxTitles:[{
                 prop:"created_at",
                 label:this.$t('mix.table_created_at'),
-                width:'120',
+                width:'100',
 			},{
-                prop:"no",
+                prop:"code",
                 label:this.$t('mix.table_product_no'),
-                width:'80',
+                width:'100',
 			},{
                 prop:"product_id",
                 label:this.$t('mix.table_product'),
-                width:'120',
+                width:'100',
+                align:'center'
 			},{
                 prop:"master_id",
                 label:this.$t('mix.table_client'),
@@ -243,39 +300,15 @@ export default {
                 prop:"status",
                 label:this.$t('mix.table_status'),
                 width:'90',
+			},{
+                prop:"action",
+                label:this.$t('mix.table_action'),
+                width:'150',
+				align: 'center'
 			}],
 			ajaxTitles1:[{
                 prop:"login",
                 label:this.$t('mix.table_name'),
-                width:'120',
-			},{
-                prop:"phone_mobile",
-                label:this.$t('mix.table_phone'),
-                width:'120',
-			},{
-                prop:"icpass",
-                label:this.$t('mix.table_icpass'),
-                width:'120',
-			},{
-                prop:"loan_time",
-                label:this.$t('mix.table_loan_time'),
-                width:'120',
-			},{
-                prop:"total_overdue",
-                label:this.$t('mix.table_total_overdue'),
-                width:'120',
-			},{
-                prop:"total_loan",
-                label:this.$t('mix.table_total_loan'),
-                width:'120',
-			},{
-                prop:"total_repay",
-                label:this.$t('mix.table_total_repay'),
-                width:'120',
-			}],
-            ajaxTitles2:[{
-                prop:"created_at",
-                label:this.$t('mix.table_created_at'),
                 width:'120',
 			},{
                 prop:"phone_mobile",
@@ -307,6 +340,19 @@ export default {
                 width:'150',
 				align: 'center'
 			}],
+            ajaxTitles2:[{
+                prop:"name",
+                label:this.$t('mix.table_name'),
+                width:'100',
+			},{
+                prop:"period",
+                label:this.$t('mix.table_period'),
+                width:'100',
+			},{
+                prop:"status",
+                label:this.$t('mix.table_account_status'),
+                width:'150',
+			}],
             ajaxTitles3:[{
                 prop:"created_at",
                 label:this.$t('mix.table_name'),
@@ -327,10 +373,16 @@ export default {
                 prop:"after_amount",
                 label:this.$t('mix.table_expense'),
                 width:'120',
+			},{
+                prop:"action",
+                label:this.$t('mix.table_action'),
+                width:'120',
 			}],
             postForm:{
 				password: "",
                 confirm_password: "",
+                is_view_other: '',
+                status: '',
 				security: "",
 				userDetails: "",
 				name:[],
@@ -392,10 +444,10 @@ export default {
 			if(done != undefined){
 				done()
 			}
-		},getEditRow(id) {
+		},resetPasswordRow(id) {
 			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
 				this.loading = true;
-				this.submitForm.id = id
+				this.submitForm.master_id = id
 				this.postData.data = JSON.stringify(this.submitForm);
 				var result = this.$m.postMethod("management/agent/agentorder/resetPassword", this.postData);
 				result.then((value) => {
@@ -466,34 +518,161 @@ export default {
 			})
         },toAgentPage(){
 			this.$router.push('/management/admin/agent');
-		},getPageRow(id){
-			if(this.$p.permissionChecker('toolSystemPage')){
-				this.loading = true
-				this.submitForm.id = id
-				this.postData.data = JSON.stringify(this.submitForm)
-				var result = this.$m.postMethod('app/tools/systems/page',this.postData)
-				result.then((value) => {
-					var data = value.data
-
-					if(value.valid){
-						this.postPageForm = data.thisDetail
-						this.postPageForm.multiple_language = parseInt(data.thisDetail.multiple_language)
-						
-						var content = '';
-						content = this.decoder(JSON.stringify(this.postPageForm.content))
-						this.postPageForm.content = JSON.parse(content)
-						
-						this.postPageForm.single_content = this.decoder(this.postPageForm.single_content)
-						this.modalList.pageRow = true
-					}
-					this.loading = false
-				})
-			}
 		},getOrderRow(){
             
         },getClientRow(){
 
-        },paginationChange(value){
+        },getAddRow(){
+			if(this.$p.permissionChecker('adminAdminAdd') && this.loading == false){
+				this.loading = true
+				this.postData.data = JSON.stringify(this.postForm)
+				var result = this.$m.postMethod('package/product/item/add',this.postData)
+				result.then((value)=>{
+					var data = value.data
+
+					if(value.valid){
+						this.attributeList = data.attributeList
+						this.postForm.attribute_list = this.attributeList
+						this.modalList.addRow = true
+						this.loading = false
+					}
+				})
+			}
+        },addRow(){
+			if(this.$p.permissionChecker('adminAdminAdd') && this.loading == false){
+				this.loading = true
+                this.preloader(true)
+                
+                this.postData.data = JSON.stringify(this.postForm)
+
+                var result = this.$m.postMethod('package/product/item/DBadd',this.postData)
+
+                result.then((value) => {
+                    var data = value.data
+
+                    if(value.valid){
+                        this.$message({
+                            message: data.returnMsg,
+                            type: 'success'
+                        })
+                        
+                        this.modalList.addRow = false
+                        this.clearPostForm()
+                        this.initial()
+                    }else{					
+                        this.$m.popupErrorMessage(data.returnMsg,this)
+                    }
+                    
+                    this.loading = false
+                    this.preloader(false)
+                })
+			}
+		},userStatusRow(id,status){
+			if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
+                this.loading = true
+                this.$confirm(this.$t('msg.msg_run_task'), this.$t('msg.prompt'), {
+						confirmButtonText: this.$t('button.yes'),
+						cancelButtonText: this.$t('button.no'),
+						customClass: 'input-dialog',
+						showInput: (this.securityCheck == 1), 
+						inputPlaceholder: this.$t('mix.table_security'),
+						inputType: 'password',
+					}).then(({value}) => {
+                        this.loading = true
+                        this.submitForm.master_id = id;
+                        this.submitForm.status = status;
+                        this.postData.data = JSON.stringify(this.submitForm)
+                        
+                        var formData = new FormData();
+                        formData.append('data', this.postData.data);
+                        formData.append('language', this.postData.language);
+        
+                        
+                        var result = this.$m.postMethod('management/agent/agentorder/DBstatus',formData)
+                        result.then((value) => {
+                        var data = value.data
+                        if(value.valid){
+                            this.$message({
+                                message: data.returnMsg,
+                                type: 'success'
+                            });
+                        }else{					
+                            this.$m.popupErrorMessage(data.returnMsg,this)
+                        }
+                        this.clearPostForm()
+                        this.initial()
+                        this.loading = false
+                        });
+
+                    })
+			};
+		},viewOtherRow(id,is_view_other){
+			if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
+                this.loading = true
+				this.submitForm.master_id = id
+				this.submitForm.is_view_other = is_view_other
+				this.postData.data = JSON.stringify(this.submitForm)
+				
+				var formData = new FormData()
+				formData.append('data', this.postData.data)
+				formData.append('language', this.postData.language)
+
+				var result = this.$m.postMethod('management/agent/agentorder/DBviewOther',formData)
+				result.then((value) => {
+					var data = value.data
+					if(value.valid){
+						this.$message({
+							message: data.returnMsg,
+							type: 'success'
+						});
+					}else{					
+						this.$m.popupErrorMessage(data.returnMsg,this)
+					}
+					this.clearPostForm()
+					this.initial()
+					this.loading = false
+				});
+			};
+		},statusRow(masterID){
+			if(this.$p.permissionChecker('userMemberStatus') && this.loading == false){
+				this.loading = true
+				this.$confirm(this.$t('msg.msg_confirmation'), this.$t('msg.prompt'), {
+					confirmButtonText: this.$t('button.yes'),
+					cancelButtonText: this.$t('button.no'),
+					customClass: 'input-dialog',
+					showInput: (this.securityCheck == 1), 
+					inputPlaceholder: this.$t('mix.table_security'),
+					inputType: 'password',
+				}).then(({value}) => {
+					this.preloader(true)
+					this.postForm.security = value
+					this.postForm.master_id = masterID
+					this.postData.data = JSON.stringify(this.postForm)
+
+					var result = this.$m.postMethod('management/admin/admin/DBstatus',this.postData)
+
+					result.then((value) => {
+						var data = value.data
+
+						if(value.valid){
+							this.$message({
+								message: data.returnMsg,
+								type: 'success'
+							})
+							this.initial()
+						}else{					
+							this.$m.popupErrorMessage(data.returnMsg,this)
+						}
+						
+						this.loading = false
+						this.preloader(false)
+					})
+				}).catch(() => {
+					this.loading = false          
+				})
+			}
+			
+		},paginationChange(value){
 			if(value.page != ""){
 				this.searchData.pagination = value.page
 			}
