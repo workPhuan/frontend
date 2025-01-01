@@ -60,17 +60,17 @@
 							</template>
 
 
-							<template v-if="title.prop == 'code'" #default="scope">
+							<!-- <template v-if="title.prop == 'code'" #default="scope">
 								<el-link type="primary" @click="setTempID(scope.row.id)">{{ scope.row.code }}</el-link>
 								<el-tooltip content="Copy" placement="top">
 									<el-icon class="ml-3 clickable-icon" @click="copy($m.getItem('system_id')), $m.copyMessage($t('msg.msg_copy_success'))"></el-icon>
 								</el-tooltip>
-							</template>
+							</template> -->
 
 
 							<template v-if="title.prop == 'action'" #default="scope">
-                                <!-- <el-checkbox v-model="selectedRows" @change="handleCheckboxChange(scope.row.id)"></el-checkbox> -->
-								<el-button v-if="$p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="assignRow(scope.row.id)">{{$t('button.assign')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
+								<el-button v-if="selectedRowId === scope.row.id && $p.permissionChecker('userChatGroupDelete')"class="custom-button danger m-1"@click="getAssignRow(scope.row.id)">{{$t('button.assign')}}</el-button>						
 							</template>
 						</el-table-column>
 					</template>
@@ -184,6 +184,7 @@ export default {
 				username: '',
 				account_package_id: '',
 				selectedIds: [],
+				selectedRowId: [],
 				name: []
 			},
 			languageList:JSON.parse(this.$m.getItem('languageList')),
@@ -414,6 +415,9 @@ export default {
 					this.$message.error(this.$t('error.msg_checkbox_select'))
 				}
 			}
+		},setTempID(id) {
+			storeTempID.value = id;  
+			this.$router.push('/package/order/detail');  
 		},initialImage(){
 			this.imagePickerFile = ''
 			this.imagePickerFileUrl = ''
@@ -444,9 +448,9 @@ export default {
 			}
 			
 			this.initial()
-		},handleSelectionChange(selection){
-			this.postForm.selectedIds = selection.map((row) => row.id)
-		}
+		},handleSelectionChange(selectedRows) {
+		this.selectedRowId = selectedRows.length > 0 ? selectedRows[0].id : null;
+		},
 	},created(){
         this.postData.language = this.$m.getItem('currentLang')??'en'
 		this.securityCheck = this.$m.getItem('securityCheck')

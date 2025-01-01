@@ -2,12 +2,8 @@
 	<div class="page-container">
 		<div class="page-header">
 			<label>
-				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{$t('menu.management_chat_group')}}
+				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{$t('menu.package_order_summary')}}
 			</label>
-			<div class="page-toolbar">
-				<el-button class="custom-button plain" @click="getAddRow(),modalList.addRow = true, genCode()" :loading="loading" v-if="$p.permissionChecker('userChatLogAdd')">{{$t('menu.management_chat_group_add')}}</el-button>
-				<el-button class="custom-button plain" @click="deleteRow('multiple')" :loading="loading" v-if="$p.permissionChecker('userChatGroupDelete')">{{$t('menu.management_chat_group_delete')}}</el-button>
-			</div>
 		</div>
 		
 		<div class="page-body p-3">
@@ -48,26 +44,24 @@
 						<div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
 					</template>
 					
-					<el-table-column type="selection" width="55" ></el-table-column>
 					<template v-for="title in ajaxTitles" :key="title.prop">
 						<el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
 							<template #header>
 								<p class="search-label">{{title.label}}</p>
 							</template>
 
-							<template v-if="title.prop == 'code'" #default="scope">
-								<el-link type="primary" @click="setTempID(scope.row.id)">{{ scope.row.code }}</el-link>
-								<el-tooltip content="Copy" placement="top">
-									<el-icon class="ml-3 clickable-icon" @click="copy($m.getItem('system_id')), $m.copyMessage($t('msg.msg_copy_success'))"></el-icon>
-								</el-tooltip>
-							</template>
 
-							<template v-else-if="title.prop == 'status_name'" #default="scope">
+
+							<template v-if="title.prop == 'status_name'" #default="scope">
 								<div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
 								{{scope.row.status_name}}
 								</div>
 							</template>
-							
+
+
+							<template v-if="title.prop == 'action'" #default="scope">
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
+							</template>
 						</el-table-column>
 					</template>
 				</el-table>
@@ -119,12 +113,12 @@ export default {
 			ajaxTitles: [{
 				prop:"created_at",
 				label:this.$t("mix.table_created_at"),
-				width: "100",
+				width: "150",
 				align:'center'
 			},{
 				prop:"code",
 				label:this.$t("mix.table_code"),
-				width: "150",
+				width: "120",
 				align:'center'
 			},{
 				prop:"product_name",
@@ -150,6 +144,11 @@ export default {
 				label:this.$t("mix.table_agent"),
 				width: "150",
 				align:'center'
+			},{
+				prop:"action",
+				label:this.$t("mix.table_action"),
+				width: "270",
+				align:'right'
 			}],
 			ajaxSearch: [{
 				prop:"name",
@@ -225,7 +224,6 @@ export default {
 			});
 		},setTempID(id) {
 		storeTempID.value = id;  
-		console.log(storeTempID.value);
 		this.$router.push('/package/order/detail');  
 		},
 		clearPostForm(done){
