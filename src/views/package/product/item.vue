@@ -47,9 +47,16 @@
 					<template v-for="title in ajaxTitles" :key="title.prop">
 						<el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
 							<template #header>
-								<p class="search-label">{{title.label}}</p>
+								<div class="d-flex">
+									<p class="search-label">{{title.label}}</p>
+									<el-tooltip>
+										<template #content>
+											<div v-html="amountHoverDesc"></div>
+										</template>
+										<i style="margin-left: 5px;" v-if="title.prop === 'amount'" class="far fa-exclamation-circle"></i>
+									</el-tooltip>
+								</div>
 							</template>
-
 							<template v-if="title.prop == 'status'" #default="scope">
 								<el-switch v-model="scope.row.status" active-value="1" inactive-value="0" @change="statusRow(scope.row)"></el-switch>
 							</template>
@@ -331,6 +338,7 @@ export default {
 			securityCheck: 0,
 			attributeList:[],
 			languageList:JSON.parse(this.$m.getItem('languageList')),
+			amountHoverDesc:'',
 		}
 	},
 	methods:{
@@ -344,6 +352,7 @@ export default {
 
 				if(value.valid){
 					this.searchProductList = data.productList
+					this.amountHoverDesc = data.content
 					this.initial()
 				}
 				this.loading = false
@@ -375,12 +384,7 @@ export default {
 					},{
 						prop:"amount",
 						label:this.$t('mix.table_amount'),
-						width:'100',
-						align: 'center'
-					},{
-						prop: "status",
-						label: this.$t('mix.table_status'),
-						width:'100',
+						width:'150',
 						align: 'center'
 					}]
 					
@@ -388,15 +392,22 @@ export default {
 						this.tempTitle = {}
 						this.tempTitle.prop = element.name
 						this.tempTitle.label = element.name
-						this.tempTitle.width = 242
-						this.tempTitle.align = 'center'
+						this.tempTitle.width = 100
+						this.tempTitle.align = 'right'
 						this.ajaxTitles.push(this.tempTitle)
 					})
 					this.tempTitle = {}
+					this.tempTitle.prop = "status",
+					this.tempTitle.label = this.$t('mix.table_status'),
+					this.tempTitle.width = 100
+					this.tempTitle.align = 'center'
+					this.ajaxTitles.push(this.tempTitle)
+
+					this.tempTitle = {}
 					this.tempTitle.prop = "action",
 					this.tempTitle.label = this.$t('mix.table_action'),
-					this.tempTitle.width = 250
-					this.tempTitle.align = 'right'
+					this.tempTitle.width = 100
+					this.tempTitle.align = 'center'
 					this.ajaxTitles.push(this.tempTitle)
 				}
 				this.loading = false
