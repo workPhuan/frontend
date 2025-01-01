@@ -62,7 +62,7 @@
 							</template>
 
 							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.master_id)">{{$t('menu.management_admin_admin_edit')}}</el-button>
+								<el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('menu.management_admin_admin_edit')}}</el-button>
 							</template>
 						</el-table-column>
 					</template>
@@ -134,37 +134,50 @@
 		<el-dialog v-model="modalList.editRow" :title="$t('menu.management_admin_admin_edit')" :before-close="clearPostForm" class="dialog-md">
 			<el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
 				<el-row :gutter="20">
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_username')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.login" :placeholder="$t('mix.table_username')" />
+					<el-col :sm="24" class="mt-4">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_code')}}</label>
+						<el-input v-model="postForm.code" :placeholder="$t('mix.table_code')" />
 					</el-col>
-
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.name" :placeholder="$t('mix.table_name')" />
+					<el-col :sm="12" class="mt-4">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_loan_period')}}</label>
+						<el-input-number class="w-100" v-model="postForm.period" :step="1" :min="0"/>
 					</el-col>
-
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_phone_mobile')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.phone_mobile" :placeholder="$t('mix.table_phone_mobile')" />
-					</el-col>
-
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_email')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.email" :placeholder="$t('mix.table_email')" />
-					</el-col>
-
-					<el-col :sm="24" class="mb-3" >
+					<el-col :sm="12" class="mt-4">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-						<el-select class="custom-input mt-1 w-100" v-model="postForm.status" :placeholder="$t('msg.msg_select')" filterable>
-							<el-option :label="$t('mix.table_normal')" :value="'normal'">{{$t('mix.table_normal')}}</el-option>
-							<el-option :label="$t('mix.table_suspended')" :value="'suspended'">{{$t('mix.table_suspended')}}</el-option>
-						</el-select>
+						<div>
+							<el-switch v-model="postForm.status" :active-value="1" :inactive-value="0" :loading="loading"></el-switch>
+						</div>
 					</el-col>
-
-					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
+				</el-row>
+				<el-row :gutter="20" class="mt-4">
+					<el-col :sm="24" :md="12" class="mb-3" v-for="item in postForm.attribute_list" :key="item.id">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger"> * </span>{{ item.name }}</label>
+						<el-input-number class="w-100" v-model="item.value" :step="1" :min="0"/>
+					</el-col>
+				</el-row>
+				<el-row :gutter="20">
+					<el-col :sm="12" class="mt-2">
+						<el-checkbox v-model="postForm.is_all_agent">{{$t('mix.table_is_all_agent')}}</el-checkbox>
+					</el-col>
+					<el-col :sm="12" class="mt-2">
+						<el-checkbox v-model="postForm.is_eligible">{{$t('mix.table_is_eligible')}}</el-checkbox>
+					</el-col>
+				</el-row>
+				<el-row :gutter="20">
+					<el-col :xs="24" :sm="24">
+						<template v-if="postForm.multiple_language === 0">
+							<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
+							<el-input class="custom-input mt-1" v-model="postForm.single_name" :placeholder="$t('mix.table_name')" />
+						</template>
+						
+						<template v-else>
+							<el-tabs type="border-card" class="mt-3 mb-4">
+								<el-tab-pane v-for="item in languageList" :key="item.id" :item="item" :label="item.name">
+									<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
+									<el-input class="custom-input mt-1" v-model="postForm.name[item.id]" :placeholder="$t('mix.table_name')" />
+								</el-tab-pane>
+							</el-tabs>
+						</template>
 					</el-col>
 				</el-row>
 			</el-form>
@@ -413,21 +426,16 @@ export default {
 				this.loading = false
 			})
 		},clearPostForm(done){
-			this.postForm.login=''
 			this.postForm.name=''
-			this.postForm.username=''
-			this.postForm.phone_mobile=''
-			this.postForm.email=''
-			this.postForm.password=''
-			this.postForm.security=''
-			this.postForm.room_id=''
-			this.postForm.is_live=1
-			this.postForm.manage=[]
-			this.postForm.status='normal'
+			this.postForm.status='',
+			this.postForm.attribute_list=[],
+			this.postForm.period=0,
+			this.postForm.multiple_language=1,
+			this.postForm.period=[],
+			this.postForm.single_name='',
+			this.postForm.is_all_agent=0,
+			this.postForm.is_eligible=0,
 			
-			this.postForm.new_password=''
-			this.postForm.new_security=''
-
 			this.postPermission.master_id = ''
 			this.postPermission.permission = []
 			
@@ -479,23 +487,33 @@ export default {
                     this.preloader(false)
                 })
 			}
-		},getEditRow(masterID){
+		},getEditRow(id){
 			if(this.$p.permissionChecker('adminAdminEdit') && this.loading == false){
 				this.loading = true
 
-				this.submitForm.master_id = masterID
+				this.submitForm.id = id
 				this.postData.data = JSON.stringify(this.submitForm)
-				var result = this.$m.postMethod('management/admin/admin/edit',this.postData)
+				var result = this.$m.postMethod('package/product/item/edit',this.postData)
 				result.then((value) => {
 					var data = value.data
 
 					if(value.valid){
 						this.postForm = data.thisDetail
-						this.defaultRole = data.defaultRole
-						this.superAdmin = data.superAdmin
-						this.streamerList = data.streamerList
-						this.roomList = data.roomList
+						// this.postForm.is_all_agent = parseInt(data.thisDetail.is_all_agent)
+						// this.postForm.is_eligible = parseInt(data.thisDetail.is_eligible)
 						
+						if(this.postForm.is_all_agent == 1){
+							this.postForm.is_all_agent = true
+						}else{
+							this.postForm.is_all_agent = false
+						}
+
+						if(this.postForm.is_eligible == 1){
+							this.postForm.is_eligible = true
+						}else{
+							this.postForm.is_eligible = false
+						}
+
 						this.modalList.editRow = true
 					}
 					this.loading = false
@@ -508,7 +526,7 @@ export default {
                 
                 this.postData.data = JSON.stringify(this.postForm)
 
-                var result = this.$m.postMethod('management/admin/admin/DBedit',this.postData)
+                var result = this.$m.postMethod('package/product/item/DBedit',this.postData)
 
                 result.then((value) => {
                     var data = value.data

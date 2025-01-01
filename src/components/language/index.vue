@@ -26,7 +26,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="language-box" v-if="0">
+                    <div class="language-box">
                         <div class="language-option">
                             <input v-model="currentLanguage" type="radio" name="language_selection" value="zh" @change="switchLanguage('zh'),languagePanel = 'none'" :check="(locale == 'zh')"/>
                             <div class="language-option-inner">
