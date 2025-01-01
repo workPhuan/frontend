@@ -51,10 +51,7 @@
 							</template>
 
 							<template v-if="title.prop == 'status'" #default="scope">
-								<p class="p-0 m-0 mb-2">{{$t('mix.table_account_status')}}: 
-									<el-tag v-if="scope.row.status == 'normal'" type="success">{{$t('mix.table_normal')}}</el-tag>
-									<el-tag v-else type="danger">{{$t('mix.table_suspended')}}</el-tag>
-								</p>
+								<el-switch v-model="scope.row.status" active-value="1" inactive-value="0" @change="statusRow(scope.row)"></el-switch>
 							</template>
 
 							<template v-if="title.prop == 'action'" #default="scope">
@@ -294,6 +291,10 @@ export default {
                 label:this.$t('mix.table_name'),
                 width:'100',
 			},{
+                prop:"period",
+                label:this.$t('mix.table_period'),
+                width:'100',
+			},{
                 prop:"status",
                 label:this.$t('mix.table_account_status'),
                 width:'150',
@@ -365,6 +366,16 @@ export default {
 						prop: "name",
 						label: this.$t('mix.table_name'),
 						width:'150',
+						align: 'center'
+					},{
+						prop:"period",
+						label:this.$t('mix.table_period'),
+						width:'100',
+						align: 'center'
+					},{
+						prop:"amount",
+						label:this.$t('mix.table_amount'),
+						width:'100',
 						align: 'center'
 					},{
 						prop: "status",

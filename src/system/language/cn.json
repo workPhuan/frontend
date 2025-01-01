@@ -1064,6 +1064,18 @@
 		"table_product_name":					"产品名称",
 		"table_loan_period":					"借款天数",
 		"table_is_all_agent":					"添加给目前所有代理",
-		"table_is_eligible":					"限已借两次以上没违约中客户"
+		"table_is_eligible":					"限已借两次以上没违约中客户",
+		"table_product_list_amount":			"额度",
+		"table_product_list_amount_desc":		"依客户贷放次数显示",
+		"table_product_list_amount_desc1":		"第1次贷款额度为7,000",
+		"table_product_list_amount_desc2":		"第2次贷款额度为10,000",
+		"table_product_list_amount_desc3":		"第3次贷款额度为12,500",
+		"table_product_list_amount_desc4":		"第4次贷款额度为15,000",
+		"table_product_list_amount_desc5":		"第5次贷款额度为17,500",
+		"table_product_list_amount_desc6":		"第6次贷款额度为20,000",
+		"table_product_list_amount_desc7":		"第7次贷款额度为22,500",
+		"table_product_list_amount_desc8":		"第8次贷款额度为25,000",
+		"table_product_list_amount_desc9":		"第9次贷款额度为27,500",
+		"table_product_list_amount_desc10":		"第10次贷款额度为30,000"
 	}
 }

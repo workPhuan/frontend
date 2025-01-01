@@ -1334,7 +1334,19 @@
 		"table_product_name":					"Product Name",
 		"table_loan_period":					"Loan Period",
 		"table_is_all_agent":					"Add to all agent",
-		"table_is_eligible":					"Limited to customers who have borrowed twice or more without default"
+		"table_is_eligible":					"Limited to customers who have borrowed twice or more without default",
+		"table_product_list_amount":			"Amount",
+		"table_product_list_amount_desc":		"Displayed by number of customer loans",
+		"table_product_list_amount_desc1":		"1st loan amount is 7,000",
+		"table_product_list_amount_desc2":		"2nd loan amount is 10,000",
+		"table_product_list_amount_desc3":		"3rd loan amount is 12,500",
+		"table_product_list_amount_desc4":		"4th loan amount is 15,000",
+		"table_product_list_amount_desc5":		"5th loan amount is 17,500",
+		"table_product_list_amount_desc6":		"6th loan amount is 20,000",
+		"table_product_list_amount_desc7":		"7th loan amount is 22,500",
+		"table_product_list_amount_desc8":		"8th loan amount is 25,000",
+		"table_product_list_amount_desc9":		"9th loan amount is 27,500",
+		"table_product_list_amount_desc10":		"10th loan amount is 30,000"
 		
 	}
 	
