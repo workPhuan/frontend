@@ -129,6 +129,10 @@ export const mainRoutes = [
 				meta: {title:'menu.management_admin_agent',icon:'user-tie',permission: 'RZYSSQ', parents:'management'},
 				component: () => import('@/views/management/admin/agent.vue'),
 			},{
+				path: '/management/admin/user',
+				meta: {title:'menu.management',icon:'user-secret',permission: 'OHCVNC', parents:'management'},
+				component: () => import('@/views/management/admin/user.vue'),
+			},{
 				path: '/management/admin/agentorder',
 				meta: {title:'menu.management_admin_agent',icon:'user-tie',permission: 'RZYSSQ', parents:'management'},
 				component: () => import('@/views/management/admin/agentorder.vue'),

@@ -305,7 +305,7 @@ export default{
 				limit: 10
 			},
 			ajaxTitles:[{
-                prop:"login",
+                prop:"name",
                 label:this.$t('mix.table_name'),
                 width:'120',
 			},{

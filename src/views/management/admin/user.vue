@@ -49,7 +49,6 @@
 							</template>
 							
 							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.agent_id,scope.row.master_id)">{{$t('button.info')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
 							</template>
@@ -299,11 +298,11 @@ export default{
 				limit: 10
 			},
 			ajaxTitles:[{
-                prop:"no",
+                prop:"agent_id",
                 label:this.$t('mix.table_id'),
-                width:'70',
+                width:'50',
 			},{
-                prop:"login",
+                prop:"name",
                 label:this.$t('mix.table_username'),
                 width:'90',
 			},{
@@ -311,28 +310,18 @@ export default{
                 label:this.$t('mix.table_status'),
                 width:'80',
 			},{
-                prop:"total_order",
-                label:this.$t('mix.table_total_order'),
+                prop:"created_at",
+                label:this.$t('mix.table_created_at'),
                 width:'90',
 				align: 'center',
 			},{
-                prop:"total_client",
-                label:this.$t('mix.table_total_client'),
+                prop:"last_login",
+                label:this.$t('mix.table_last_login_times'),
                 width:'90',
 				align: 'center'
 			},{
-                prop:"total_loan",
-                label:this.$t('mix.table_total_loan')+' NT$',
-                width:'100',
-				align: 'center'
-			},{
-                prop:"total_repay",
-                label:this.$t('mix.table_total_repay')+' NT$',
-                width:'130',
-				align: 'center'
-			},{
-                prop:"total_overdue",
-                label:this.$t('mix.table_total_overdue'),
+                prop:"last_ip",
+                label:this.$t('mix.table_last_login')+' NT$',
                 width:'100',
 				align: 'center'
 			},{
@@ -376,7 +365,7 @@ export default{
 			this.loading = true
 			
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/agent/agent',this.postData)
+			var result = this.$m.postMethod('management/admin/user',this.postData)
 			result.then((value) => {
 				var data = value.data
 
@@ -390,7 +379,7 @@ export default{
 			this.loading = true
 			
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/agent/agent/ajaxTable',this.postData)
+			var result = this.$m.postMethod('management/admin/user/ajaxTable',this.postData)
 			result.then((value) => {
 				var data = value.data
 

@@ -1,7 +1,7 @@
 <template>
 	<div class="page-container">
 		<div class="page-header">
-			<el-button style="cursor: pointer;" class="custom-button" type="info" @click="toAgentPage()">
+			<el-button style="cursor: pointer;" class="custom-button" type="info" @click="toClientPage()">
 				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{"Back to " + $t('menu.management_admin_agent')}}
 			</el-button>
 		</div>
@@ -29,23 +29,148 @@
                 </div>
                 <el-tabs type="border-card" @tab-click="loadTable">
                     <el-tab-pane key="loan" :label="$t('mix.table_loan_record')">
+                        <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+                            <template #empty v-if="tableData.length=='0'">
+                                <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                            </template>
+                            
+                            <template v-for="title in ajaxTitles" :key="title.prop">
+                                <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+                                    <template #header>
+                                        <p class="search-label">{{title.label}}</p>
+                                    </template>
 
+                                    <template v-if="title.prop == 'status'" #default="scope">
+                                        <el-tag :type="scope.row.status_color">{{scope.row.status}}</el-tag>
+                                    </template>
+                                    
+                                    <template v-if="title.prop == 'action'" #default="scope">
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getOrderRow(scope.row.code)">{{$t('button.order_info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientRow(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
+                                    </template>
+                                </el-table-column>
+                            </template>
+                        </el-table>
+                        <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
                     </el-tab-pane>
                         
                     <el-tab-pane key="basic" :label="$t('mix.table_basic_info')">
-                        
+                        <el-card shadow="never">
+                            <el-descriptions>
+                                    <el-descriptions-item :label="$t('mix.table_name')">{{ userDetails.master_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_marital_status')">{{ userDetails.marital_id }}</el-descriptions-item>
+                                    <br>
+                                    <el-descriptions-item :label="$t('mix.table_phone_mobile')">{{ userDetails.phone_mobile }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_child')">{{ userDetails.child_number }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_icpass')">{{ userDetails.icpass }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_current_address')">{{ userDetails.current_address }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_gender')">{{ userDetails.gender_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_house_holding')">{{ userDetails.house_holding_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_birthdate')">{{ userDetails.dob }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_address')">{{ userDetails.address }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_education')">{{ userDetails.education_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_line_id')">{{ userDetails.line_id }}</el-descriptions-item>
+                            </el-descriptions>
+                            <el-descriptions>
+                                <el-descriptions-item>
+                                    <label>
+                                        <p class="p-0 m-0">{{$t('mix.table_icpass_front_url')}}</p>
+                                    </label>
+                                    <img :src="userDetails.icpass_front_url" class="w-r-2 h-auto me-2"/>
+                                </el-descriptions-item>
+                                <el-descriptions-item>
+                                    <label>
+                                        <p class="p-0 m-0">{{$t('mix.table_icpass_back_url')}}</p>
+                                    </label>
+                                    <img :src="userDetails.icpass_back_url" class="w-r-2 h-auto me-2"/>
+                                </el-descriptions-item>
+                                <el-descriptions-item>
+                                    <label>
+                                        <p class="p-0 m-0">{{$t('mix.table_icpass_holding_url')}}</p>
+                                    </label>
+                                    <img :src="userDetails.icpass_holding_url" class="w-r-2 h-auto me-2"/>
+                                </el-descriptions-item>
+                                <el-descriptions-item>
+                                    <label>
+                                        <p class="p-0 m-0">{{$t('mix.table_application_img_url')}}</p>
+                                    </label>
+                                    <img :src="userDetails.application_img_url" class="w-r-2 h-auto me-2"/>
+                                </el-descriptions-item>
+                                <el-descriptions-item>
+                                    <label>
+                                        <p class="p-0 m-0">{{$t('mix.table_contract_img_url')}}</p>
+                                    </label>
+                                    <img :src="userDetails.contract_img_url" class="w-r-2 h-auto me-2"/>
+                                </el-descriptions-item>
+                            </el-descriptions>
+                        </el-card>
                     </el-tab-pane>
-                    
-                    <el-tab-pane key="work" :label="$t('mix.table_work_info')">
                         
+                    <el-tab-pane key="work" :label="$t('mix.table_work_info')">
+                        <el-card shadow="never">
+                            <el-descriptions>
+                                <el-descriptions-item :label="$t('mix.table_company_name')">{{ userDetails.company_name }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_company_address')">{{ userDetails.company_address }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ userDetails.company_phone_mobile }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_position')">{{ userDetails.position }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_experience')">{{ userDetails.experience }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_salary')">{{ userDetails.salary }}</el-descriptions-item>
+                            </el-descriptions>
+                            <el-descriptions>
+                                <el-descriptions-item>
+                                    <label>
+                                        <p class="p-0 m-0">{{$t('mix.table_staff_id_url')}}</p>
+                                    </label>
+                                    <img :src="userDetails.staff_id_url" class="w-r-2 h-auto me-2"/>
+                                </el-descriptions-item>
+                                <el-descriptions-item>
+                                    <label>
+                                        <p class="p-0 m-0">{{$t('mix.table_bussiness_card_url')}}</p>
+                                    </label>
+                                    <img :src="userDetails.bussiness_card_url" class="w-r-2 h-auto me-2"/>
+                                </el-descriptions-item>
+                            </el-descriptions>
+                        </el-card>
                     </el-tab-pane>
                     
                     <el-tab-pane key="bank" :label="$t('mix.table_bank_info')">
-                        
+                        <el-card shadow="never">
+                            <el-descriptions>
+                                <el-descriptions-item>{{$t('mix.table_bank_name')}} : {{ userDetails.bank_id }}</el-descriptions-item>
+                                <el-descriptions-item>{{$t('mix.table_branch_bank')}} : {{ userDetails.bank_name }}</el-descriptions-item>
+                                <el-descriptions-item>{{$t('mix.table_bank_account_holder')}} : {{ userDetails.bank_account_holder }}</el-descriptions-item>
+                                <el-descriptions-item>{{$t('mix.table_bank_account_no')}} : {{ userDetails.bank_account_no }}</el-descriptions-item>
+                            </el-descriptions>
+                        </el-card>
                     </el-tab-pane>
                     
                     <el-tab-pane key="contact" :label="$t('mix.table_contact_info')">
-                        
+                        <el-card shadow="never">
+                            <el-descriptions>
+                                <el-descriptions-item :label="$t('mix.table_company_name')">{{ userDetails.company_name }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_company_address')">{{ userDetails.company_address }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ userDetails.company_phone_mobile }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_position')">{{ userDetails.position }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_experience')">{{ userDetails.experience }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_salary')">{{ userDetails.salary }}</el-descriptions-item>
+                            </el-descriptions>
+                            <div class="d-flex align-items-center">
+                                <img :src="userDetails.staff_id_url" class="w-r-2 h-auto me-2"/>
+                                <div class="d-flex flex-column">
+                                    <p class="p-0 m-0">$t('mix.staff_id_url')</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <img :src="userDetails.bussiness_card_url" class="w-r-2 h-auto me-2"/>
+                                <div class="d-flex flex-column">
+                                    <p class="p-0 m-0">$t('mix.bussiness_card_url')</p>
+                                </div>
+                            </div>
+
+                        </el-card>
                     </el-tab-pane>
 
                     <el-tab-pane key="message" :label="$t('mix.table_message_log')">
@@ -53,38 +178,35 @@
                     </el-tab-pane>
 
                     <el-tab-pane key="location" :label="$t('mix.table_location_info')">
+                        <el-card shadow="never">
+                            <el-descriptions>
+                                <el-descriptions-item :label="$t('mix.table_company_name')">{{ userDetails.company_name }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_company_address')">{{ userDetails.company_address }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ userDetails.company_phone_mobile }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_position')">{{ userDetails.position }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_experience')">{{ userDetails.experience }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_salary')">{{ userDetails.salary }}</el-descriptions-item>
+                            </el-descriptions>
+                            <div class="d-flex align-items-center">
+                                <img :src="userDetails.staff_id_url" class="w-r-2 h-auto me-2"/>
+                                <div class="d-flex flex-column">
+                                    <p class="p-0 m-0">$t('mix.staff_id_url')</p>
+                                </div>
+                            </div>
 
+                            <div class="d-flex align-items-center">
+                                <img :src="userDetails.bussiness_card_url" class="w-r-2 h-auto me-2"/>
+                                <div class="d-flex flex-column">
+                                    <p class="p-0 m-0">$t('mix.bussiness_card_url')</p>
+                                </div>
+                            </div>
+
+                        </el-card>
                     </el-tab-pane>
                 </el-tabs>
             </el-card>
 		</div>
-		<el-dialog v-model="modalList.editRow" :title="$t('general.forgetpasswordchange')" :before-close="clearPostForm">
-			<el-form label-position="top" label-width="auto" @submit.native.prevent>
-				<el-row :gutter="20">
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_password')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.password"  :placeholder="$t('mix.table_new_password')" />
-					</el-col>
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_password_confirm')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.confirm_password"  :placeholder="$t('mix.table_new_password_confirm')" />
-					</el-col>
-					
-
-					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
-					</el-col>
-				</el-row>
-			</el-form>
-			
-			<template #footer>
-				<div class="d-flex justify-content-center align-item-center">
-					<el-button class="custom-button success font-8 pt-3 pb-3" @click="editRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
-				</div>
-			</template>
-		</el-dialog>
+	
 		
 	</div>
 </template>
@@ -140,17 +262,18 @@ export default {
                 width:'100',
                 align:'center'
 			},{
-                prop:"master_id",
-                label:this.$t('mix.table_client'),
-                width:'100',
-			},{
                 prop:"loan_amount",
                 label:this.$t('mix.table_loan_amount'),
                 width:'90',
+                align: 'center'
 			},{
                 prop:"status",
                 label:this.$t('mix.table_status'),
                 width:'90',
+			},{
+                prop:"master_id",
+                label:this.$t('mix.table_agent'),
+                width:'100',
 			},{
                 prop:"action",
                 label:this.$t('mix.table_action'),
@@ -239,6 +362,7 @@ export default {
 				name:[],
 				selectedIds:[],
 			},
+            userDetails: [],
 			postForm:{},
 			modalList:{},
             agentDetail:[],
@@ -251,13 +375,12 @@ export default {
         getInitial(){
             this.searchData.pagination = 1
 			this.loading = true
-			this.searchData.agent_id = storeTempID.agent_id
+			this.searchData.master_id = storeTempID.master_id
 			this.postData.data = JSON.stringify(this.searchData)
 			var result = this.$m.postMethod('management/client/info',this.postData)
 			result.then((value)=>{
 				var data = value.data
 				if(value.valid){
-                    this.agentDetail = data.agentDetails
 				}
 				this.initial()
 			})
@@ -265,7 +388,7 @@ export default {
 		},
 		initial(){
             this.loading = true
-			this.searchData.agent_id = storeTempID.agent_id
+			this.searchData.master_id = storeTempID.master_id
 			this.postData.data = JSON.stringify(this.searchData)
 			var result = this.$m.postMethod('management/client/info/ajaxTable',this.postData)
 			result.then((value) => {
@@ -341,25 +464,32 @@ export default {
 		},loadTable(tab){
             this.loading = true
 			this.postData.data = JSON.stringify(this.searchData)
-            this.searchData.agent_id = storeTempID.agent_id
             this.searchData.master_id = storeTempID.master_id
             let table;
             let data;
             if(tab.index == 0){
-                table = 'management/agent/agentorder/ajaxTableOrder';
+                table = 'management/client/info/ajaxTable';
             }else if(tab.index == 1){
-                table = 'management/agent/agentorder/ajaxTableClient';
+                table = 'management/client/info/clientDetails';
             }else if(tab.index == 2){
-                table = 'management/agent/agentorder/ajaxTableSetting';
+                table = 'management/client/info/companyDetails';
             }else if(tab.index == 3){
-                table = 'management/agent/agentorder/ajaxTableExpense';
+                table = 'management/client/info/bankDetails';
+            }else if(tab.index == 4){
+                table = 'management/client/info/contactDetails';
+            }else if(tab.index == 5){
+                table = 'management/client/info/locationDetails';
+            }else if(tab.index == 6){
+                table = 'management/client/info/locationDetails';
             }
+
             var result = this.$m.postMethod(table,this.postData)
             
 			result.then((value) => {
 				var data = value.data
 
 				if(value.valid){
+                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -367,8 +497,8 @@ export default {
 				}
 				this.loading = false
 			})
-        },toAgentPage(){
-			this.$router.push('/management/admin/agent');
+        },toClientPage(){
+			this.$router.push('/management/client/client');
 		},getOrderRow(){
             
         },getClientRow(){
