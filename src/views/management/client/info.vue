@@ -28,181 +28,32 @@
                     </el-descriptions>
                 </div>
                 <el-tabs type="border-card" @tab-click="loadTable">
-                    <el-tab-pane key="order" :label="$t('menu.agent_order')">
-                        <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
-                            <template #empty v-if="tableData.length=='0'">
-                                <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
-                                <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-                                <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-                            </template>
-                            
-                            <template v-for="title in ajaxTitles" :key="title.prop">
-                                <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
-                                    <template #header>
-                                        <p class="search-label">{{title.label}}</p>
-                                    </template>
+                    <el-tab-pane key="loan" :label="$t('mix.table_loan_record')">
 
-                                    <template v-if="title.prop == 'status'" #default="scope">
-                                        <el-tag :type="scope.row.status_color">{{scope.row.status}}</el-tag>
-                                    </template>
-                                    
-                                    <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getOrderRow(scope.row.code)">{{$t('button.order_info')}}</el-button>
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientRow(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
-                                    </template>
-                                </el-table-column>
-                            </template>
-                        </el-table>
-                        <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
                     </el-tab-pane>
                         
-                    <el-tab-pane key="client" :label="$t('menu.management_client_client')">
-                        <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
-                            <template #empty v-if="tableData.length=='0'">
-                                <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
-                                <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-                                <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-                            </template>
-                            
-                            <template v-for="title in ajaxTitles1" :key="title.prop">
-                                <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
-                                    <template #header>
-                                        <p class="search-label">{{title.label}}</p>
-                                    </template>
-
-                                    <template v-if="title.prop == 'status'" #default="scope">
-                                        <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
-                                        {{scope.row.status}}
-                                        </div>
-                                    </template>
-                                    
-                                    <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
-                                    </template>
-                                </el-table-column>
-                            </template>
-                        </el-table>
-                    </el-tab-pane>
-
-                    <el-tab-pane key="system" :label="$t('menu.app')">
-                        <div class="page-toolbar">
-                            <el-button class="custom-button plain" @click="getAddRow()" :loading="loading" v-if="$p.permissionChecker('adminAdminAdd')">{{$t('menu.management_admin_admin_add')}}</el-button>
-                        </div>
+                    <el-tab-pane key="basic" :label="$t('mix.table_basic_info')">
                         
-                        <div class="page-body p-3">
-                            <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
-                                <template #empty v-if="tableData.length=='0'">
-                                    <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
-                                    <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-                                    <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-                                </template>
-                                
-                            <template v-for="title in ajaxTitles2" :key="title.prop">
-                                    <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
-                                        <template #header>
-                                            <p class="search-label">{{title.label}}</p>
-                                        </template>
-
-                                        <template v-if="title.prop == 'status'" #default="scope">
-                                            <!-- <el-switch v-model="scope.row.status" active-value="1" inactive-value="0" @change="statusRow(scope.row)"></el-switch> -->
-                                        </template>
-
-                                        <template v-if="title.prop == 'action'" #default="scope">
-                                            <el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.master_id)">{{$t('menu.management_admin_admin_edit')}}</el-button>
-                                        </template>
-                                    </el-table-column>
-                                </template>
-                            </el-table>
-
-                            <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
-                        </div>
-
-                        <el-dialog v-model="modalList.addRow" :title="$t('menu.management_admin_admin_add')" :before-close="clearPostForm" class="dialog-md">
-                            <el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
-                                <el-row :gutter="20">
-                                    <el-col :sm="24" class="mt-4">
-                                        <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_code')}}</label>
-                                        <el-input v-model="postForm.code" :placeholder="$t('mix.table_code')" />
-                                    </el-col>
-                                    <el-col :sm="12" class="mt-4">
-                                        <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_loan_period')}}</label>
-                                        <el-input-number class="w-100" v-model="postForm.period" :step="1" :min="0"/>
-                                    </el-col>
-                                    <el-col :sm="12" class="mt-4">
-                                        <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-                                        <div>
-                                            <el-switch v-model="postForm.status" :active-value="1" :inactive-value="0" :loading="loading"></el-switch>
-                                        </div>
-                                    </el-col>
-                                </el-row>
-                                <el-row :gutter="20" class="mt-4">
-                                    <el-col :sm="24" :md="12" class="mb-3" v-for="item in postForm.attribute_list" :key="item.id">
-                                        <label class="text-theme font-8 fw-bold"><span class="text-danger"> * </span>{{ item.name }}</label>
-                                        <el-input-number class="w-100" v-model="item.value" :step="1" :min="0"/>
-                                    </el-col>
-                                </el-row>
-                                <el-row :gutter="20">
-                                    <el-col :sm="12" class="mt-2">
-                                        <el-checkbox v-model="postForm.is_all_agent">{{$t('mix.table_is_all_agent')}}</el-checkbox>
-                                    </el-col>
-                                    <el-col :sm="12" class="mt-2">
-                                        <el-checkbox v-model="postForm.is_eligible">{{$t('mix.table_is_eligible')}}</el-checkbox>
-                                    </el-col>
-                                </el-row>
-                                <el-row :gutter="20">
-                                    <el-col :xs="24" :sm="24">
-                                        <template v-if="postForm.multiple_language === 0">
-                                            <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
-                                            <el-input class="custom-input mt-1" v-model="postForm.single_name" :placeholder="$t('mix.table_name')" />
-                                        </template>
-                                        
-                                        <template v-else>
-                                            <el-tabs type="border-card" class="mt-3 mb-4">
-                                                <el-tab-pane v-for="item in languageList" :key="item.id" :item="item" :label="item.name">
-                                                    <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
-                                                    <el-input class="custom-input mt-1" v-model="postForm.name[item.id]" :placeholder="$t('mix.table_name')" />
-                                                </el-tab-pane>
-                                            </el-tabs>
-                                        </template>
-                                    </el-col>
-                                </el-row>
-                            </el-form>
-                            
-                            <template #footer>
-                                <div class="d-flex justify-content-center align-item-center">
-                                    <el-button class="custom-button success font-8 pt-3 pb-3" @click="addRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-                                    <el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.addRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
-                                </div>
-                            </template>
-                        </el-dialog>
+                    </el-tab-pane>
+                    
+                    <el-tab-pane key="work" :label="$t('mix.table_work_info')">
+                        
+                    </el-tab-pane>
+                    
+                    <el-tab-pane key="bank" :label="$t('mix.table_bank_info')">
+                        
+                    </el-tab-pane>
+                    
+                    <el-tab-pane key="contact" :label="$t('mix.table_contact_info')">
+                        
                     </el-tab-pane>
 
-                    <el-tab-pane key="expense" :label="$t('menu.agent_expense')">
-                        <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
-                            <template #empty v-if="tableData.length=='0'">
-                                <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
-                                <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-                                <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-                            </template>
-                            
-                            <template v-for="title in ajaxTitles3" :key="title.prop">
-                                <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
-                                    <template #header>
-                                        <p class="search-label">{{title.label}}</p>
-                                    </template>
+                    <el-tab-pane key="message" :label="$t('mix.table_message_log')">
+                        
+                    </el-tab-pane>
 
-                                    <template v-if="title.prop == 'status'" #default="scope">
-                                        <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
-                                        {{scope.row.status}}
-                                        </div>
-                                    </template>
-                                    
-                                    <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
-                                    </template>
-                                </el-table-column>
-                            </template>
-                        </el-table>
+                    <el-tab-pane key="location" :label="$t('mix.table_location_info')">
+
                     </el-tab-pane>
                 </el-tabs>
             </el-card>
@@ -402,7 +253,7 @@ export default {
 			this.loading = true
 			this.searchData.agent_id = storeTempID.agent_id
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/agent/agentorder',this.postData)
+			var result = this.$m.postMethod('management/client/info',this.postData)
 			result.then((value)=>{
 				var data = value.data
 				if(value.valid){
@@ -416,7 +267,7 @@ export default {
             this.loading = true
 			this.searchData.agent_id = storeTempID.agent_id
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/agent/agentorder/ajaxTableOrder',this.postData)
+			var result = this.$m.postMethod('management/client/info/ajaxTable',this.postData)
 			result.then((value) => {
 				var data = value.data
 
@@ -520,9 +371,8 @@ export default {
 			this.$router.push('/management/admin/agent');
 		},getOrderRow(){
             
-        },getClientRow(master_id){
-            this.$router.push('/management/client/client/info');
-			storeTempID.master_id = master_id
+        },getClientRow(){
+
         },getAddRow(){
 			if(this.$p.permissionChecker('adminAdminAdd') && this.loading == false){
 				this.loading = true
@@ -715,8 +565,8 @@ export default {
 	},created(){
         this.postData.language = this.$m.getItem('currentLang')??'en'
 		this.securityCheck = this.$m.getItem('securityCheck')
-        if(storeTempID.agent_id == "" || storeTempID.agent_id == undefined){
-			this.$router.push('/management/admin/agent');
+        if(storeTempID.master_id == "" || storeTempID.master_id == undefined){
+			this.$router.push('/management/client/client');
 		}else{
             this.getInitial()
         }

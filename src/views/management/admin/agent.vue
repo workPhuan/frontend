@@ -15,9 +15,11 @@
 					<legend>{{$t('mix.table_filter')}}</legend>
 					<div class="p-3 d-flex flex-wrap">
 
-						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.agent_id" :placeholder="$t('menu.management_agent_agent')" clearable @change="initial()" size="large">
-							<el-option v-for="item in searchAgentList" :label="item.login" :value="item.master_id">{{item.login}}</el-option>
-						</el-select>
+						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.name" :placeholder="$t('mix.table_please_enter')+$t('mix.table_username')" @keyup.enter.native="initial()">
+							<template #prepend>
+								<label>{{$t('mix.table_username')}}</label>
+							</template>
+						</el-input>
 						
 						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.status" :placeholder="$t('mix.table_status')" clearable @change="initial()" size="large">
 							<el-option :label="$t('mix.table_enabled')" value="normal">{{$t('mix.table_enabled')}}</el-option>

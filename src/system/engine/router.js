@@ -225,7 +225,12 @@ export const mainRoutes = [
 			children: [{
 				path: '/management/client/client',
 				meta: {title:'menu.management_client_client',icon:'users',permission: 'UH1QB6', parents:'management'},
-				component: () => import('@/views/management/user/member.vue'),
+				component: () => import('@/views/management/client/client.vue'),
+			},{
+				path: '/management/client/client/info',
+				meta: {title:'menu.management_client_client',icon:'users',permission: 'UH1QB6', parents:'management'},
+				component: () => import('@/views/management/client/info.vue'),
+				hidden: true
 			}],
 		}],
 	},{
