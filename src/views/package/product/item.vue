@@ -58,7 +58,7 @@
 								</div>
 							</template>
 							<template v-if="title.prop == 'status'" #default="scope">
-								<el-switch v-model="scope.row.status" active-value="1" inactive-value="0" @change="statusRow(scope.row)"></el-switch>
+								<el-switch v-model="scope.row.status" active-value="1" inactive-value="0" @change="statusRow(scope.row.id,scope.row.status)"></el-switch>
 							</template>
 
 							<template v-if="title.prop == 'action'" #default="scope">
@@ -393,7 +393,7 @@ export default {
 						this.tempTitle.prop = element.name
 						this.tempTitle.label = element.name
 						this.tempTitle.width = 100
-						this.tempTitle.align = 'right'
+						this.tempTitle.align = 'center'
 						this.ajaxTitles.push(this.tempTitle)
 					})
 					this.tempTitle = {}
@@ -600,7 +600,7 @@ export default {
                     this.preloader(false)
                 })
 			}
-		},statusRow(masterID){
+		},statusRow(id, status){
 			if(this.$p.permissionChecker('userMemberStatus') && this.loading == false){
 				this.loading = true
 				this.$confirm(this.$t('msg.msg_confirmation'), this.$t('msg.prompt'), {
@@ -613,10 +613,11 @@ export default {
 				}).then(({value}) => {
 					this.preloader(true)
 					this.postForm.security = value
-					this.postForm.master_id = masterID
+					this.postForm.id = id
+					this.postForm.status = status
 					this.postData.data = JSON.stringify(this.postForm)
 
-					var result = this.$m.postMethod('management/admin/admin/DBstatus',this.postData)
+					var result = this.$m.postMethod('package/product/item/DBstatus',this.postData)
 
 					result.then((value) => {
 						var data = value.data
@@ -653,7 +654,6 @@ export default {
 					if (value.valid) {
 						this.postPermission.permission = data.permission
 						this.permissionList = data.permissionList
-						
 						this.modalList.permissionRow = true
 					}
 					
