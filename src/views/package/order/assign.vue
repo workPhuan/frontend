@@ -2,12 +2,9 @@
 	<div class="page-container">
 		<div class="page-header">
 			<label>
-				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{$t('menu.management_chat_group')}}
+				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{$t('menu.package_order_assign')}}
 			</label>
-			<div class="page-toolbar">
-				<el-button class="custom-button plain" @click="getAddRow(),modalList.addRow = true, genCode()" :loading="loading" v-if="$p.permissionChecker('userChatLogAdd')">{{$t('menu.management_chat_group_add')}}</el-button>
-				<el-button class="custom-button plain" @click="deleteRow('multiple')" :loading="loading" v-if="$p.permissionChecker('userChatGroupDelete')">{{$t('menu.management_chat_group_delete')}}</el-button>
-			</div>
+
 		</div>
 		
 		<div class="page-body p-3">
@@ -70,11 +67,31 @@
 
 							<template v-if="title.prop == 'action'" #default="scope">
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
-								<el-button v-if="selectedRowId === scope.row.id && $p.permissionChecker('userChatGroupDelete')"class="custom-button danger m-1"@click="getAssignRow(scope.row.id)">{{$t('button.assign')}}</el-button>						
-							</template>
+								<el-button v-if="selectedRowId === scope.row.id && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(scope.row.id), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							</template>
 						</el-table-column>
 					</template>
 				</el-table>
+
+				<el-dialog v-model="modalList.assignRow" :title="$t('menu.package_order_assign')" :before-close="clearPostForm">
+					<el-form label-position="top" label-width="auto" @submit.native.prevent>
+						<el-text class="mx-1">{{$t('mix.table_agent')}}</el-text>
+						<el-row :gutter="20">
+						<div :style="{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }">
+							<div v-for="(agent, index) in agentList" :key="agent.master_id">
+								<el-checkbox v-model="selectedAgents" :label="agent.master_id">
+									{{ agent.name }}
+								</el-checkbox>
+							</div>
+						</div>
+						</el-row>
+					</el-form>
+					
+					<template #footer>
+						<div class="d-flex justify-content-center align-item-center">
+							<el-button class="custom-button success font-8 pt-3 pb-3" @click="assignRow(selectedAgents)" :loading="loading">{{$t('button.assign	')}}</el-button>
+						</div>
+					</template>
+				</el-dialog>
 
 				<pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
 			</el-card>
@@ -185,6 +202,7 @@ export default {
 				account_package_id: '',
 				selectedIds: [],
 				selectedRowId: [],
+				selectedAgents: [],
 				name: []
 			},
 			languageList:JSON.parse(this.$m.getItem('languageList')),
@@ -195,7 +213,10 @@ export default {
 			},
 			modalList:{},
 			searchProductList: [],
-			productList: [],
+			agentList: [],
+			selectedAgents: [],
+			selectedIds: [],
+			selectedRowId: [],
 			securityCheck: 0,
 			imagePickerFile:'',
 			imagePickerFileUrl:'',
@@ -231,7 +252,6 @@ export default {
 				}
 			});
 		},setTempID(id) {
-
 			storeTempID.value = id;  
 			console.log(storeTempID.value);
 			this.$router.push('/package/order/detail');  
@@ -259,17 +279,20 @@ export default {
 					var data = value.data
 			
 					if(value.valid){
-						this.packageList = data.packageList
-						this.modalList.addRow = true
+						this.agentList = data.agentList
+						this.modalList.assignRow = true
 						this.loading = false
 					}
 				})
 			}
-        },assignRow() {
+        },assignRow(selectedAgents) {
 			if(this.$p.permissionChecker('userChatGroupAdd') && this.loading == false){
 				this.preloader(true)
 				this.loading = true
+				this.postForm.selectedAgents = selectedAgents;
+
 				this.postData.data = JSON.stringify(this.postForm)
+				console.log(this.postData.data);
 				var formData = new FormData()
 				formData.append('file',this.imagePickerFile)
 				formData.append('data',JSON.stringify(this.postForm))
@@ -284,7 +307,7 @@ export default {
 							type: "success"
 						});
 						
-						this.modalList.addRow = false
+						this.modalList.assignRow = false
 						this.clearPostForm()
 						this.initial()
 					} else {
@@ -293,81 +316,6 @@ export default {
 					
 					this.loading = false
 					this.preloader(false)
-				});
-			}
-		},getEditRow(id) {
-			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
-				this.loading = true;
-				this.submitForm.id = id
-				this.postData.data = JSON.stringify(this.submitForm);
-				var result = this.$m.postMethod("management/chat/group/edit", this.postData);
-				result.then((value) => {
-					var data = value.data;
-
-					if (value.valid) {
-						
-						this.postForm = data.thisDetail
-						this.packageList = data.packageList
-						this.modalList.editRow = true
-					}
-					this.loading = false
-				});
-			}
-		},
-		editRow() {
-			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
-				this.loading = true
-				this.preloader(true)
-				var formData = new FormData()
-				formData.append('file',this.imagePickerFile)
-				formData.append('data',JSON.stringify(this.postForm))
-				var result = this.$m.postMethod("management/chat/group/DBedit", formData)
-
-				result.then((value) => {
-					var data = value.data
-
-					if (value.valid) {
-						this.$message({
-							message: data.returnMsg,
-							type: "success"
-						});
-						
-						this.modalList.editRow = false
-						this.clearPostForm()
-						this.initial()
-					} else {
-						this.$m.popupErrorMessage(data.returnMsg,this)
-					}
-
-					this.loading = false
-					this.preloader(false)
-				});
-			}
-		},statusRow(currentData){
-			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
-				this.loading = true
-				this.submitForm.id = currentData.id
-				this.submitForm.status = currentData.status
-				this.postData.data = JSON.stringify(this.submitForm)
-				
-				var formData = new FormData()
-				formData.append('data', this.postData.data)
-				formData.append('language', this.postData.language)
-
-				var result = this.$m.postMethod('management/chat/group/DBstatus',formData)
-				result.then((value) => {
-					var data = value.data
-					if(value.valid){
-						this.$message({
-							message: data.returnMsg,
-							type: 'success'
-						});
-					}else{					
-						this.$m.popupErrorMessage(data.returnMsg,this)
-					}
-					this.clearPostForm()
-					this.initial()
-					this.loading = false
 				});
 			}
 		},deleteRow(id) {
