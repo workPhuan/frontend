@@ -8,7 +8,6 @@
 		
 		<div class="page-body p-3">
 			<el-card shadow="never">
-				<div class="page-filter">
                     <div>
                     <br>
                     <h5>{{$t('menu.package_order_details')}}</h5>
@@ -22,21 +21,18 @@
                         <el-descriptions-item :label="$t('mix.table_agent')">{{ orderDetail.name }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ orderDetail.loan_amount }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_payment_period')"></el-descriptions-item>
-
                     </el-descriptions>
                      </div>
-				</div>
                 <el-tabs type="border-card">
                     <el-tab-pane key="application" :label="$t('mix.table_application_details')">   
-                        <el-button class="custom-button plain" @click="basicAjaxTable(),modalList.basicAjaxTable = true" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.basic_information')}}</el-button>
-                        <el-button class="custom-button plain" @click="jobAjaxTable(),modalList.basicAjaxTable = true" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.basic_information')}}</el-button>
+                        <!-- <el-button class="custom-button plain" @click="basicAjaxTable(),modalList.basicAjaxTable = true" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.basic_information')}}</el-button> -->
 
-                        <el-button plain>{{$t('button.job_information')}}</el-button>
-                        <el-button plain>{{$t('button.bank_information')}}</el-button>
-                        <el-button plain>{{$t('button.contact_information')}}</el-button>
-                        <el-button plain>{{$t('button.newsletter')}}</el-button>
-                        <el-button plain>{{$t('button.location_information')}}</el-button>
-
+                            <el-button class="custom-button plain" @click="loadTable('basic')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.basic_information')}}</el-button>
+                            <el-button class="custom-button plain" @click="loadTable('job'),modalList.jobAjaxTable = true" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.job_information')}}</el-button>
+                            <el-button plain>{{$t('button.bank_information')}}</el-button>
+                            <el-button plain>{{$t('button.contact_information')}}</el-button>
+                            <el-button plain>{{$t('button.newsletter')}}</el-button>
+                            <el-button plain>{{$t('button.location_information')}}</el-button>
                     </el-tab-pane>
 
                     <el-tab-pane key="record" :label="$t('mix.table_order_records')">
@@ -47,6 +43,78 @@
 				<pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
 			</el-card>
 		</div>
+
+        <div v-if="modalList.basicAjaxTable" class="page-body p-3">
+            <el-card shadow="never">
+                <el-descriptions>
+                        <el-descriptions-item :label="$t('mix.table_name')">{{ clientDetail.name }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_marital_status')">{{ clientDetail.marital_status }}</el-descriptions-item>
+                        <br>
+                        <el-descriptions-item :label="$t('mix.table_phone_mobile')">{{ clientDetail.phone_mobile }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_child')">{{ clientProfile.child_number }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_icpass')">{{ clientDetail.icpass }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_current_address')">{{ clientProfile.current_address }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_gender')">{{ clientDetail.gender }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_house_holding')">{{ clientDetail.house_holding }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_birthdate')">{{ clientProfile.dob }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_address')">{{ clientProfile.address }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_education')">{{ clientDetail.education }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_line_id')">{{ clientProfile.line_id }}</el-descriptions-item>
+                </el-descriptions>
+                <div>
+                    <img :src="clientProfile.icpass_front_url" class="w-r-2 h-auto me-2"/>
+                    <div class="d-flex flex-column">
+                        <p class="p-0 m-0">{{ $t('mix.table_icpass_front_url') }}</p>
+                    </div>
+
+                    <img :src="clientProfile.icpass_back_url" class="w-r-2 h-auto me-2"/>
+                    <div class="d-flex flex-column">
+                        <p class="p-0 m-0">{{ $t('mix.table_icpass_back_url') }}</p>
+                    </div>
+
+                    <img :src="clientProfile.icpass_holding_url" class="w-r-2 h-auto me-2"/>
+                    <div class="d-flex flex-column">
+                        <p class="p-0 m-0">{{ $t('mix.table_icpass_holding_url') }}</p>
+                    </div>
+
+                    <img :src="clientProfile.application_img_url" class="w-r-2 h-auto me-2"/>
+                    <div class="d-flex flex-column">
+                        <p class="p-0 m-0">{{ $t('mix.table_application_img_url') }}</p>
+                    </div>
+
+                    <img :src="clientProfile.contract_img_url" class="w-r-2 h-auto me-2"/>
+                    <div class="d-flex flex-column">
+                        <p class="p-0 m-0">{{ $t('mix.table_contract_img_url') }}</p>
+                    </div>
+                </div>
+            </el-card>
+        </div>
+
+        <div v-if="modalList.jobAjaxTable" class="page-body p-3">
+            <el-card shadow="never">
+                <el-descriptions>
+                        <el-descriptions-item :label="$t('mix.table_name')">{{ clientDetail.name }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_marital_status')">{{ clientDetail.marital_status }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_phone_mobile')">{{ clientDetail.phone_mobile }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_child')">{{ clientProfile.child_number }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_period')">{{ clientDetail.icpass }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_name')">{{ clientProfile.current_address }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ clientDetail.gender }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ clientDetail.house_holding }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ clientProfile.dob }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ clientProfile.address }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ clientDetail.education }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ clientProfile.line_id }}</el-descriptions-item>
+                </el-descriptions>
+                <div class="d-flex align-items-center">
+                    <img :src="clientProfile.icpass_front_url" class="w-r-2 h-auto me-2"/>
+                    <div class="d-flex flex-column">
+                        <p class="p-0 m-0">$t('mix.table_loan_amount')</p>
+                    </div>
+                </div>
+
+            </el-card>
+        </div>
 	</div>
 </template>
 
@@ -132,7 +200,7 @@ export default {
 			}],
 			ajaxSearch: [{
 				prop:"name",
-				label:this.$t("mix.table_name")
+				label:this  .$t("mix.table_name")
 			},{
 				prop:"category",
 				label:this.$t("mix.table_category")
@@ -166,6 +234,8 @@ export default {
 			agentList: [],
             searchStatusList: [],
             orderDetail: [],
+            clientDetail: [],
+            clientProfile: [],
 			statusList: [],
 			securityCheck: 0,
 			imagePickerFile:'',
@@ -210,37 +280,49 @@ export default {
 				}
 				this.loading = false
 		})
-		},loadTable(tab){
-            this.loading = true
-			this.postData.data = JSON.stringify(this.searchData)
-            this.searchData.agent_id = storeTempID.agent_id
-            let table;
-            if(tab.index == 0){
-                table = 'package/order/detail/basicAjaxTable';
-            }else if(tab.index == 1){
-                table = 'package/order/detail/jobAjaxTable';
-            }else if(tab.index == 2){
-                table = 'package/order/detail/bankAjaxTable';
-            }else if(tab.index == 3){
-                table = 'package/order/detail/contactAjaxTable';
-            }else if(tab.index == 4){
-                table = 'package/order/detail/newsAjaxTable';
-            }else if(tab.index == 5){
-                table = 'package/order/detail/locationAjaxTable';
-            }
-            var result = this.$m.postMethod(table,this.postData)
+		},loadTable(tab) {
+            this.loading = true;
+            this.postData.data = JSON.stringify(this.searchData);
+            this.postData.id = storeTempID.id;
             
-			result.then((value) => {
-				var data = value.data
+            let table;
 
-				if(value.valid){
-					this.tableData1 = data.datatable.data
-					this.total = parseInt(data.datatable.total_number)
-					this.listQuery.page = parseInt(data.datatable.current_pagination)
-					this.listQuery.limit = parseInt(data.datatable.limit)
-				}
-				this.loading = false
-			})
+            if (tab === 'basic') {
+                table = 'package/order/detail/basicAjaxTable';
+                this.modalList.basicAjaxTable = true;
+
+            } else if (tab === 'job') {
+                table = 'package/order/detail/jobAjaxTable';
+                this.modalList.jobAjaxTable = true;
+
+            } else if (tab === 'bank') {
+                table = 'package/order/detail/bankAjaxTable';
+            } else if (tab === 'contact') {
+                table = 'package/order/detail/contactAjaxTable';
+            } else if (tab === 'news') {
+                table = 'package/order/detail/newsAjaxTable';
+            } else if (tab === 'location') {
+                table = 'package/order/detail/locationAjaxTable';
+            } else {
+                this.loading = false;
+                return;
+            }
+
+            this.$m.postMethod(table, this.postData)
+                .then((value) => {
+                    var data = value.data;
+
+                    if (value.valid) {
+                        this.clientProfile = data.clientProfile;
+                        this.clientDetail = data.clientDetail;
+                        console.log(this.clientDetail);
+                    }
+                    this.loading = false;
+                })
+                .catch((error) => {
+                    console.error('Error while fetching table data:', error);
+                    this.loading = false;
+                });
         },returnToPage(){
 			this.$router.push('/package/order/summary');
 		},

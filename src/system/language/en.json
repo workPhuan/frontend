@@ -860,7 +860,22 @@
 		"table_feature": 		     			"Feature",
 		"table_formula": 		     			"Formula",
 		"table_mode":							"Mode",
-		"table_permission": 		     		"Permission",
+		"table_marital_status": 		     	"Marital Status",
+		"table_child": 		     				"Child",
+		"table_gender": 		     			"Gender",
+		"table_house_holding": 		     		"House Holding",
+		"table_birthdate": 		     			"Date of birth",
+		"table_address": 		     			"Address",
+		"table_education": 		     			"Education",
+		"table_line_id": 		     			"LINE ID",
+		"table_icpass_front_url": 		     	"IC Front",
+		"table_icpass_back_url": 		     	"IC Back",
+		"table_icpass_holding_url": 			"IC Holding",
+		"table_application_img_url": 		    "IC Application",
+		"table_contract_img_url": 		     	"IC Contract",
+
+
+
 		"table_file": 		     				"File",
 		"table_path": 		     				"Path",
 		"table_relation_path": 		     		"Relation Path",
