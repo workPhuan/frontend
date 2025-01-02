@@ -46,9 +46,9 @@
                     
                     <template v-for="title in ajaxTitles" :key="title.prop">
                         <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" :sortable="title.prop == 'total_loan' || title.prop == 'loan_time' || title.prop == 'total_overdue' || title.prop == 'total_repay' ? true : false">
-                            <template #header>
+                            <!-- <template #header>
                                 <p class="search-label">{{title.label}}</p>
-                            </template>
+                            </template> -->
 
                             <template v-if="title.prop == 'status'" #default="scope">
                                 <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
@@ -229,22 +229,22 @@ export default{
 			},{
                 prop:"loan_time",
                 label:this.$t('mix.table_loan_time'),
-                width:'120',
+                width:'150',
 				sortable: true,
 			},{
                 prop:"total_overdue",
                 label:this.$t('mix.table_total_overdue'),
-                width:'120',
+                width:'150',
 				sortable: true,
 			},{
                 prop:"total_loan",
                 label:this.$t('mix.table_total_loan'),
-                width:'120',
+                width:'150',
 				sortable: true,
 			},{
                 prop:"total_repay",
                 label:this.$t('mix.table_total_repay'),
-                width:'120',
+                width:'150',
 				sortable: true,
 			},{
                 prop:"action",
