@@ -9,7 +9,7 @@
 		<div class="page-body p-3">
             <el-card shadow="never">
                 <h5 class="mb-3">{{$t('button.client_info')}}</h5>
-                <div style="display: flex;">
+                <div class="info-container">
                     <div class="info">
                         <div class="tag">
                             <p>{{$t('mix.table_name')}} :</p>
@@ -17,28 +17,37 @@
                             <p>{{ $t('mix.table_phone') }} :</p>
                         </div>
                         <div class="detail">
-                            <p>{{ userDetails.icpass }}</p>
-                            <p>{{ userDetails.name }}</p>
-                            <p>{{ userDetails.phone_mobile }}</p></div>
+                            <p>{{ accountDetails.name }}</p>
+                            <p>{{ accountDetails.icpass }}</p>
+                            <p>{{ accountDetails.phone_mobile }}</p>
+                            <el-button type="info" size="small"  @click="addBlackList(storeTempID.master_id)" >{{$t('button.blacklist')}}</el-button>
+                        </div>
                     </div>
+                    
                     <div class="info-box">
                         <div class="details-box">
-
+                            <p>{{ $t('mix.table_loan_time') }}</p>
+                            <p>{{ accountDetails.total_order }}</p>
                         </div>
                         <div class="details-box">
-
+                            <p>{{ $t('mix.table_total_overdue') }}</p>
+                            <p>{{ accountDetails.total_overdue }}</p>
                         </div>
                         <div class="details-box">
-
+                            <p>{{ $t('mix.table_total_loan') }}</p>
+                            <p>{{ accountDetails.total_loan }}</p>
                         </div>
                         <div class="details-box">
-
+                            <p>{{ $t('mix.table_total_repay') }}</p>
+                            <p>{{ accountDetails.total_repay }}</p>
                         </div>
                         <div class="details-box">
-
+                            <p>{{ $t('mix.table_early_repay') }}</p>
+                            <p>0</p>
                         </div>
                         <div class="details-box">
-
+                            <p>{{ $t('mix.table_today_overdue') }}</p>
+                            <p>0</p>
                         </div>
                     </div>
                 </div>
@@ -63,8 +72,7 @@
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getOrderRow(scope.row.code)">{{$t('button.order_info')}}</el-button>
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientRow(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.agent_id)">{{$t('mix.table_agent_info')}}</el-button>
                                     </template>
                                 </el-table-column>
                             </template>
@@ -77,7 +85,6 @@
                             <el-descriptions>
                                     <el-descriptions-item :label="$t('mix.table_name')">{{ userDetails.master_id }}</el-descriptions-item>
                                     <el-descriptions-item :label="$t('mix.table_marital_status')">{{ userDetails.marital_id }}</el-descriptions-item>
-                                    <br>
                                     <el-descriptions-item :label="$t('mix.table_phone_mobile')">{{ userDetails.phone_mobile }}</el-descriptions-item>
                                     <el-descriptions-item :label="$t('mix.table_child')">{{ userDetails.child_number }}</el-descriptions-item>
                                     <el-descriptions-item :label="$t('mix.table_icpass')">{{ userDetails.icpass }}</el-descriptions-item>
@@ -163,29 +170,58 @@
                     </el-tab-pane>
                     
                     <el-tab-pane key="contact" :label="$t('mix.table_contact_info')">
-                        <template v-for="title in ajaxTitles4" :key="title.prop">
+                        <card shadow="never">
                             <el-text class="mx-1">{{$t('mix.table_emergency_contacts')}}</el-text>
-                            <el-table :data="contactTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
-                                <template #empty v-if="TableData.length=='0'">
-                                    <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                            <el-table :data="contactTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange">
+                                <template #empty v-if="contactTableData.length=='0'">
                                     <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
                                     <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
                                 </template>
                                 
+                                <el-table-column type="selection" width="55"></el-table-column>
                                 <template v-for="title in ajaxContactTitles" :key="title.prop">
-                                    <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
+                                    <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
                                         <template #header>
                                             <p class="search-label">{{title.label}}</p>
                                         </template>
+                                     
 
                                         <template v-if="title.prop == 'action'" #default="scope">
-                                            <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
-                                            <el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
+                                            <el-button v-if="$p.permissionChecker('toolAttributeEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
+                                            <el-button v-if="$p.permissionChecker('toolAttributeDelete')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
                                         </template>
                                     </el-table-column>
                                 </template>
                             </el-table>
-                        </template>
+                            <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+                        </card>
+
+                        <el-card shadow="never">
+                            <el-text class="mx-1">{{$t('mix.table_call_records')}}</el-text>
+                            <el-table :data="callTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange">
+                                    <template #empty v-if="callTableData.length=='0'">
+                                        <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                        <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                                    </template>
+                                    
+                                    <el-table-column type="selection" width="55"></el-table-column>
+                                    <template v-for="title in callAjaxTitles" :key="title.prop">
+                                        <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+                                            <template #header>
+                                                <p class="search-label">{{title.label}}</p>
+                                            </template>
+                                         
+    
+                                            <template v-if="title.prop == 'action'" #default="scope">
+                                                <el-button v-if="$p.permissionChecker('toolAttributeEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
+                                                <el-button v-if="$p.permissionChecker('toolAttributeDelete')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
+                                            </template>
+                                        </el-table-column>
+                                    </template>
+                                </el-table>
+                                <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+                        </el-card>
+                        
                     </el-tab-pane>
 
                     <el-tab-pane key="message" :label="$t('mix.table_message_log')">
@@ -222,6 +258,25 @@
             </el-card>
 		</div>
 	
+        <el-dialog v-model="modalList.agentinfo" :title="$t('mix.table_agent_info')" :before-close="clearPostForm">
+			<el-form label-position="top" label-width="auto" @submit.native.prevent>
+				<el-row :gutter="20">
+					
+					<el-col :sm="12" class="mb-3">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_admin_agent')}}</label>
+						<el-select class="custom-input mt-1 w-100" v-model="postForm.agent_id" :placeholder="$t('menu.management_admin_agent')">
+							<el-option v-for="(list,index) in agentList" :key="index" :label="list.name" :value="list.agent_id">{{list.name}}</el-option>
+						</el-select>
+					</el-col>
+
+				</el-row>
+
+                <div class="d-flex justify-content-center align-item-center">
+                    <el-button class="custom-button success font-8 pt-3 pb-3" @click="toAgentInfoPage(this.postForm.agent_id)" :loading="loading">{{$t('button.submit')}}</el-button>
+                    <el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
+                </div>
+            </el-form>
+        </el-dialog>
 		
 	</div>
 </template>
@@ -244,9 +299,8 @@ export default {
 			loading: true,
 			errors: [],
             tableData: [],
-            tableData1: [],
-            tableData2: [],
-            tableData3: [],
+            contactTableData: [],
+            callTableData: [],
             total: 0,
             searchData:Object.assign({}, searchForm),
 			submitForm: {
@@ -286,7 +340,7 @@ export default {
                 label:this.$t('mix.table_status'),
                 width:'90',
 			},{
-                prop:"master_id",
+                prop:"agent_name",
                 label:this.$t('mix.table_agent'),
                 width:'100',
 			},{
@@ -383,10 +437,32 @@ export default {
 				width: "100",
 				align:'center'
 			}],
+            callAjaxTitles: [{
+				prop:"name",
+				label:this.$t("mix.table_name"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"phone_mobile",
+				label:this.$t("mix.table_phone_mobile"),
+				width: "150",
+				align:'center'
+			},{
+				prop:"start_at",
+				label:this.$t("mix.table_start_at"),
+				width: "150",
+				align:'center'
+			},{
+				prop:"duration",
+				label:this.$t("mix.table_duration"),
+				width: "100",
+                align:'center'
+			}],
             postForm:{
 				password: "",
                 confirm_password: "",
                 is_view_other: '',
+                agent_id: '',
                 status: '',
 				security: "",
 				userDetails: "",
@@ -394,6 +470,8 @@ export default {
 				selectedIds:[],
 			},
             userDetails: [],
+            accountDetails: [],
+            agentList: [],
 			postForm:{},
 			modalList:{},
             agentDetail:[],
@@ -412,7 +490,7 @@ export default {
 			result.then((value)=>{
 				var data = value.data
 				if(value.valid){
-                    this.userDetails = data.userDetails
+                    this.accountDetails = data.userDetails
 				}
 				this.initial()
 			})
@@ -427,6 +505,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
+                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -495,10 +574,8 @@ export default {
 			}
 		},loadTable(tab){
             this.loading = true
-			this.postData.data = JSON.stringify(this.searchData)
             this.searchData.master_id = storeTempID.master_id
-            let table;
-            let data;
+			this.postData.data = JSON.stringify(this.searchData)
             if(tab.index == 0){
                 this.initial()
             }else if(tab.index == 1){
@@ -517,13 +594,13 @@ export default {
             }
         },clientDetails(data){
             this.loading = true
-			this.searchData.master_id = storeTempID.master_id
 			this.postData.data = data
 			var result = this.$m.postMethod('management/client/info/clientDetails',this.postData)
 			result.then((value) => {
 				var data = value.data
-
+                console.log(value)
 				if(value.valid){
+                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -540,6 +617,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
+                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -556,22 +634,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
-					this.tableData = data.datatable.data
-					this.total = parseInt(data.datatable.total_number)
-					this.listQuery.page = parseInt(data.datatable.current_pagination)
-					this.listQuery.limit = parseInt(data.datatable.limit)
-				}
-				this.loading = false
-			})
-        },contactDetails(data){
-            this.loading = true
-			this.searchData.master_id = storeTempID.master_id
-			this.postData.data = data
-			var result = this.$m.postMethod('management/client/info/contactDetails',this.postData)
-			result.then((value) => {
-				var data = value.data
-
-				if(value.valid){
+                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -584,7 +647,7 @@ export default {
 
             this.postData.data = JSON.stringify(this.searchData)
 
-            var result = this.$m.postMethod('package/order/detail/contactAjaxTable',this.postData)
+            var result = this.$m.postMethod('management/client/info/contactAjaxTable',this.postData)
             result.then((value) => {
                 var data = value.data
                 
@@ -605,7 +668,7 @@ export default {
 
             this.postData.data = JSON.stringify(this.searchData)
             
-            var result = this.$m.postMethod('package/order/detail/callAjaxTable',this.postData)
+            var result = this.$m.postMethod('management/client/info/callAjaxTable',this.postData)
             result.then((value) => {
                 var data = value.data
                 
@@ -637,10 +700,92 @@ export default {
 				}
 				this.loading = false
 			})
+        },addBlackList(){
+            if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
+                this.loading = true
+                if(status == 'suspended'){this.$confirm(this.$t('msg.msg_suspend_account'), this.$t('msg.suspended'), {
+						confirmButtonText: this.$t('button.yes'),
+						cancelButtonText: this.$t('button.no'),
+						customClass: 'input-dialog',
+						showInput: (this.securityCheck == 1), 
+						inputPlaceholder: this.$t('mix.table_security'),
+						inputType: 'password',
+					}).then(({value}) => {
+                        this.loading = true
+                        this.submitForm.master_id = id;
+                        this.submitForm.status = status;
+                        this.postData.data = JSON.stringify(this.submitForm)
+                        
+                        var formData = new FormData();
+                        formData.append('data', this.postData.data);
+                        formData.append('language', this.postData.language);
+        
+                        
+                        var result = this.$m.postMethod('management/agent/agentinfo/DBstatus',formData)
+                        result.then((value) => {
+                        var data = value.data
+                        if(value.valid){
+                            this.$message({
+                                message: data.returnMsg,
+                                type: 'success'
+                            });
+                        }else{					
+                            this.$m.popupErrorMessage(data.returnMsg,this)
+                        }
+                        this.clearPostForm()
+                        this.getInitial()
+                        this.loading = false
+                        });
+
+                    })
+                }else{
+                    this.submitForm.master_id = id;
+                    this.submitForm.status = status;
+                    this.postData.data = JSON.stringify(this.submitForm)
+                    
+                    var formData = new FormData()
+                    formData.append('data', this.postData.data)
+                    formData.append('language', this.postData.language)
+
+                    var result = this.$m.postMethod('management/agent/agentinfo/DBstatus',formData)
+                    result.then((value) => {
+                        var data = value.data
+                        if(value.valid){
+                            this.$message({
+                                message: data.returnMsg,
+                                type: 'success'
+                            });
+                        }else{					
+                            this.$m.popupErrorMessage(data.returnMsg,this)
+                        }
+                        this.clearPostForm()
+                        this.getInitial()
+                        this.loading = false
+                    });
+                }
+			};
         },toClientPage(){
 			this.$router.push('/management/client/client');
-		},getOrderRow(){
-            
+		},toAgentInfoPage(id){
+            console.log(id)
+			this.$router.push('/management/client/client/agentinfo');
+            storeTempID.agent_id = id
+		},getAgentRow(id){
+            if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
+				this.loading = true
+				this.submitForm.agent_id = id
+				this.postData.data = JSON.stringify(this.submitForm)
+				var result = this.$m.postMethod('management/client/info/getAgent',this.postData)
+				result.then((value) => {
+					var data = value.data
+
+					if(value.valid){
+						this.agentList = data.agentList
+						this.modalList.agentinfo = true
+					}
+					this.loading = false
+				})
+			}
         },getAddRow(){
 			if(this.$p.permissionChecker('adminAdminAdd') && this.loading == false){
 				this.loading = true
