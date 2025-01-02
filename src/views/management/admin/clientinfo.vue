@@ -1,7 +1,7 @@
 <template>
 	<div class="page-container">
 		<div class="page-header">
-			<el-button style="cursor: pointer;" class="custom-button" type="info" @click="toClientPage()">
+			<el-button style="cursor: pointer;" class="custom-button" type="info" @click="toAgentInfoPage()">
 				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{"Back to " + $t('menu.management_client_client')}}
 			</el-button>
 		</div>
@@ -37,8 +37,7 @@
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getOrderRow(scope.row.code)">{{$t('button.order_info')}}</el-button>
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientRow(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentInfo(scope.row.agent_id)">{{$t('mix.table_agent_info')}}</el-button>
                                     </template>
                                 </el-table-column>
                             </template>
@@ -261,7 +260,7 @@ export default {
                 label:this.$t('mix.table_status'),
                 width:'90',
 			},{
-                prop:"master_id",
+                prop:"agent_name",
                 label:this.$t('mix.table_agent'),
                 width:'100',
 			},{
@@ -355,7 +354,7 @@ export default {
             userDetails: [],
 			postForm:{},
 			modalList:{},
-            agentDetail:[],
+            userDetails:[],
 			languageList:JSON.parse(this.$m.getItem('languageList')),
 			categoryList: [],
 			securityCheck: 0
@@ -371,6 +370,7 @@ export default {
 			result.then((value)=>{
 				var data = value.data
 				if(value.valid){
+                    this.userDetails = data.userDetails
 				}
 				this.initial()
 			})
@@ -413,7 +413,7 @@ export default {
 				this.loading = true;
 				this.submitForm.master_id = id
 				this.postData.data = JSON.stringify(this.submitForm);
-				var result = this.$m.postMethod("management/agent/agentinfo/resetPassword", this.postData);
+				var result = this.$m.postMethod("management/agent/clientinfo/resetPassword", this.postData);
 				result.then((value) => {
 					var data = value.data;
 
@@ -429,7 +429,7 @@ export default {
 				this.loading = true
 				this.preloader(true)
                 this.postData.data = JSON.stringify(this.postForm)
-				var result = this.$m.postMethod("management/agent/agentinfo/DBresetPassword",this.postData)
+				var result = this.$m.postMethod("management/agent/clientinfo/DBresetPassword",this.postData)
 
 				result.then((value) => {
 					var data = value.data
@@ -453,33 +453,32 @@ export default {
 			}
 		},loadTable(tab){
             this.loading = true
-			this.postData.data = JSON.stringify(this.searchData)
             this.searchData.master_id = storeTempID.master_id
-            let table;
-            let data;
+			this.postData.data = JSON.stringify(this.searchData)
             if(tab.index == 0){
-                table = 'management/agent/clientinfo/ajaxTable';
+                this.initial()
             }else if(tab.index == 1){
-                table = 'management/agent/clientinfo/clientDetails';
+                this.clientDetails(this.postData.data)
             }else if(tab.index == 2){
-                table = 'management/agent/clientinfo/companyDetails';
+                this.companyDetails(this.postData.data)
             }else if(tab.index == 3){
-                table = 'management/agent/clientinfo/bankDetails';
+                this.bankDetails(this.postData.data)
             }else if(tab.index == 4){
-                table = 'management/agent/clientinfo/contactDetails';
+                this.contactDetails(this.postData.data)
             }else if(tab.index == 5){
-                table = 'management/agent/clientinfo/locationDetails';
+                this.messageLog(this.postData.data)
             }else if(tab.index == 6){
-                table = 'management/agent/clientinfo/locationDetails';
+                this.LocationDetails(this.postData.data)
             }
-
-            var result = this.$m.postMethod(table,this.postData)
-            
+        },clientDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/agent/clientinfo/clientDetails',this.postData)
 			result.then((value) => {
 				var data = value.data
 
 				if(value.valid){
-                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -487,11 +486,89 @@ export default {
 				}
 				this.loading = false
 			})
-        },toClientPage(){
-			this.$router.push('/management/client/client');
-		},getOrderRow(){
-            
-        },getAddRow(){
+        },companyDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/agent/clientinfo/companyDetails',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },bankDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/agent/clientinfo/bankDetails',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },contactDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/agent/clientinfo/contactDetails',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },messageLog(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/agent/clientinfo/messagelog',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },LocationDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/agent/clientinfo/locationDetails',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },toAgentInfoPage(){
+			this.$router.push('/management/admin/agentinfo');
+		},getAddRow(){
 			if(this.$p.permissionChecker('adminAdminAdd') && this.loading == false){
 				this.loading = true
 				this.postData.data = JSON.stringify(this.postForm)
@@ -557,7 +634,7 @@ export default {
                         formData.append('language', this.postData.language);
         
                         
-                        var result = this.$m.postMethod('management/agent/agentinfo/DBstatus',formData)
+                        var result = this.$m.postMethod('management/agent/clientinfo/DBstatus',formData)
                         result.then((value) => {
                         var data = value.data
                         if(value.valid){
@@ -586,7 +663,7 @@ export default {
 				formData.append('data', this.postData.data)
 				formData.append('language', this.postData.language)
 
-				var result = this.$m.postMethod('management/agent/agentinfo/DBviewOther',formData)
+				var result = this.$m.postMethod('management/agent/clientinfo/DBviewOther',formData)
 				result.then((value) => {
 					var data = value.data
 					if(value.valid){
@@ -684,7 +761,7 @@ export default {
         this.postData.language = this.$m.getItem('currentLang')??'en'
 		this.securityCheck = this.$m.getItem('securityCheck')
         if(storeTempID.master_id == "" || storeTempID.master_id == undefined){
-			this.$router.push('/management/client/client');
+			this.$router.push('/management/admin/agentinfo');
 		}else{
             this.getInitial()
         }

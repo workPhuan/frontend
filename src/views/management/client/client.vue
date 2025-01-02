@@ -57,7 +57,6 @@
                             </template>
                             
                             <template v-if="title.prop == 'action'" #default="scope">
-                                <el-button v-if="$p.permissionChecker('toolAttributeEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.master_id)">{{$t('button.edit')}}</el-button>
                                 <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientRow(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
                             </template>
                         </el-table-column>

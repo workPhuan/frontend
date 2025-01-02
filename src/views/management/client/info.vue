@@ -137,30 +137,29 @@
                     </el-tab-pane>
                     
                     <el-tab-pane key="contact" :label="$t('mix.table_contact_info')">
-                        <el-card shadow="never">
-                            <el-descriptions>
-                                <el-descriptions-item :label="$t('mix.table_company_name')">{{ userDetails.company_name }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_company_address')">{{ userDetails.company_address }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ userDetails.company_phone_mobile }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_position')">{{ userDetails.position }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_experience')">{{ userDetails.experience }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_salary')">{{ userDetails.salary }}</el-descriptions-item>
-                            </el-descriptions>
-                            <div class="d-flex align-items-center">
-                                <img :src="userDetails.staff_id_url" class="w-r-2 h-auto me-2"/>
-                                <div class="d-flex flex-column">
-                                    <p class="p-0 m-0">$t('mix.staff_id_url')</p>
-                                </div>
-                            </div>
+                        <template v-for="title in ajaxTitles4" :key="title.prop">
+                            <el-text class="mx-1">{{$t('mix.table_emergency_contacts')}}</el-text>
+                            <el-table :data="contactTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
+                                <template #empty v-if="TableData.length=='0'">
+                                    <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                    <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                    <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                                </template>
+                                
+                                <template v-for="title in ajaxContactTitles" :key="title.prop">
+                                    <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
+                                        <template #header>
+                                            <p class="search-label">{{title.label}}</p>
+                                        </template>
 
-                            <div class="d-flex align-items-center">
-                                <img :src="userDetails.bussiness_card_url" class="w-r-2 h-auto me-2"/>
-                                <div class="d-flex flex-column">
-                                    <p class="p-0 m-0">$t('mix.bussiness_card_url')</p>
-                                </div>
-                            </div>
-
-                        </el-card>
+                                        <template v-if="title.prop == 'action'" #default="scope">
+                                            <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
+                                            <el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
+                                        </template>
+                                    </el-table-column>
+                                </template>
+                            </el-table>
+                        </template>
                     </el-tab-pane>
 
                     <el-tab-pane key="message" :label="$t('mix.table_message_log')">
@@ -342,6 +341,22 @@ export default {
                 label:this.$t('mix.table_action'),
                 width:'120',
 			}],
+            ajaxContactTitles: [{
+				prop:"name",
+				label:this.$t("mix.table_name"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"phone_mobile",
+				label:this.$t("mix.table_phone_mobile"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"relation",
+				label:this.$t("mix.table_relation"),
+				width: "100",
+				align:'center'
+			}],
             postForm:{
 				password: "",
                 confirm_password: "",
@@ -458,28 +473,136 @@ export default {
             let table;
             let data;
             if(tab.index == 0){
-                table = 'management/client/info/ajaxTable';
+                this.initial()
             }else if(tab.index == 1){
-                table = 'management/client/info/clientDetails';
+                this.clientDetails(this.postData.data)
             }else if(tab.index == 2){
-                table = 'management/client/info/companyDetails';
+                this.companyDetails(this.postData.data)
             }else if(tab.index == 3){
-                table = 'management/client/info/bankDetails';
+                this.bankDetails(this.postData.data)
             }else if(tab.index == 4){
-                table = 'management/client/info/contactDetails';
+                this.contactData(this.postData.data)
+                this.callData(this.postData.data)
             }else if(tab.index == 5){
-                table = 'management/client/info/locationDetails';
+                this.messageLog(this.postData.data)
             }else if(tab.index == 6){
-                table = 'management/client/info/locationDetails';
+                this.locationDetails(this.postData.data)
             }
-
-            var result = this.$m.postMethod(table,this.postData)
-            
+        },clientDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/client/info/clientDetails',this.postData)
 			result.then((value) => {
 				var data = value.data
 
 				if(value.valid){
-                    this.userDetails = data.userDetails
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },companyDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/client/info/companyDetails',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },bankDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/client/info/bankDetails',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },contactDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/client/info/contactDetails',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },contactData(){
+            this.loading = true
+
+            this.postData.data = JSON.stringify(this.searchData)
+
+            var result = this.$m.postMethod('package/order/detail/contactAjaxTable',this.postData)
+            result.then((value) => {
+                var data = value.data
+                
+                if (value.valid) {
+                    this.contactTableData = data.datatable.data
+                    this.total = parseInt(data.datatable.total_number)
+                    this.listQuery.page = parseInt(data.datatable.current_pagination)
+                    this.listQuery.limit = parseInt(data.datatable.limit)
+                    this.modalList.contactAjaxTable = true
+
+                    this.loading = false
+                }
+                this.loading = false;
+            })
+
+		},callData(){
+            this.loading = true
+
+            this.postData.data = JSON.stringify(this.searchData)
+            
+            var result = this.$m.postMethod('package/order/detail/callAjaxTable',this.postData)
+            result.then((value) => {
+                var data = value.data
+                
+                if (value.valid) {
+                    this.callTableData = data.datatable.data
+                    this.total = parseInt(data.datatable.total_number)
+                    this.listQuery.page = parseInt(data.datatable.current_pagination)
+                    this.listQuery.limit = parseInt(data.datatable.limit)
+                    this.modalList.callAjaxTable = true
+
+                    this.loading = false
+                }
+                this.loading = false;
+            })
+
+		},locationDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/client/info/locationDetails',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)

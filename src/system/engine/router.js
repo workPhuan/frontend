@@ -138,9 +138,14 @@ export const mainRoutes = [
 				component: () => import('@/views/management/admin/agentinfo.vue'),
 				hidden: true
 			},{
-				path: '/management/admin/clientinfo',
+				path: '/management/admin/agentinfo',
+				meta: {title:'menu.management_admin_agent',icon:'user-tie',permission: 'RZYSSQ', parents:'management'},
+				component: () => import('@/views/management/admin/agentinfo.vue'),
+				hidden: true
+			},{
+				path: '/management/admin/orderinfo',
 				meta: {title:'menu.management_client_client',icon:'users',permission: 'UH1QB6', parents:'management'},
-				component: () => import('@/views/management/admin/clientinfo.vue'),
+				component: () => import('@/views/management/admin/orderinfo.vue'),
 				hidden: true
 			},{
 				path: '/management/admin/assistant',

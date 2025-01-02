@@ -13,10 +13,10 @@
                     <el-descriptions>
                         <el-descriptions-item :label="$t('mix.table_account')">{{ agentDetail.name }}    <el-button type="info" size="small"  @click="getResetPasswordRow(agentDetail.master_id),modalList.editRow = true" >{{$t('general.forgetpasswordchange')}}</el-button></el-descriptions-item> 
                         <el-descriptions-item :label="$t('mix.table_total_order')">{{ agentDetail.total_order }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_total_loan')">{{ agentDetail.total_loan }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_total_loan') + '  NT$'">{{ agentDetail.total_loan }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_name')">{{ agentDetail.login }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_total_client')">{{ agentDetail.total_client }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_total_repay')">{{ agentDetail.total_repay }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_total_repay') + '  NT$'">{{ agentDetail.total_repay }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_status')">
                             {{ agentDetail.status }}
                             <el-switch v-model="agentDetail.status" active-value='normal' inactive-value="suspended" @change="userStatusRow(agentDetail.master_id,agentDetail.status)"></el-switch>
@@ -47,7 +47,7 @@
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getOrderRow(scope.row.code)">{{$t('button.order_info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getOrderRow(scope.row.id)">{{$t('button.order_info')}}</el-button>
                                         <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientPage(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
                                     </template>
                                 </el-table-column>
@@ -90,14 +90,14 @@
                         </div>
                         
                         <div class="page-body p-3">
-                            <el-table :data="tableData2" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+                            <el-table :data="tableData1" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
                                 <template #empty v-if="tableData.length=='0'">
                                     <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
                                     <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
                                     <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
                                 </template>
                                 
-                                <template v-for="title in ajaxTitles" :key="title.prop">
+                                <template v-for="title in ajaxTitles2" :key="title.prop">
                                     <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
                                         <template #header>
                                             <div class="d-flex">
@@ -140,7 +140,7 @@
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientPage(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="toAgentPage()">{{$t('mix.table_agent_info')}}</el-button>
                                     </template>
                                 </el-table-column>
                             </template>
@@ -199,8 +199,6 @@ export default {
 			errors: [],
             tableData: [],
             tableData1: [],
-            tableData2: [],
-            tableData3: [],
             total: 0,
             searchData:Object.assign({}, searchForm),
 			submitForm: {
@@ -297,14 +295,14 @@ export default {
 			}],
             ajaxTitles3:[{
                 prop:"created_at",
-                label:this.$t('mix.table_name'),
+                label:this.$t('mix.table_created_at'),
                 width:'120',
 			},{
                 prop:"status",
                 label:this.$t('mix.table_consumption_type'),
                 width:'120',
 			},{
-                prop:"master_id",
+                prop:"login",
                 label:this.$t('mix.table_name'),
                 width:'120',
 			},{
@@ -314,10 +312,6 @@ export default {
 			},{
                 prop:"after_amount",
                 label:this.$t('mix.table_expense'),
-                width:'120',
-			},{
-                prop:"action",
-                label:this.$t('mix.table_action'),
                 width:'120',
 			}],
             postForm:{
@@ -435,7 +429,7 @@ export default {
             this.searchData.master_id = storeTempID.master_id
 			this.postData.data = JSON.stringify(this.searchData)    
             if(tab.index == 0){
-                this.ajaxTableOrder(this.postData.data)
+                this.initial()
             }else if(tab.index == 1){
                 this.ajaxTableClient(this.postData.data)
             }else if(tab.index == 2){
@@ -443,22 +437,6 @@ export default {
             }else if(tab.index == 3){
                 this.ajaxTableExpense(this.postData.data)
             }
-        },ajaxTableOrder(data){
-            this.loading = true
-			this.searchData.agent_id = storeTempID.agent_id
-			this.postData.data = data
-			var result = this.$m.postMethod('management/agent/agentinfo/ajaxTableOrder',this.postData)
-			result.then((value) => {
-				var data = value.data
-
-				if(value.valid){
-					this.tableData = data.datatable.data
-					this.total = parseInt(data.datatable.total_number)
-					this.listQuery.page = parseInt(data.datatable.current_pagination)
-					this.listQuery.limit = parseInt(data.datatable.limit)
-				}
-				this.loading = false
-			})
         },ajaxTableClient(data){
             this.loading = true
 			this.searchData.agent_id = storeTempID.agent_id
@@ -484,7 +462,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
-					this.tableData = data.datatable.data
+					this.tableData1 = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
 					this.listQuery.limit = parseInt(data.datatable.limit)
@@ -511,7 +489,7 @@ export default {
 						this.tempTitle.label = element.name
 						this.tempTitle.width = 100
 						this.tempTitle.align = 'center'
-						this.ajaxTitles.push(this.tempTitle)
+						this.ajaxTitles2.push(this.tempTitle)
 					
 					})
 					this.tempTitle = {}
@@ -519,14 +497,14 @@ export default {
 					this.tempTitle.label = this.$t('mix.table_status'),
 					this.tempTitle.width = 100
 					this.tempTitle.align = 'center'
-					this.ajaxTitles.push(this.tempTitle)
+					this.ajaxTitles2.push(this.tempTitle)
 
 					this.tempTitle = {}
 					this.tempTitle.prop = "action",
 					this.tempTitle.label = this.$t('mix.table_action'),
 					this.tempTitle.width = 100
 					this.tempTitle.align = 'center'
-					this.ajaxTitles.push(this.tempTitle)
+					this.ajaxTitles2.push(this.tempTitle)
 				}
 				this.loading = false
 			})
@@ -548,8 +526,9 @@ export default {
 			})
         },toAgentPage(){
 			this.$router.push('/management/admin/agent');
-		},getOrderRow(){
-            
+		},getOrderRow(id){
+            this.$router.push('/management/admin/orderinfo');
+            storeTempID.id = id
         },getClientPage(master_id){
             this.$router.push('/management/admin/clientinfo');
 			storeTempID.master_id = master_id
