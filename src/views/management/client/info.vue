@@ -8,15 +8,41 @@
 		
 		<div class="page-body p-3">
             <el-card shadow="never">
-                <div>
-                    <h5 class="mb-3">{{$t('button.client_info')}}</h5>
-                    <el-descriptions>
-                        <el-descriptions-item :label="$t('mix.table_name')">{{ agentDetail.name }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_icpass')">{{ agentDetail.icpass }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_phone')">{{ agentDetail.phone_mobile }}</el-descriptions-item>
-                    </el-descriptions>
+                <h5 class="mb-3">{{$t('button.client_info')}}</h5>
+                <div style="display: flex;">
+                    <div class="info">
+                        <div class="tag">
+                            <p>{{$t('mix.table_name')}} :</p>
+                            <p>{{ $t('mix.table_icpass')}} :</p>
+                            <p>{{ $t('mix.table_phone') }} :</p>
+                        </div>
+                        <div class="detail">
+                            <p>{{ userDetails.icpass }}</p>
+                            <p>{{ userDetails.name }}</p>
+                            <p>{{ userDetails.phone_mobile }}</p></div>
+                    </div>
+                    <div class="info-box">
+                        <div class="details-box">
 
+                        </div>
+                        <div class="details-box">
+
+                        </div>
+                        <div class="details-box">
+
+                        </div>
+                        <div class="details-box">
+
+                        </div>
+                        <div class="details-box">
+
+                        </div>
+                        <div class="details-box">
+
+                        </div>
+                    </div>
                 </div>
+
                 <el-tabs type="border-card" @tab-click="loadTable">
                     <el-tab-pane key="loan" :label="$t('mix.table_loan_record')">
                         <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
@@ -386,6 +412,7 @@ export default {
 			result.then((value)=>{
 				var data = value.data
 				if(value.valid){
+                    this.userDetails = data.userDetails
 				}
 				this.initial()
 			})

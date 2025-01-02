@@ -36,6 +36,7 @@ import '@/assets/css/util.css'
 import '@/assets/css/status.css'
 import '@/assets/css/stream.css'
 import '@/assets/css/chat.css'
+import '@/assets/css/info.css'
 import 'viewerjs/dist/viewer.css'
 
 const app = createApp(App)

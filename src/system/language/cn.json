@@ -686,6 +686,14 @@
 		"table_username":						"用户账号",
 		"table_password":						"登录密码"
 	},"mix":{
+		"table_total_order":					"订单数",
+		"table_total_client":					"客户数",
+		"table_total_loan":						"贷款总计",
+		"table_total_repay":					"还款总计",
+		"table_total_overdue":					"逾期次数",
+		"table_loan_time":						"贷款次数",
+		"table_early_repay":					"提前结清次数",
+		"table_today_overdue":					"今日到期未还笔数",
 		"table_system_statistic":				"系统统计",
 		"table_recently_statistic":				"最近{day}天数据统计",
 		"table_name":							"名字",

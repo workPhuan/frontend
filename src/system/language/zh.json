@@ -684,6 +684,14 @@
 		"table_username":						"用戶賬號",
 		"table_password":						"登入密碼"
 	},"mix":{
+		"table_total_order":					"訂單數",
+		"table_total_client":					"客戶數",
+		"table_total_loan":						"貸款總計",
+		"table_total_repay":					"還款總計",
+		"table_total_overdue":					"預期次數",
+		"table_loan_time":						"貸款次數",
+		"table_early_repay":					"提前結清次數",
+		"table_today_overdue":					"今日到期未還筆數",
 		"table_system_statistic": 				"系統統計",
 		"table_recently_statistic": 			"最近{day}天數據統計",
 		"table_name": 							"名稱",

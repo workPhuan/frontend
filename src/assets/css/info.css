@@ -1,0 +1,29 @@
+.info{
+    width: 25%;
+    font-size: 0.87rem;
+    color:black;
+    display: flex;
+}
+.info .tag{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    padding-right: 0.4rem;
+}
+.info .detail{
+    width: 50%;
+
+}
+
+.info-box{
+    border: 1px solid black;
+    width: 75%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.details-box{
+    border: 1px solid black;
+    width: 16%;
+}
