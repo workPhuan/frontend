@@ -269,6 +269,9 @@ export default {
 			this.postForm.id = '' 
 			this.postForm.name = []
 			this.postForm.selectedIds = []
+			this.postForm.selectedRows = []
+			this.postForm.selectedRowId = []
+			this.postForm.selectedAgents = []
 			this.postForm.domain_url = ''
 			this.postForm.username = ''
 			this.imagePickerFile = ''

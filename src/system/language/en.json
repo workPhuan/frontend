@@ -265,7 +265,7 @@
 		"single_language":						"Single Language",
 		"multi_language":						"Multi Language",
 		"yes":									"Yes",
-		"no":									"No",
+		"no":									"No",		
 		"active":								"Active",
 		"inactive":								"Inactive",
 		"day":									"Day",
@@ -286,7 +286,7 @@
 		"job_information":						"Job Information",
 		"contact_information":					"Contact Information",
 		"bank_information":						"Bank Information",
-		"newsletter":							"Newsletter",
+		"message_information":					"Message Information",
 		"location_information":					"Location Information",
 
 		"terminate":							"Terminate",

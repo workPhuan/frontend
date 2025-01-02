@@ -29,7 +29,7 @@
                             <el-button class="custom-button plain" @click="loadTable('job')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.job_information')}}</el-button>
                             <el-button class="custom-button plain" @click="loadTable('bank')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.bank_information')}}</el-button>
                             <el-button class="custom-button plain" @click="loadTable('contact')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.contact_information')}}</el-button>
-                            <el-button class="custom-button plain" @click="loadTable('news')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.news_information')}}</el-button>
+                            <el-button class="custom-button plain" @click="loadTable('message')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.message_information')}}</el-button>
                             <el-button class="custom-button plain" @click="loadTable('location')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.location_information')}}</el-button>
                     </el-tab-pane>
 
@@ -57,7 +57,7 @@
                         <el-descriptions-item :label="$t('mix.table_education')">{{ clientDetail.education }}</el-descriptions-item>
                         <!-- <el-descriptions-item :label="$t('mix.table_line_id')">{{ clientProfile.line_id }}</el-descriptions-item> -->
                 </el-descriptions>
-                <!-- <div>
+                <div>
                     <img :src="clientProfile.icpass_front_url" class="w-r-2 h-auto me-2"/>
                     <div class="d-flex flex-column">
                         <p class="p-0 m-0">{{ $t('mix.table_icpass_front_url') }}</p>
@@ -82,7 +82,7 @@
                     <div class="d-flex flex-column">
                         <p class="p-0 m-0">{{ $t('mix.table_contract_img_url') }}</p>
                     </div>
-                </div> -->
+                </div>
             </el-card>
         </div>
 
@@ -160,7 +160,7 @@
 
         <div v-if="modalList.callAjaxTable" class="page-body p-3">
             <el-card shadow="never">
-                
+                <el-text class="mx-1">{{$t('mix.table_call_records')}}</el-text>
                 <el-table :data="callTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
 					<template #empty v-if="callTableData.length=='0'">
 						<img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
@@ -186,17 +186,31 @@
             </el-card>
         </div>
 
-        <div v-if="modalList.newsAjaxTable" class="page-body p-3">
+        <div v-if="modalList.messageAjaxTable" class="page-body p-3">
             <el-card shadow="never">
-                
-                <el-descriptions>
-                    <el-descriptions-item :label="$t('mix.table_company_name')">{{ clientDetail.company_name }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_company_address')">{{ clientDetail.company_address }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ clientDetail.company_phone_mobile }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_position')">{{ clientProfile.position }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_experience')">{{ clientDetail.experience }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_salary')">{{ clientProfile.salary }}</el-descriptions-item>
-                </el-descriptions>
+                <el-text class="mx-1">{{$t('mix.table_call_records')}}</el-text>
+                <el-table :data="messageTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
+					<template #empty v-if="callTableData.length=='0'">
+						<img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+						<div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+						<div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+					</template>
+					
+					<template v-for="title in ajaxCallTitles" :key="title.prop">
+						<el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
+							<template #header>
+								<p class="search-label">{{title.label}}</p>
+							</template>
+
+							<template v-if="title.prop == 'action'" #default="scope">
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
+								<el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
+							</template>
+						</el-table-column>
+					</template>
+				</el-table>
+                <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+
             </el-card>
         </div>
 
@@ -244,7 +258,7 @@ export default {
             tableData: [],
             contactTableData: [],
             callTableData: [],
-
+            messageTableData: [],
 
 			total: 0,
 			errors: [],
@@ -338,6 +352,27 @@ export default {
 				width: "100",
 				align:'center'
 			}],
+            ajaxMessageTitles: [{
+				prop:"created_at",
+				label:this.$t("mix.table_name"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"name",
+				label:this.$t("mix.table_phone_mobile"),
+				width: "150",
+				align:'center'
+			},{
+				prop:"phone_mobile",
+				label:this.$t("mix.table_start_at"),
+				width: "150",
+				align:'center'
+			},{
+				prop:"content",
+				label:this.$t("mix.table_duration"),
+				width: "270",
+                align:'left'
+			}],
 			ajaxSearch: [{
 				prop:"name",
 				label:this  .$t("mix.table_name")
@@ -430,7 +465,7 @@ export default {
                 bankAjaxTable: false,
                 contactAjaxTable: false,
                 callAjaxTable: false,
-                newsAjaxTable: false,
+                messageAjaxTable: false,
                 locationAjaxTable: false,
             };
 
@@ -438,29 +473,20 @@ export default {
             let table;
 
             if (tab === 'basic') {
-                table = 'package/order/detail/basicAjaxTable';
-                this.modalList.basicAjaxTable = true;
                 this.basicData()
 
             } else if (tab === 'job') {
-                table = 'package/order/detail/jobAjaxTable';
-                this.modalList.jobAjaxTable = true;
                 this.jobData()
 
             } else if (tab === 'bank') {
-                table = 'package/order/detail/bankAjaxTable';
-                this.modalList.bankAjaxTable = true;
                 this.bankData()
 
             } else if (tab === 'contact') {
-                this.modalList.contactAjaxTable = true;
                 this.contactData()
                 this.callData()
 
-            } else if (tab === 'news') {
-                table = 'package/order/detail/newsAjaxTable';
-                this.modalList.newsAjaxTable = true;
-                this.newsData()
+            } else if (tab === 'message') {
+                this.messageData()
 
             } else if (tab === 'location') {
                 table = 'package/order/detail/locationAjaxTable';
@@ -577,20 +603,23 @@ export default {
                 this.loading = false;
             })
 
-		},newsData(){
+		},messageData(){
             this.loading = true
 
             this.postData.data = JSON.stringify(this.searchData)
 
-            var result = this.$m.postMethod('package/order/detail/newsAjaxTable',this.postData)
+            var result = this.$m.postMethod('package/order/detail/messageAjaxTable',this.postData)
             result.then((value) => {
                 var data = value.data
                 
                 if (value.valid) {
-                    this.clientProfile = data.clientProfile;
-                    this.clientDetail = data.clientDetail;
-                    this.modalList.newsAjaxTable = true
+                    this.messageTableData = data.datatable.data
+                    this.total = parseInt(data.datatable.total_number)
+                    this.listQuery.page = parseInt(data.datatable.current_pagination)
+                    this.listQuery.limit = parseInt(data.datatable.limit)
+                    this.modalList.messageAjaxTable = true
 
+                    this.loading = false
                 }
                 this.loading = false;
             })
