@@ -380,7 +380,7 @@ export default {
             this.loading = true
 			this.searchData.master_id = storeTempID.master_id
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/client/info/ajaxTable',this.postData)
+			var result = this.$m.postMethod('management/agent/clientinfo/ajaxTable',this.postData)
 			result.then((value) => {
 				var data = value.data
 
@@ -458,19 +458,19 @@ export default {
             let table;
             let data;
             if(tab.index == 0){
-                table = 'management/client/info/ajaxTable';
+                table = 'management/agent/clientinfo/ajaxTable';
             }else if(tab.index == 1){
-                table = 'management/client/info/clientDetails';
+                table = 'management/agent/clientinfo/clientDetails';
             }else if(tab.index == 2){
-                table = 'management/client/info/companyDetails';
+                table = 'management/agent/clientinfo/companyDetails';
             }else if(tab.index == 3){
-                table = 'management/client/info/bankDetails';
+                table = 'management/agent/clientinfo/bankDetails';
             }else if(tab.index == 4){
-                table = 'management/client/info/contactDetails';
+                table = 'management/agent/clientinfo/contactDetails';
             }else if(tab.index == 5){
-                table = 'management/client/info/locationDetails';
+                table = 'management/agent/clientinfo/locationDetails';
             }else if(tab.index == 6){
-                table = 'management/client/info/locationDetails';
+                table = 'management/agent/clientinfo/locationDetails';
             }
 
             var result = this.$m.postMethod(table,this.postData)

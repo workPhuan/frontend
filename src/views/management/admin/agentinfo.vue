@@ -48,7 +48,7 @@
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
                                         <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getOrderRow(scope.row.code)">{{$t('button.order_info')}}</el-button>
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientRow(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientPage(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
                                     </template>
                                 </el-table-column>
                             </template>
@@ -77,7 +77,7 @@
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientPage(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
                                     </template>
                                 </el-table-column>
                             </template>
@@ -190,15 +190,9 @@
                                     <template #header>
                                         <p class="search-label">{{title.label}}</p>
                                     </template>
-
-                                    <template v-if="title.prop == 'status'" #default="scope">
-                                        <div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
-                                        {{scope.row.status}}
-                                        </div>
-                                    </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.id)">{{$t('button.client_info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientPage(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
                                     </template>
                                 </el-table-column>
                             </template>
@@ -289,7 +283,7 @@ export default {
                 width:'100',
                 align:'center'
 			},{
-                prop:"master_id",
+                prop:"name",
                 label:this.$t('mix.table_client'),
                 width:'100',
 			},{
@@ -402,7 +396,7 @@ export default {
 			this.loading = true
 			this.searchData.agent_id = storeTempID.agent_id
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/agent/agentorder',this.postData)
+			var result = this.$m.postMethod('management/agent/agentinfo',this.postData)
 			result.then((value)=>{
 				var data = value.data
 				if(value.valid){
@@ -416,7 +410,7 @@ export default {
             this.loading = true
 			this.searchData.agent_id = storeTempID.agent_id
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/agent/agentorder/ajaxTableOrder',this.postData)
+			var result = this.$m.postMethod('management/agent/agentinfo/ajaxTableOrder',this.postData)
 			result.then((value) => {
 				var data = value.data
 
@@ -449,7 +443,7 @@ export default {
 				this.loading = true;
 				this.submitForm.master_id = id
 				this.postData.data = JSON.stringify(this.submitForm);
-				var result = this.$m.postMethod("management/agent/agentorder/resetPassword", this.postData);
+				var result = this.$m.postMethod("management/agent/agentinfo/resetPassword", this.postData);
 				result.then((value) => {
 					var data = value.data;
 
@@ -465,7 +459,7 @@ export default {
 				this.loading = true
 				this.preloader(true)
                 this.postData.data = JSON.stringify(this.postForm)
-				var result = this.$m.postMethod("management/agent/agentorder/DBresetPassword",this.postData)
+				var result = this.$m.postMethod("management/agent/agentinfo/DBresetPassword",this.postData)
 
 				result.then((value) => {
 					var data = value.data
@@ -495,16 +489,32 @@ export default {
             let table;
             let data;
             if(tab.index == 0){
-                table = 'management/agent/agentorder/ajaxTableOrder';
+                table = 'management/agent/agentinfo/ajaxTableOrder';
             }else if(tab.index == 1){
-                table = 'management/agent/agentorder/ajaxTableClient';
+                table = 'management/agent/agentinfo/ajaxTableClient';
             }else if(tab.index == 2){
-                table = 'management/agent/agentorder/ajaxTableSetting';
+                table = 'management/agent/agentinfo/ajaxTableSetting';
             }else if(tab.index == 3){
-                table = 'management/agent/agentorder/ajaxTableExpense';
+                table = 'management/agent/agentinfo/ajaxTableExpense';
             }
             var result = this.$m.postMethod(table,this.postData)
             
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },ajaxTableOrder(){
+            this.loading = true
+			this.searchData.agent_id = storeTempID.agent_id
+			this.postData.data = JSON.stringify(this.searchData)
+			var result = this.$m.postMethod('management/agent/agentinfo/ajaxTableOrder',this.postData)
 			result.then((value) => {
 				var data = value.data
 
@@ -520,8 +530,8 @@ export default {
 			this.$router.push('/management/admin/agent');
 		},getOrderRow(){
             
-        },getClientRow(master_id){
-            this.$router.push('/management/client/client/info');
+        },getClientPage(master_id){
+            this.$router.push('/management/admin/clientinfo');
 			storeTempID.master_id = master_id
         },getAddRow(){
 			if(this.$p.permissionChecker('adminAdminAdd') && this.loading == false){
@@ -571,7 +581,7 @@ export default {
 		},userStatusRow(id,status){
 			if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
                 this.loading = true
-                this.$confirm(this.$t('msg.msg_run_task'), this.$t('msg.prompt'), {
+                if(status == 'suspended'){this.$confirm(this.$t('msg.msg_suspend_account'), this.$t('msg.suspended'), {
 						confirmButtonText: this.$t('button.yes'),
 						cancelButtonText: this.$t('button.no'),
 						customClass: 'input-dialog',
@@ -589,7 +599,7 @@ export default {
                         formData.append('language', this.postData.language);
         
                         
-                        var result = this.$m.postMethod('management/agent/agentorder/DBstatus',formData)
+                        var result = this.$m.postMethod('management/agent/agentinfo/DBstatus',formData)
                         result.then((value) => {
                         var data = value.data
                         if(value.valid){
@@ -601,11 +611,36 @@ export default {
                             this.$m.popupErrorMessage(data.returnMsg,this)
                         }
                         this.clearPostForm()
-                        this.initial()
+                        this.getInitial()
                         this.loading = false
                         });
 
                     })
+                }else{
+                    this.submitForm.master_id = id;
+                    this.submitForm.status = status;
+                    this.postData.data = JSON.stringify(this.submitForm)
+                    
+                    var formData = new FormData()
+                    formData.append('data', this.postData.data)
+                    formData.append('language', this.postData.language)
+
+                    var result = this.$m.postMethod('management/agent/agentinfo/DBstatus',formData)
+                    result.then((value) => {
+                        var data = value.data
+                        if(value.valid){
+                            this.$message({
+                                message: data.returnMsg,
+                                type: 'success'
+                            });
+                        }else{					
+                            this.$m.popupErrorMessage(data.returnMsg,this)
+                        }
+                        this.clearPostForm()
+                        this.getInitial()
+                        this.loading = false
+                    });
+                }
 			};
 		},viewOtherRow(id,is_view_other){
 			if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
@@ -618,7 +653,7 @@ export default {
 				formData.append('data', this.postData.data)
 				formData.append('language', this.postData.language)
 
-				var result = this.$m.postMethod('management/agent/agentorder/DBviewOther',formData)
+				var result = this.$m.postMethod('management/agent/agentinfo/DBviewOther',formData)
 				result.then((value) => {
 					var data = value.data
 					if(value.valid){

@@ -57,6 +57,7 @@
                             </template>
                             
                             <template v-if="title.prop == 'action'" #default="scope">
+                                <el-button v-if="$p.permissionChecker('toolAttributeEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.master_id)">{{$t('button.edit')}}</el-button>
                                 <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getClientRow(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
                             </template>
                         </el-table-column>
@@ -104,27 +105,6 @@
 						</template>
 					</el-col>
 
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_payment_method')}}</label>
-						<el-select class="custom-input mt-1 w-100" v-model="postForm.payment_method" :placeholder="$t('menu.management_agent_payment_method')" size="large">
-							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.value">{{list.name}}</el-option>
-						</el-select>
-					</el-col>
-					
-					<el-col :sm="12" class="mt-4">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_is_view_other')}}</label>
-						<div>
-							<el-switch v-model="postForm.is_view_other" active-value="1" inactive-value="0"></el-switch>
-						</div>
-					</el-col>
-					
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_repayment_method')}}</label>
-						<el-select class="custom-input mt-1 w-100" v-model="postForm.repayment_method" :placeholder="$t('menu.management_agent_repayment_method')" size="large">
-							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.value">{{list.name}}</el-option>
-						</el-select>
-					</el-col>
-
 					<el-col :sm="12" class="mt-4">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
 						<div>
@@ -146,75 +126,6 @@
 				</div>
 			</template>
 		</el-dialog>
-
-		<el-dialog v-model="modalList.editRow" :title="$t('menu.management_admin_agent_edit')" :before-close="clearPostForm" class="dialog-md">
-			<el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
-				<el-row :gutter="20">
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_username')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.login" :placeholder="$t('mix.table_username')" />
-					</el-col>
-
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.name" :placeholder="$t('mix.table_name')" />
-					</el-col>
-
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_service_text')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.service_text" :placeholder="$t('mix.table_service_text')"  />
-					</el-col>
-
-					<el-col :sm="24" class="mb-3" v-if="$p.permissionChecker('adminAgentStatus')">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-						<el-select class="custom-input mt-1 w-100" v-model="postForm.status" :placeholder="$t('msg.msg_select')" filterable>
-							<el-option :label="$t('mix.table_normal')" :value="'normal'">{{$t('mix.table_normal')}}</el-option>
-							<el-option :label="$t('mix.table_suspended')" :value="'suspended'">{{$t('mix.table_suspended')}}</el-option>
-						</el-select>
-					</el-col>
-
-					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
-					</el-col>
-				</el-row>
-			</el-form>
-			
-			<template #footer>
-				<div class="d-flex justify-content-center align-item-center">
-					<el-button class="custom-button success font-8 pt-3 pb-3" @click="editRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
-				</div>
-			</template>
-		</el-dialog>
-		
-		<el-dialog v-model="modalList.passwordRow" :title="$t('menu.management_admin_agent_password')" :before-close="clearPostForm">
-			<el-form label-position="top" label-width="auto" @submit.native.prevent>	
-				<el-row :gutter="20">
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_username')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.username" :placeholder="$t('mix.table_username')" disabled="disabled" />
-					</el-col>
-					
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_password')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.new_password" :placeholder="$t('mix.table_new_password')" />
-					</el-col>
-
-					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
-					</el-col>
-				</el-row>
-			</el-form>
-
-			<template #footer>
-				<div class="d-flex justify-content-center align-item-center">
-					<el-button class="custom-button success font-8 pt-3 pb-3" @click="passwordRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.passwordRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
-				</div>
-			</template>
-        </el-dialog>
 
 		<el-dialog v-model="modalList.securityRow" :title="$t('menu.management_admin_agent_security')" :before-close="clearPostForm">
 			<el-form label-position="top" label-width="auto" @submit.native.prevent>	

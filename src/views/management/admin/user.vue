@@ -44,12 +44,11 @@
 							</template>
 
 							<template v-if="title.prop == 'status'" #default="scope">
-								<el-tag v-if="scope.row.status == 'normal'" type="success">{{$t('mix.table_normal')}}</el-tag>
-								<el-tag v-else type="danger">{{$t('mix.table_suspended')}}</el-tag>
+								<el-switch v-model="scope.row.status" active-value="normal" inactive-value="suspended" @change="statusRow(scope.row)" :disabled="($p.permissionChecker('toolAttributeEdit')) ? false : true"></el-switch>
 							</template>
 							
 							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.master_id)">{{$t('button.edit')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
 							</template>
 						</el-table-column>
@@ -60,7 +59,7 @@
 			</el-card>
 		</div>
 
-		<el-dialog v-model="modalList.addRow" :title="$t('menu.management_admin_agent_add')" :before-close="clearPostForm" class="dialog-md">
+        <el-dialog v-model="modalList.addRow" :title="$t('menu.management_admin_agent_add')" :before-close="clearPostForm" class="dialog-md">
 			<el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
 				<el-row :gutter="20">
 					<el-col :sm="12" class="mb-3">
@@ -97,27 +96,6 @@
 						</template>
 					</el-col>
 
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_payment_method')}}</label>
-						<el-select class="custom-input mt-1 w-100" v-model="postForm.payment_method" :placeholder="$t('menu.management_agent_payment_method')" size="large">
-							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.value">{{list.name}}</el-option>
-						</el-select>
-					</el-col>
-					
-					<el-col :sm="12" class="mt-4">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_is_view_other')}}</label>
-						<div>
-							<el-switch v-model="postForm.is_view_other" active-value="1" inactive-value="0"></el-switch>
-						</div>
-					</el-col>
-					
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_repayment_method')}}</label>
-						<el-select class="custom-input mt-1 w-100" v-model="postForm.repayment_method" :placeholder="$t('menu.management_agent_repayment_method')" size="large">
-							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.value">{{list.name}}</el-option>
-						</el-select>
-					</el-col>
-
 					<el-col :sm="12" class="mt-4">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
 						<div>
@@ -143,83 +121,38 @@
 		<el-dialog v-model="modalList.editRow" :title="$t('menu.management_admin_agent_edit')" :before-close="clearPostForm" class="dialog-md">
 			<el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
 				<el-row :gutter="20">
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_username')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.login" :placeholder="$t('mix.table_username')" />
-					</el-col>
-
-					<el-col :sm="24" class="mb-3">
+					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
 						<el-input class="custom-input mt-1" v-model="postForm.name" :placeholder="$t('mix.table_name')" />
 					</el-col>
 
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_service_text')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.service_text" :placeholder="$t('mix.table_service_text')"  />
-					</el-col>
-
-					<el-col :sm="24" class="mb-3" v-if="$p.permissionChecker('adminAgentStatus')">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-						<el-select class="custom-input mt-1 w-100" v-model="postForm.status" :placeholder="$t('msg.msg_select')" filterable>
-							<el-option :label="$t('mix.table_normal')" :value="'normal'">{{$t('mix.table_normal')}}</el-option>
-							<el-option :label="$t('mix.table_suspended')" :value="'suspended'">{{$t('mix.table_suspended')}}</el-option>
-						</el-select>
-					</el-col>
-
-					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
-					</el-col>
-				</el-row>
-			</el-form>
-			
-			<template #footer>
-				<div class="d-flex justify-content-center align-item-center">
-					<el-button class="custom-button success font-8 pt-3 pb-3" @click="editRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
-				</div>
-			</template>
-		</el-dialog>
-		
-		<el-dialog v-model="modalList.passwordRow" :title="$t('menu.management_admin_agent_password')" :before-close="clearPostForm">
-			<el-form label-position="top" label-width="auto" @submit.native.prevent>	
-				<el-row :gutter="20">
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_username')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.username" :placeholder="$t('mix.table_username')" disabled="disabled" />
+					<el-col :sm="12" class="mb-3">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_account')}}</label>
+						<el-input class="custom-input mt-1" v-model="postForm.agent_id" :placeholder="$t('mix.table_account')" />
 					</el-col>
 					
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_password')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.new_password" :placeholder="$t('mix.table_new_password')" />
+					<el-col :sm="12" class="mb-3">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_password')}}</label>
+						<el-input class="custom-input mt-1" v-model="postForm.password" :placeholder="$t('mix.table_password')"  />
 					</el-col>
 
-					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
+					<el-col :sm="12" class="mb-3">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_password_confirm')}}</label>
+						<el-input class="custom-input mt-1" v-model="postForm.confirm_password" :placeholder="$t('mix.table_new_password_confirm')"  />
 					</el-col>
-				</el-row>
-			</el-form>
 
-			<template #footer>
-				<div class="d-flex justify-content-center align-item-center">
-					<el-button class="custom-button success font-8 pt-3 pb-3" @click="passwordRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.passwordRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
-				</div>
-			</template>
-        </el-dialog>
-
-		<el-dialog v-model="modalList.securityRow" :title="$t('menu.management_admin_agent_security')" :before-close="clearPostForm">
-			<el-form label-position="top" label-width="auto" @submit.native.prevent>	
-				<el-row :gutter="20">
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_username')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.username" :placeholder="$t('mix.table_username')" disabled="disabled" />
-					</el-col>
-					
-					<el-col :sm="24" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_security')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.new_security" :placeholder="$t('mix.table_new_security')" />
+					<el-col :sm="12" class="mb-3">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.package_setting_product')}}</label>
+						<div v-for="(list,index) in productList" :key="index" :label="list.name" :value="list.id">
+							<el-checkbox v-model="checked3" :label="list.name" />
+						</div>
+						
+						<template #footer>
+							<div class="d-flex justify-content-center align-item-center">
+								<el-button class="custom-button success font-8 pt-3 pb-3" @click="permissionRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
+								<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.permissionRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
+							</div>
+						</template>
 					</el-col>
 
 					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
@@ -228,11 +161,11 @@
 					</el-col>
 				</el-row>
 			</el-form>
-
+			
 			<template #footer>
 				<div class="d-flex justify-content-center align-item-center">
-					<el-button class="custom-button success font-8 pt-3 pb-3" @click="securityRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.securityRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
+					<el-button class="custom-button success font-8 pt-3 pb-3" @click="addRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
+					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.addRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
 				</div>
 			</template>
         </el-dialog>
@@ -287,6 +220,8 @@ export default{
 			errors: [],
 			submitForm: {
 				id:'',
+                master_id:'',
+                status:''
 			},
 			postData: {
 				data: '',
@@ -301,6 +236,7 @@ export default{
                 prop:"agent_id",
                 label:this.$t('mix.table_id'),
                 width:'50',
+                align:'left'
 			},{
                 prop:"name",
                 label:this.$t('mix.table_username'),
@@ -321,7 +257,7 @@ export default{
 				align: 'center'
 			},{
                 prop:"last_ip",
-                label:this.$t('mix.table_last_login')+' NT$',
+                label:this.$t('mix.table_last_login'),
                 width:'100',
 				align: 'center'
 			},{
@@ -331,15 +267,11 @@ export default{
 				align: 'center'
 			}],
 			postForm:{
-				sponsor:'',
-				member:'',
-				remark:'',
-				username:'',
 				name:'',
-				manage:[],
-				status:'normal',
-				new_password:'',
-				new_security:''
+                agent_id : '',
+			    password:'',
+			    confirm_password:'',
+			    status: 1
 			},
 			permissionList:[],
 			postPermission:{
@@ -348,7 +280,6 @@ export default{
 			},
 			defaultProps:{
 				id: 'id',
-				children: 'children',
 				label: 'name'
 			},
             defaultRole: '',
@@ -392,24 +323,12 @@ export default{
 				this.loading = false
 			})
 		},clearPostForm(done){
-			this.postForm.sponsor=''
-			this.postForm.login=''
 			this.postForm.name=''
-			this.postForm.username=''
-			this.postForm.service_url=''
-			this.postForm.service_text=''
+            this.postForm.agent_id = ''
 			this.postForm.password=''
-			this.postForm.security=''
-			this.postForm.room_id=''
-			this.postForm.is_live=1
-			this.postForm.manage=[]
-			this.postForm.status='normal'
-			
-			this.postForm.new_password=''
-			this.postForm.new_security=''
-
-			this.postPermission.master_id = ''
-			this.postPermission.permission = []
+			this.postForm.confirm_password=''
+			this.postForm.status= 1
+            this.pageList = []
 			
 			if(done != undefined){
 				done()
@@ -458,10 +377,10 @@ export default{
                     this.preloader(false)
                 })
 			}
-		},statusRow(masterID){
+		},statusRow(currentData){
 			if(this.$p.permissionChecker('userMemberStatus') && this.loading == false){
 				this.loading = true
-				this.$confirm(this.$t('msg.msg_confirmation'), this.$t('msg.prompt'), {
+				if(currentData.status == 'suspended'){this.$confirm(this.$t('msg.msg_suspend_account'), this.$t('msg.suspend'), {
 					confirmButtonText: this.$t('button.yes'),
 					cancelButtonText: this.$t('button.no'),
 					customClass: 'input-dialog',
@@ -470,11 +389,12 @@ export default{
 					inputType: 'password',
 				}).then(({value}) => {
 					this.preloader(true)
-					this.postForm.security = value
-					this.postForm.master_id = masterID
-					this.postData.data = JSON.stringify(this.postForm)
+					this.loading = true
+                    this.submitForm.master_id = currentData.master_id;
+                    this.submitForm.status = currentData.status;
+                    this.postData.data = JSON.stringify(this.submitForm)
 
-					var result = this.$m.postMethod('management/agent/agent/DBstatus',this.postData)
+					var result = this.$m.postMethod('management/admin/user/DBstatus',this.postData)
 
 					result.then((value) => {
 						var data = value.data
@@ -495,8 +415,80 @@ export default{
 				}).catch(() => {
 					this.loading = false          
 				})
+                }else{
+                    this.submitForm.master_id = currentData.master_id;
+                    this.submitForm.status = currentData.status;
+                    this.postData.data = JSON.stringify(this.submitForm)
+                    
+                    var formData = new FormData()
+                    formData.append('data', this.postData.data)
+                    formData.append('language', this.postData.language)
+
+                    var result = this.$m.postMethod('management/admin/user/DBstatus',formData)
+                    result.then((value) => {
+                        var data = value.data
+                        if(value.valid){
+                            this.$message({
+                                message: data.returnMsg,
+                                type: 'success'
+                            });
+                        }else{					
+                            this.$m.popupErrorMessage(data.returnMsg,this)
+                        }
+                        this.clearPostForm()
+                        this.initial()
+                        this.loading = false
+                    });
+                }
 			}
 			
+		},getEditRow(id){
+			if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
+				this.loading = true
+				this.submitForm.master_id = id
+				this.postData.data = JSON.stringify(this.submitForm)
+				var result = this.$m.postMethod('management/admin/user/edit',this.postData)
+				result.then((value) => {
+					var data = value.data
+
+					if(value.valid){
+						this.postForm = data.thisDetail
+						this.postForm.sort = parseInt(data.thisDetail.sort)
+						this.postForm.status = parseInt(data.thisDetail.status)
+						this.postForm.multiple_language = parseInt(data.thisDetail.multiple_language)
+						this.filterList = data.filterList
+						this.modalList.editRow = true
+					}
+					this.loading = false
+				})
+			}
+		},editRow(){
+			if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
+				this.loading = true
+				this.preloader(true)
+				this.postData.data = JSON.stringify(this.postForm)
+				var result = this.$m.postMethod('management/admin/user/DBedit',this.postData)
+
+				result.then((value) => {
+					var data = value.data
+
+					if(value.valid){
+						this.$message({
+							message: data.returnMsg,
+							type: 'success'
+						})
+						
+						this.modalList.editRow = false
+						this.clearPostForm()
+						this.initial()
+					}else{					
+						this.$m.popupErrorMessage(data.returnMsg,this)
+					}
+					
+					this.loading = false
+					this.preloader(false)
+				})
+			}
 		},getPermissionRow(id, login) {
 			if(this.$p.permissionChecker('adminAgentPermission') && this.loading == false){
 				this.loading = true;
@@ -578,7 +570,7 @@ export default{
 			
 			this.initial()
 		},getAgentRow(agent,master) {
-			this.$router.push('/management/admin/agentorder');
+			this.$router.push('/management/admin/agentinfo');
 			// this.$m.setItem('group_id',id)
 			storeTempID.agent_id = agent
 			storeTempID.master_id = master

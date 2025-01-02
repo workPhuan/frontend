@@ -589,7 +589,7 @@ export default{
 			
 			this.initial()
 		},getAgentRow(agent,master) {
-			this.$router.push('/management/admin/agentorder');
+			this.$router.push('/management/admin/agentinfo');
 			// this.$m.setItem('group_id',id)
 			storeTempID.agent_id = agent
 			storeTempID.master_id = master
