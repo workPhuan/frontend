@@ -10,11 +10,45 @@
             <el-card shadow="never">
                 <div>
                     <h5 class="mb-3">{{$t('button.client_info')}}</h5>
-                    <el-descriptions>
-                        <el-descriptions-item :label="$t('mix.table_name')">{{ agentDetail.name }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_icpass')">{{ agentDetail.icpass }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_phone')">{{ agentDetail.phone_mobile }}</el-descriptions-item>
-                    </el-descriptions>
+                    <div class="info-container">
+                        <div class="info">
+                            <div class="tag">
+                                <p>{{$t('mix.table_name')}} :</p>
+                                <p>{{ $t('mix.table_icpass')}} :</p>
+                                <p>{{ $t('mix.table_phone') }} :</p>
+                            </div>
+                            <div class="detail">
+                                <p>{{ accountDetails.icpass }}</p>
+                                <p>{{ accountDetails.name }}</p>
+                                <p>{{ accountDetails.phone_mobile }}</p></div>
+                        </div>
+                        <div class="info-box">
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_loan_time') }}</p>
+                                <p>{{ accountDetails.total_order }}</p>
+                            </div>
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_total_overdue') }}</p>
+                                <p>{{ accountDetails.total_overdue }}</p>
+                            </div>
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_total_loan') }}</p>
+                                <p>{{ accountDetails.total_loan }}</p>
+                            </div>
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_total_repay') }}</p>
+                                <p>{{ accountDetails.total_repay }}</p>
+                            </div>
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_early_repay') }}</p>
+                                <p>0</p>
+                            </div>
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_today_overdue') }}</p>
+                                <p>0</p>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
                 <el-tabs type="border-card" @tab-click="loadTable">
@@ -37,7 +71,7 @@
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentInfo(scope.row.agent_id)">{{$t('mix.table_agent_info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="toAgentPage(scope.row.agent_id)">{{$t('mix.table_agent_info')}}</el-button>
                                     </template>
                                 </el-table-column>
                             </template>
@@ -352,6 +386,7 @@ export default {
 				selectedIds:[],
 			},
             userDetails: [],
+            accountDetails: [],
 			postForm:{},
 			modalList:{},
             userDetails:[],
@@ -366,11 +401,11 @@ export default {
 			this.loading = true
 			this.searchData.master_id = storeTempID.master_id
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/client/info',this.postData)
+			var result = this.$m.postMethod('management/agent/clientinfo',this.postData)
 			result.then((value)=>{
 				var data = value.data
 				if(value.valid){
-                    this.userDetails = data.userDetails
+                    this.accountDetails = data.userDetails
 				}
 				this.initial()
 			})
@@ -479,6 +514,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
+                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -495,6 +531,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
+                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -511,6 +548,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
+                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -527,6 +565,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
+                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)

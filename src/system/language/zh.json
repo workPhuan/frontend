@@ -196,6 +196,7 @@
 		"confirm": 								"确认",
 		"cancel": 								"取消",
 		"info": 								"信息",
+		"blacklist":							"加入黑名單",
 		"order_info":							"訂單詳情",
 		"client_info":							"客戶信息",
 		"add_client":							"添加客戶",
