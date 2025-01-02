@@ -42,7 +42,7 @@
 					</div>
 				</div>
 
-				<el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange">
+				<el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
 					<template #empty v-if="tableData.length=='0'">
 						<img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
 						<div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
@@ -67,7 +67,8 @@
 
 							<template v-if="title.prop == 'action'" #default="scope">
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
-								<el-button v-if="selectedRowId === scope.row.id && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(scope.row.id), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							</template>
+								<el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
+							</template>
 						</el-table-column>
 					</template>
 				</el-table>
@@ -88,7 +89,7 @@
 					
 					<template #footer>
 						<div class="d-flex justify-content-center align-item-center">
-							<el-button class="custom-button success font-8 pt-3 pb-3" @click="assignRow(selectedAgents)" :loading="loading">{{$t('button.assign	')}}</el-button>
+							<el-button class="custom-button success font-8 pt-3 pb-3" @click="assignRow(selectedAgents, selectedRows)" :loading="loading">{{$t('button.assign	')}}</el-button>
 						</div>
 					</template>
 				</el-dialog>
@@ -173,6 +174,16 @@ export default {
 				width: "150",
 				align:'center'
 			},{
+				prop:"total_order",
+				label:this.$t("mix.table_total_order"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"total_overdue",
+				label:this.$t("mix.table_total_overdue"),
+				width: "100",
+				align:'center'
+			},{
 				prop:"action",
 				label:this.$t("mix.table_action"),
 				width: "270",
@@ -195,15 +206,10 @@ export default {
 				status: 1,
 				security: "",
 				code: "",
-				domain_url: '',
 				master_id: '',
-				img_url: '',
-				username: '',
-				account_package_id: '',
-				selectedIds: [],
 				selectedRowId: [],
 				selectedAgents: [],
-				name: []
+				selectedRows: [],
 			},
 			languageList:JSON.parse(this.$m.getItem('languageList')),
 			defaultProps:{
@@ -217,6 +223,7 @@ export default {
 			selectedAgents: [],
 			selectedIds: [],
 			selectedRowId: [],
+			selectedRows: [],
 			securityCheck: 0,
 			imagePickerFile:'',
 			imagePickerFileUrl:'',
@@ -253,7 +260,6 @@ export default {
 			});
 		},setTempID(id) {
 			storeTempID.value = id;  
-			console.log(storeTempID.value);
 			this.$router.push('/package/order/detail');  
 		},
 		clearPostForm(done){
@@ -270,9 +276,10 @@ export default {
 			if(done != undefined){
 				done()
 			}
-		},getAssignRow(){
+		},getAssignRow(selectedRows){
 			if(this.$p.permissionChecker('userChatLogAdd') && this.loading == false){
 				this.loading = true
+				this.postForm.selectedRows = selectedRows;
 				this.postData.data = JSON.stringify(this.postForm)
 				var result = this.$m.postMethod('package/order/assign/assign',this.postData)
 				result.then((value)=>{
@@ -285,14 +292,14 @@ export default {
 					}
 				})
 			}
-        },assignRow(selectedAgents) {
+        },assignRow(selectedAgents,selectedRows) {
 			if(this.$p.permissionChecker('userChatGroupAdd') && this.loading == false){
 				this.preloader(true)
 				this.loading = true
 				this.postForm.selectedAgents = selectedAgents;
+				this.postForm.selectedRows = selectedRows;
 
 				this.postData.data = JSON.stringify(this.postForm)
-				console.log(this.postData.data);
 				var formData = new FormData()
 				formData.append('file',this.imagePickerFile)
 				formData.append('data',JSON.stringify(this.postForm))
@@ -397,7 +404,9 @@ export default {
 			
 			this.initial()
 		},handleSelectionChange(selectedRows) {
-		this.selectedRowId = selectedRows.length > 0 ? selectedRows[0].id : null;
+			this.selectedRows = selectedRows;
+			this.selectedRowId = selectedRows.length === 1 ? [selectedRows[0].id] : selectedRows.map(row => row.id);
+
 		},
 	},created(){
         this.postData.language = this.$m.getItem('currentLang')??'en'

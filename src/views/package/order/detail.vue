@@ -20,7 +20,7 @@
                         <el-descriptions-item :label="$t('mix.table_period')">{{ orderDetail.period }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_agent')">{{ orderDetail.name }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ orderDetail.loan_amount }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_payment_period')"></el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_payment_period')">{{ orderDetail.payment_period }}</el-descriptions-item>
                     </el-descriptions>
                      </div>
                 <el-tabs type="border-card">
@@ -37,8 +37,6 @@
                         
                     </el-tab-pane>
                 </el-tabs>
-
-				<pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
 			</el-card>
 		</div>
 
@@ -127,15 +125,64 @@
 
         <div v-if="modalList.contactAjaxTable" class="page-body p-3">
             <el-card shadow="never">
+                <el-text class="mx-1">{{$t('mix.table_emergency_contacts')}}</el-text>
+                <el-table :data="contactTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
+                    <template #empty v-if="callTableData.length=='0'">
+                        <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                        <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                        <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                    </template>
+                    
+                    <template v-for="title in ajaxContactTitles" :key="title.prop">
+                        <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
+                            <template #header>
+                                <p class="search-label">{{title.label}}</p>
+                            </template>
+
+
+                            <!-- <template v-if="title.prop == 'code'" #default="scope">
+                                <el-link type="primary" @click="setTempID(scope.row.id)">{{ scope.row.code }}</el-link>
+                                <el-tooltip content="Copy" placement="top">
+                                    <el-icon class="ml-3 clickable-icon" @click="copy($m.getItem('system_id')), $m.copyMessage($t('msg.msg_copy_success'))"></el-icon>
+                                </el-tooltip>
+                            </template> -->
+
+
+                            <template v-if="title.prop == 'action'" #default="scope">
+                                <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
+                                <el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
+                            </template>
+                        </el-table-column>
+                    </template>
+                </el-table>
+            </el-card>
+        </div>
+
+        <div v-if="modalList.callAjaxTable" class="page-body p-3">
+            <el-card shadow="never">
                 
-                <el-descriptions>
-                    <el-descriptions-item :label="$t('mix.table_company_name')">{{ clientDetail.company_name }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_company_address')">{{ clientDetail.company_address }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ clientDetail.company_phone_mobile }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_position')">{{ clientProfile.position }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_experience')">{{ clientDetail.experience }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_salary')">{{ clientProfile.salary }}</el-descriptions-item>
-                </el-descriptions>
+                <el-table :data="callTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
+					<template #empty v-if="callTableData.length=='0'">
+						<img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+						<div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+						<div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+					</template>
+					
+					<template v-for="title in ajaxCallTitles" :key="title.prop">
+						<el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
+							<template #header>
+								<p class="search-label">{{title.label}}</p>
+							</template>
+
+							<template v-if="title.prop == 'action'" #default="scope">
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
+								<el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
+							</template>
+						</el-table-column>
+					</template>
+				</el-table>
+                <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+
             </el-card>
         </div>
 
@@ -194,7 +241,11 @@ export default {
 	data() {
 		return {
 			loading: true,
-			tableData: [],
+            tableData: [],
+            contactTableData: [],
+            callTableData: [],
+
+
 			total: 0,
 			errors: [],
 			submitForm: {
@@ -249,6 +300,43 @@ export default {
 				label:this.$t("mix.table_action"),
 				width: "270",
 				align:'right'
+			}],
+            ajaxCallTitles: [{
+				prop:"name",
+				label:this.$t("mix.table_name"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"phone_mobile",
+				label:this.$t("mix.table_phone_mobile"),
+				width: "150",
+				align:'center'
+			},{
+				prop:"start_at",
+				label:this.$t("mix.table_start_at"),
+				width: "150",
+				align:'center'
+			},{
+				prop:"duration",
+				label:this.$t("mix.table_duration"),
+				width: "100",
+                align:'center'
+			}],
+            ajaxContactTitles: [{
+				prop:"name",
+				label:this.$t("mix.table_name"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"phone_mobile",
+				label:this.$t("mix.table_phone_mobile"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"relation",
+				label:this.$t("mix.table_relation"),
+				width: "100",
+				align:'center'
 			}],
 			ajaxSearch: [{
 				prop:"name",
@@ -341,6 +429,7 @@ export default {
                 jobAjaxTable: false,
                 bankAjaxTable: false,
                 contactAjaxTable: false,
+                callAjaxTable: false,
                 newsAjaxTable: false,
                 locationAjaxTable: false,
             };
@@ -351,45 +440,178 @@ export default {
             if (tab === 'basic') {
                 table = 'package/order/detail/basicAjaxTable';
                 this.modalList.basicAjaxTable = true;
+                this.basicData()
 
             } else if (tab === 'job') {
                 table = 'package/order/detail/jobAjaxTable';
                 this.modalList.jobAjaxTable = true;
+                this.jobData()
 
             } else if (tab === 'bank') {
                 table = 'package/order/detail/bankAjaxTable';
                 this.modalList.bankAjaxTable = true;
-                
+                this.bankData()
+
             } else if (tab === 'contact') {
-                table = 'package/order/detail/contactAjaxTable';
                 this.modalList.contactAjaxTable = true;
+                this.contactData()
+                this.callData()
 
             } else if (tab === 'news') {
                 table = 'package/order/detail/newsAjaxTable';
                 this.modalList.newsAjaxTable = true;
+                this.newsData()
 
             } else if (tab === 'location') {
                 table = 'package/order/detail/locationAjaxTable';
                 this.modalList.locationAjaxTable = true;
+                this.locationData()
 
             } else {
                 this.loading = false;
                 return;
             }
 
-            this.$m.postMethod(table, this.postData)
-                .then((value) => {
-                    var data = value.data;
+            // this.$m.postMethod(table, this.postData)
+            //     .then((value) => {
+            //         var data = value.data;
 
-                    if (value.valid) {
-                        this.clientProfile = data.clientProfile;
-                        this.clientDetail = data.clientDetail;
+            //         if (value.valid) {
+            //             this.clientProfile = data.clientProfile;
+            //             this.clientDetail = data.clientDetail;
+            //             // this.tableData1 = data.datatable.data
+            //             // this.tableData2 = data.datatable.data
                         
-                    }
-                    this.loading = false;
+            //         }
+            //         this.loading = false;
 
-                })
-        },returnToPage(){
+            //     })
+        },basicData(){
+			this.loading = true
+
+			this.postData.data = JSON.stringify(this.searchData)
+
+			var result = this.$m.postMethod('package/order/detail/basicAjaxTable',this.postData)
+			result.then((value) => {
+				var data = value.data
+				
+                if (value.valid) {
+                    this.clientProfile = data.clientProfile;
+                    this.clientDetail = data.clientDetail;
+                    this.modalList.basicAjaxTable = true
+
+                }
+                this.loading = false;
+		})
+		},jobData(){
+            this.loading = true
+
+            this.postData.data = JSON.stringify(this.searchData)
+
+            var result = this.$m.postMethod('package/order/detail/jobAjaxTable',this.postData)
+            result.then((value) => {
+                var data = value.data
+                
+                if (value.valid) {
+                    this.clientDetail = data.clientDetail;
+                    this.modalList.jobAjaxTable = true
+
+                }
+                this.loading = false;
+            })
+		},bankData(){
+            this.loading = true
+
+            this.postData.data = JSON.stringify(this.searchData)
+
+            var result = this.$m.postMethod('package/order/detail/bankAjaxTable',this.postData)
+            result.then((value) => {
+                var data = value.data
+                
+                if (value.valid) {
+                    this.clientDetail = data.clientDetail;
+                    this.modalList.bankAjaxTable = true
+
+                }
+                this.loading = false;
+            })
+		},contactData(){
+            this.loading = true
+
+            this.postData.data = JSON.stringify(this.searchData)
+
+            var result = this.$m.postMethod('package/order/detail/contactAjaxTable',this.postData)
+            result.then((value) => {
+                var data = value.data
+                
+                if (value.valid) {
+                    this.contactTableData = data.datatable.data
+                    this.total = parseInt(data.datatable.total_number)
+                    this.listQuery.page = parseInt(data.datatable.current_pagination)
+                    this.listQuery.limit = parseInt(data.datatable.limit)
+                    this.modalList.contactAjaxTable = true
+
+                    this.loading = false
+                }
+                this.loading = false;
+            })
+
+		},callData(){
+            this.loading = true
+
+            this.postData.data = JSON.stringify(this.searchData)
+            
+            var result = this.$m.postMethod('package/order/detail/callAjaxTable',this.postData)
+            result.then((value) => {
+                var data = value.data
+                
+                if (value.valid) {
+                    this.callTableData = data.datatable.data
+                    this.total = parseInt(data.datatable.total_number)
+                    this.listQuery.page = parseInt(data.datatable.current_pagination)
+                    this.listQuery.limit = parseInt(data.datatable.limit)
+                    this.modalList.callAjaxTable = true
+
+                    this.loading = false
+                }
+                this.loading = false;
+            })
+
+		},newsData(){
+            this.loading = true
+
+            this.postData.data = JSON.stringify(this.searchData)
+
+            var result = this.$m.postMethod('package/order/detail/newsAjaxTable',this.postData)
+            result.then((value) => {
+                var data = value.data
+                
+                if (value.valid) {
+                    this.clientProfile = data.clientProfile;
+                    this.clientDetail = data.clientDetail;
+                    this.modalList.newsAjaxTable = true
+
+                }
+                this.loading = false;
+            })
+		},locationData(){
+            this.loading = true
+
+            this.postData.data = JSON.stringify(this.searchData)
+
+            var result = this.$m.postMethod('package/order/detail/locationAjaxTable',this.postData)
+            result.then((value) => {
+                var data = value.data
+                
+                if (value.valid) {
+                    this.clientProfile = data.clientProfile;
+                    this.clientDetail = data.clientDetail;
+                    this.modalList.locationAjaxTable = true
+
+                }
+                this.loading = false;
+            })
+		},returnToPage(){
 			this.$router.push('/package/order/summary');
 		},
 		clearPostForm(done){
