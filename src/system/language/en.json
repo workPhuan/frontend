@@ -178,9 +178,11 @@
 		"msg_export_fail":    		        	"Export in progress, please try later",
 		"msg_import_1":       					"Please select the file to be imported",
   		"msg_import_2":       					"Imported files only accept xlsx format",
-		"msg_status_off_desc_1": 				"停用将使所有代理无法使用该产品。",
-		"msg_status_off_desc_2": 				"请再次确认是否要停用该产品,停用 仅限于之后订单,先前已申请的订单 则不受影响。",
-		"stop_using": 							"停用"
+		"msg_status_off_desc_1": 				"Deactivation will make all agents unable to use the product.",
+		"msg_status_off_desc_2": 				"Please confirm again whether you want to deactivate the product. Deactivation is only limited to future orders, and previously applied orders will not be affected.",
+		"stop_using": 							"Deactivate product",
+		"join_blacklist":						"Join Blacklist",
+		"msg_join_blacklist_desc":				"After this customer is added to the blacklist, he will not be able to apply for a loan. Please confirm again whether you want to join. After joining, it will only apply to future orders, and previously applied orders will not be affected."
 	},"button":{
 		"login":								"Log In",
 		"logout":								"Log Out",
