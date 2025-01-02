@@ -11,7 +11,7 @@
                 <div>
                     <h5 class="mb-3">{{$t('mix.table_agent_info')}}</h5>
                     <el-descriptions>
-                        <el-descriptions-item :label="$t('mix.table_account')">{{ agentDetail.name }}    <el-button type="info" size="small"  @click="resetPasswordRow(agentDetail.master_id),modalList.editRow = true" >{{$t('general.forgetpasswordchange')}}</el-button></el-descriptions-item> 
+                        <el-descriptions-item :label="$t('mix.table_account')">{{ agentDetail.name }}    <el-button type="info" size="small"  @click="getResetPasswordRow(agentDetail.master_id),modalList.editRow = true" >{{$t('general.forgetpasswordchange')}}</el-button></el-descriptions-item> 
                         <el-descriptions-item :label="$t('mix.table_total_order')">{{ agentDetail.total_order }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_total_loan')">{{ agentDetail.total_loan }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_name')">{{ agentDetail.login }}</el-descriptions-item>
@@ -86,29 +86,36 @@
 
                     <el-tab-pane key="system" :label="$t('menu.app')">
                         <div class="page-toolbar">
-                            <el-button class="custom-button plain" @click="getAddRow()" :loading="loading" v-if="$p.permissionChecker('adminAdminAdd')">{{$t('menu.management_admin_admin_add')}}</el-button>
+                            <el-button class="custom-button plain" @click="getAddRow()" :loading="loading" v-if="$p.permissionChecker('adminAdminAdd')">{{$t('menu.management_product_item_add')}}</el-button>
                         </div>
                         
                         <div class="page-body p-3">
-                            <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+                            <el-table :data="tableData2" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
                                 <template #empty v-if="tableData.length=='0'">
                                     <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
                                     <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
                                     <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
                                 </template>
                                 
-                            <template v-for="title in ajaxTitles2" :key="title.prop">
+                                <template v-for="title in ajaxTitles" :key="title.prop">
                                     <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
                                         <template #header>
-                                            <p class="search-label">{{title.label}}</p>
+                                            <div class="d-flex">
+                                                <p class="search-label">{{title.label}}</p>
+                                                <el-tooltip>
+                                                    <template #content>
+                                                        <div v-html="amountHoverDesc"></div>
+                                                    </template>
+                                                    <i style="margin-left: 5px;" v-if="title.prop === 'amount'" class="far fa-exclamation-circle"></i>
+                                                </el-tooltip>
+                                            </div>
                                         </template>
-
                                         <template v-if="title.prop == 'status'" #default="scope">
-                                            <!-- <el-switch v-model="scope.row.status" active-value="1" inactive-value="0" @change="statusRow(scope.row)"></el-switch> -->
+                                            <el-switch v-model="scope.row.status" active-value="1" inactive-value="0" :disabled="scope.row.is_edit === false"  @change="statusRow(scope.row.id,scope.row.status)"></el-switch>
                                         </template>
 
                                         <template v-if="title.prop == 'action'" #default="scope">
-                                            <el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.master_id)">{{$t('menu.management_admin_admin_edit')}}</el-button>
+                                            <el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary" @click="getEditRow(scope.row.id)">{{$t('menu.management_product_item_edit')}}</el-button>
                                         </template>
                                     </el-table-column>
                                 </template>
@@ -116,65 +123,6 @@
 
                             <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
                         </div>
-
-                        <el-dialog v-model="modalList.addRow" :title="$t('menu.management_admin_admin_add')" :before-close="clearPostForm" class="dialog-md">
-                            <el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
-                                <el-row :gutter="20">
-                                    <el-col :sm="24" class="mt-4">
-                                        <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_code')}}</label>
-                                        <el-input v-model="postForm.code" :placeholder="$t('mix.table_code')" />
-                                    </el-col>
-                                    <el-col :sm="12" class="mt-4">
-                                        <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_loan_period')}}</label>
-                                        <el-input-number class="w-100" v-model="postForm.period" :step="1" :min="0"/>
-                                    </el-col>
-                                    <el-col :sm="12" class="mt-4">
-                                        <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-                                        <div>
-                                            <el-switch v-model="postForm.status" :active-value="1" :inactive-value="0" :loading="loading"></el-switch>
-                                        </div>
-                                    </el-col>
-                                </el-row>
-                                <el-row :gutter="20" class="mt-4">
-                                    <el-col :sm="24" :md="12" class="mb-3" v-for="item in postForm.attribute_list" :key="item.id">
-                                        <label class="text-theme font-8 fw-bold"><span class="text-danger"> * </span>{{ item.name }}</label>
-                                        <el-input-number class="w-100" v-model="item.value" :step="1" :min="0"/>
-                                    </el-col>
-                                </el-row>
-                                <el-row :gutter="20">
-                                    <el-col :sm="12" class="mt-2">
-                                        <el-checkbox v-model="postForm.is_all_agent">{{$t('mix.table_is_all_agent')}}</el-checkbox>
-                                    </el-col>
-                                    <el-col :sm="12" class="mt-2">
-                                        <el-checkbox v-model="postForm.is_eligible">{{$t('mix.table_is_eligible')}}</el-checkbox>
-                                    </el-col>
-                                </el-row>
-                                <el-row :gutter="20">
-                                    <el-col :xs="24" :sm="24">
-                                        <template v-if="postForm.multiple_language === 0">
-                                            <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
-                                            <el-input class="custom-input mt-1" v-model="postForm.single_name" :placeholder="$t('mix.table_name')" />
-                                        </template>
-                                        
-                                        <template v-else>
-                                            <el-tabs type="border-card" class="mt-3 mb-4">
-                                                <el-tab-pane v-for="item in languageList" :key="item.id" :item="item" :label="item.name">
-                                                    <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_name')}}</label>
-                                                    <el-input class="custom-input mt-1" v-model="postForm.name[item.id]" :placeholder="$t('mix.table_name')" />
-                                                </el-tab-pane>
-                                            </el-tabs>
-                                        </template>
-                                    </el-col>
-                                </el-row>
-                            </el-form>
-                            
-                            <template #footer>
-                                <div class="d-flex justify-content-center align-item-center">
-                                    <el-button class="custom-button success font-8 pt-3 pb-3" @click="addRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-                                    <el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.addRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
-                                </div>
-                            </template>
-                        </el-dialog>
                     </el-tab-pane>
 
                     <el-tab-pane key="expense" :label="$t('menu.agent_expense')">
@@ -223,7 +171,7 @@
 			
 			<template #footer>
 				<div class="d-flex justify-content-center align-item-center">
-					<el-button class="custom-button success font-8 pt-3 pb-3" @click="editRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
+					<el-button class="custom-button success font-8 pt-3 pb-3" @click="resetPasswordRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
 					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
 				</div>
 			</template>
@@ -301,7 +249,7 @@ export default {
 				align: 'center'
 			}],
 			ajaxTitles1:[{
-                prop:"login",
+                prop:"name",
                 label:this.$t('mix.table_name'),
                 width:'120',
 			},{
@@ -438,7 +386,7 @@ export default {
 			if(done != undefined){
 				done()
 			}
-		},resetPasswordRow(id) {
+		},getResetPasswordRow(id) {
 			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
 				this.loading = true;
 				this.submitForm.master_id = id
@@ -454,7 +402,7 @@ export default {
 					this.loading = false
 				});
 			}
-		},editRow() {
+		},resetPasswordRow() {
 			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
 				this.loading = true
 				this.preloader(true)
@@ -483,22 +431,23 @@ export default {
 			}
 		},loadTable(tab){
             this.loading = true
-			this.postData.data = JSON.stringify(this.searchData)
             this.searchData.agent_id = storeTempID.agent_id
             this.searchData.master_id = storeTempID.master_id
-            let table;
-            let data;
+			this.postData.data = JSON.stringify(this.searchData)    
             if(tab.index == 0){
-                table = 'management/agent/agentinfo/ajaxTableOrder';
+                this.ajaxTableOrder(this.postData.data)
             }else if(tab.index == 1){
-                table = 'management/agent/agentinfo/ajaxTableClient';
+                this.ajaxTableClient(this.postData.data)
             }else if(tab.index == 2){
-                table = 'management/agent/agentinfo/ajaxTableSetting';
+                this.ajaxTableSetting(this.postData.data)
             }else if(tab.index == 3){
-                table = 'management/agent/agentinfo/ajaxTableExpense';
+                this.ajaxTableExpense(this.postData.data)
             }
-            var result = this.$m.postMethod(table,this.postData)
-            
+        },ajaxTableOrder(data){
+            this.loading = true
+			this.searchData.agent_id = storeTempID.agent_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/agent/agentinfo/ajaxTableOrder',this.postData)
 			result.then((value) => {
 				var data = value.data
 
@@ -510,11 +459,82 @@ export default {
 				}
 				this.loading = false
 			})
-        },ajaxTableOrder(){
+        },ajaxTableClient(data){
+            this.loading = true
+			this.searchData.agent_id = storeTempID.agent_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/agent/agentinfo/ajaxTableClient',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },ajaxTableSetting(data){
+            this.loading = true
+			
+			this.postData.data = JSON.stringify(this.searchData)
+			var result = this.$m.postMethod('package/product/item/ajaxTable',this.postData)
+			result.then((value) => {
+				var data = value.data
+
+				if(value.valid){
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+
+					this.ajaxTitles2 = [{
+						prop: "name",
+						label: this.$t('mix.table_name'),
+						width:'150',
+						align:'center',
+					},{
+						prop:"period",
+						label:this.$t('mix.table_period'),
+						width:'100',
+						align:'center',
+					},{
+						prop:"amount",
+						label:this.$t('mix.table_amount'),
+						width:'150',
+						align:'center',
+					}]
+					data.attributeList.forEach((element) => {
+						this.tempTitle = {}
+						this.tempTitle.prop = element.name
+						this.tempTitle.label = element.name
+						this.tempTitle.width = 100
+						this.tempTitle.align = 'center'
+						this.ajaxTitles.push(this.tempTitle)
+					
+					})
+					this.tempTitle = {}
+					this.tempTitle.prop = "status",
+					this.tempTitle.label = this.$t('mix.table_status'),
+					this.tempTitle.width = 100
+					this.tempTitle.align = 'center'
+					this.ajaxTitles.push(this.tempTitle)
+
+					this.tempTitle = {}
+					this.tempTitle.prop = "action",
+					this.tempTitle.label = this.$t('mix.table_action'),
+					this.tempTitle.width = 100
+					this.tempTitle.align = 'center'
+					this.ajaxTitles.push(this.tempTitle)
+				}
+				this.loading = false
+			})
+        },ajaxTableExpense(data){
             this.loading = true
 			this.searchData.agent_id = storeTempID.agent_id
 			this.postData.data = JSON.stringify(this.searchData)
-			var result = this.$m.postMethod('management/agent/agentinfo/ajaxTableOrder',this.postData)
+			var result = this.$m.postMethod('management/agent/agentinfo/ajaxTableExpense',this.postData)
 			result.then((value) => {
 				var data = value.data
 

@@ -49,7 +49,7 @@
 							
 							<template v-if="title.prop == 'action'" #default="scope">
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.master_id)">{{$t('button.edit')}}</el-button>
-								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button danger m-1" @click="getResetPasswordRow(scope.row.master_id)">{{$t('general.forgetpasswordchange')}}</el-button>
 							</template>
 						</el-table-column>
 					</template>
@@ -130,19 +130,9 @@
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_account')}}</label>
 						<el-input class="custom-input mt-1" v-model="postForm.agent_id" :placeholder="$t('mix.table_account')" />
 					</el-col>
-					
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_password')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.password" :placeholder="$t('mix.table_password')"  />
-					</el-col>
 
 					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_password_confirm')}}</label>
-						<el-input class="custom-input mt-1" v-model="postForm.confirm_password" :placeholder="$t('mix.table_new_password_confirm')"  />
-					</el-col>
-
-					<el-col :sm="12" class="mb-3">
-						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.package_setting_product')}}</label>
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_page_permission')}}</label>
 						<div v-for="(list,index) in productList" :key="index" :label="list.name" :value="list.id">
 							<el-checkbox v-model="checked3" :label="list.name" />
 						</div>
@@ -164,8 +154,8 @@
 			
 			<template #footer>
 				<div class="d-flex justify-content-center align-item-center">
-					<el-button class="custom-button success font-8 pt-3 pb-3" @click="addRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.addRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
+					<el-button class="custom-button success font-8 pt-3 pb-3" @click="editRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
+					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
 				</div>
 			</template>
         </el-dialog>
@@ -191,6 +181,34 @@
 				<div class="d-flex justify-content-center align-item-center">
 					<el-button class="custom-button success font-8 pt-3 pb-3" @click="permissionRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
 					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.permissionRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
+				</div>
+			</template>
+		</el-dialog>
+
+        <el-dialog v-model="modalList.resetRow" :title="$t('general.forgetpasswordchange')" :before-close="clearPostForm">
+			<el-form label-position="top" label-width="auto" @submit.native.prevent>
+				<el-row :gutter="20">
+					<el-col :sm="12" class="mb-3">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_password')}}</label>
+						<el-input class="custom-input mt-1" v-model="postForm.password"  :placeholder="$t('mix.table_new_password')" />
+					</el-col>
+					<el-col :sm="12" class="mb-3">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_new_password_confirm')}}</label>
+						<el-input class="custom-input mt-1" v-model="postForm.confirm_password"  :placeholder="$t('mix.table_new_password_confirm')" />
+					</el-col>
+					
+
+					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_security')}}</label>
+						<el-input class="custom-input mt-1" v-model="postForm.security" show-password :placeholder="$t('mix.table_security')" />
+					</el-col>
+				</el-row>
+			</el-form>
+			
+			<template #footer>
+				<div class="d-flex justify-content-center align-item-center">
+					<el-button class="custom-button success font-8 pt-3 pb-3" @click="resetPasswordRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
+					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
 				</div>
 			</template>
 		</el-dialog>
@@ -269,6 +287,7 @@ export default{
 			postForm:{
 				name:'',
                 agent_id : '',
+                master_id : '',
 			    password:'',
 			    confirm_password:'',
 			    status: 1
@@ -337,7 +356,7 @@ export default{
 			if(this.$p.permissionChecker('userChatRoleEdit') && this.loading == false){
 				this.loading = true
 				this.postData.data = JSON.stringify(this.postForm)
-				var result = this.$m.postMethod('management/agent/agent/add',this.postData)
+				var result = this.$m.postMethod('management/admin/user/add',this.postData)
 				result.then((value)=>{
 					var data = value.data
 
@@ -355,7 +374,7 @@ export default{
                 
                 this.postData.data = JSON.stringify(this.postForm)
 
-                var result = this.$m.postMethod('management/agent/agent/DBadd',this.postData)
+                var result = this.$m.postMethod('management/admin/user/DBadd',this.postData)
 
                 result.then((value) => {
                     var data = value.data
@@ -380,7 +399,7 @@ export default{
 		},statusRow(currentData){
 			if(this.$p.permissionChecker('userMemberStatus') && this.loading == false){
 				this.loading = true
-				if(currentData.status == 'suspended'){this.$confirm(this.$t('msg.msg_suspend_account'), this.$t('msg.suspend'), {
+				if(currentData.status == 'suspended'){this.$confirm(this.$t('msg.msg_suspend_confirm'), this.$t('msg.suspend'), {
 					confirmButtonText: this.$t('button.yes'),
 					cancelButtonText: this.$t('button.no'),
 					customClass: 'input-dialog',
@@ -452,11 +471,11 @@ export default{
 					var data = value.data
 
 					if(value.valid){
+                        this.productList = data.productList
 						this.postForm = data.thisDetail
 						this.postForm.sort = parseInt(data.thisDetail.sort)
 						this.postForm.status = parseInt(data.thisDetail.status)
 						this.postForm.multiple_language = parseInt(data.thisDetail.multiple_language)
-						this.filterList = data.filterList
 						this.modalList.editRow = true
 					}
 					this.loading = false
@@ -488,6 +507,49 @@ export default{
 					this.loading = false
 					this.preloader(false)
 				})
+			}
+		},getResetPasswordRow(id) {
+			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
+				this.loading = true;
+				this.submitForm.master_id = id
+				this.postData.data = JSON.stringify(this.submitForm);
+				var result = this.$m.postMethod("management/admin/user/resetPassword", this.postData);
+				result.then((value) => {
+					var data = value.data;
+
+					if (value.valid) {
+						
+						this.modalList.resetRow = true
+					}
+					this.loading = false
+				});
+			}
+		},resetPasswordRow() {
+			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
+				this.loading = true
+				this.preloader(true)
+                this.postData.data = JSON.stringify(this.postForm)
+				var result = this.$m.postMethod("management/admin/user/DBresetPassword",this.postData)
+
+				result.then((value) => {
+					var data = value.data
+
+					if (value.valid) {
+						this.$message({
+							message: data.returnMsg,
+							type: "success"
+						});
+						
+						this.modalList.resetRow = false
+						this.clearPostForm()
+						this.initial()
+					} else {
+						this.$m.popupErrorMessage(data.returnMsg,this)
+					}
+
+					this.loading = false
+					this.preloader(false)
+				});
 			}
 		},getPermissionRow(id, login) {
 			if(this.$p.permissionChecker('adminAgentPermission') && this.loading == false){
@@ -571,7 +633,6 @@ export default{
 			this.initial()
 		},getAgentRow(agent,master) {
 			this.$router.push('/management/admin/agentinfo');
-			// this.$m.setItem('group_id',id)
 			storeTempID.agent_id = agent
 			storeTempID.master_id = master
 		}
