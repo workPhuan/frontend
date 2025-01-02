@@ -177,7 +177,10 @@
 		"msg_token_invalid":					"Invalid account session token, please login again",
 		"msg_export_fail":    		        	"Export in progress, please try later",
 		"msg_import_1":       					"Please select the file to be imported",
-  		"msg_import_2":       					"Imported files only accept xlsx format"
+  		"msg_import_2":       					"Imported files only accept xlsx format",
+		"msg_status_off_desc_1": 				"停用将使所有代理无法使用该产品。",
+		"msg_status_off_desc_2": 				"请再次确认是否要停用该产品,停用 仅限于之后订单,先前已申请的订单 则不受影响。",
+		"stop_using": 							"停用"
 	},"button":{
 		"login":								"Log In",
 		"logout":								"Log Out",
@@ -768,7 +771,9 @@
 		"site_content_carousel_edit":			"Edit Carousel",
 		"site_content_carousel_delete":			"Delete Carousel",
 		"product_management":					"Product Management",
-		"product_item_list":					"Product Item List"
+		"product_item_list":					"Product Item List",
+		"management_product_item_add":			"Add Product",
+		"management_product_item_edit":			"Edit Product"
 	},"login":{
 		"table_signin":                         "Sign In",
 		"table_welcome_back":                   "{appname} management platform",

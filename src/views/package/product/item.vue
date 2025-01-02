@@ -5,13 +5,13 @@
 				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{$t('menu.management_admin_admin')}}
 			</label>
 			<div class="page-toolbar">
-				<el-button class="custom-button plain" @click="getAddRow()" :loading="loading" v-if="$p.permissionChecker('adminAdminAdd')">{{$t('menu.management_admin_admin_add')}}</el-button>
+				<el-button class="custom-button plain" @click="getAddRow()" :loading="loading" v-if="$p.permissionChecker('adminAdminAdd')">{{$t('menu.management_product_item_add')}}</el-button>
 			</div>
 		</div>
 		
 		<div class="page-body p-3">
 			<el-card shadow="never">
-				<div class="page-filter">
+				<!-- <div class="page-filter">
 					<legend>{{$t('mix.table_filter')}}</legend>
 					<div class="p-3 d-flex flex-wrap">
 						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.login" :placeholder="$t('mix.table_please_enter')+$t('mix.table_username')" @keyup.enter.native="initial()">
@@ -35,7 +35,7 @@
 						
 						<el-button class="custom-button plain m-2 h-r-2-5 pe-4 ps-4" @click="initial()" :loading="loading"><i class="fa-light fa-search me-2"></i>{{$t('button.search')}}</el-button>
 					</div>
-				</div>
+				</div> -->
 
 				<el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
 					<template #empty v-if="tableData.length=='0'">
@@ -58,11 +58,11 @@
 								</div>
 							</template>
 							<template v-if="title.prop == 'status'" #default="scope">
-								<el-switch v-model="scope.row.status" active-value="1" inactive-value="0" @change="statusRow(scope.row.id,scope.row.status)"></el-switch>
+								<el-switch v-model="scope.row.status" active-value="1" inactive-value="0" :disabled="scope.row.is_edit === false"  @change="statusRow(scope.row.id,scope.row.status)"></el-switch>
 							</template>
 
 							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('menu.management_admin_admin_edit')}}</el-button>
+								<el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary" @click="getEditRow(scope.row.id)">{{$t('menu.management_product_item_edit')}}</el-button>
 							</template>
 						</el-table-column>
 					</template>
@@ -72,9 +72,17 @@
 			</el-card>
 		</div>
 
-		<el-dialog v-model="modalList.addRow" :title="$t('menu.management_admin_admin_add')" :before-close="clearPostForm" class="dialog-md">
+		<el-dialog v-model="modalList.addRow" :title="$t('menu.management_product_item_add')" :before-close="clearPostForm" class="dialog-md">
 			<el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
 				<el-row :gutter="20">
+					<el-row :gutter="20">
+						<el-col :sm="12" class="mt-2">
+							<el-checkbox v-model="postForm.is_all_agent">{{$t('mix.table_is_all_agent')}}</el-checkbox>
+						</el-col>
+						<el-col :sm="12" class="mt-2">
+							<el-checkbox v-model="postForm.is_eligible">{{$t('mix.table_is_eligible')}}</el-checkbox>
+						</el-col>
+					</el-row>
 					<el-col :sm="24" class="mt-4">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_code')}}</label>
 						<el-input v-model="postForm.code" :placeholder="$t('mix.table_code')" />
@@ -94,14 +102,6 @@
 					<el-col :sm="24" :md="12" class="mb-3" v-for="item in postForm.attribute_list" :key="item.id">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger"> * </span>{{ item.name }}</label>
 						<el-input-number class="w-100" v-model="item.value" :step="1" :min="0"/>
-					</el-col>
-				</el-row>
-				<el-row :gutter="20">
-					<el-col :sm="12" class="mt-2">
-						<el-checkbox v-model="postForm.is_all_agent">{{$t('mix.table_is_all_agent')}}</el-checkbox>
-					</el-col>
-					<el-col :sm="12" class="mt-2">
-						<el-checkbox v-model="postForm.is_eligible">{{$t('mix.table_is_eligible')}}</el-checkbox>
 					</el-col>
 				</el-row>
 				<el-row :gutter="20">
@@ -131,8 +131,16 @@
 			</template>
 		</el-dialog>
 
-		<el-dialog v-model="modalList.editRow" :title="$t('menu.management_admin_admin_edit')" :before-close="clearPostForm" class="dialog-md">
+		<el-dialog v-model="modalList.editRow" :title="$t('menu.management_product_item_edit')" :before-close="clearPostForm" class="dialog-md">
 			<el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
+				<el-row :gutter="20">
+					<el-col :sm="12" class="mt-2">
+						<el-checkbox v-model="postForm.is_all_agent">{{$t('mix.table_is_all_agent')}}</el-checkbox>
+					</el-col>
+					<el-col :sm="12" class="mt-2">
+						<el-checkbox v-model="postForm.is_eligible">{{$t('mix.table_is_eligible')}}</el-checkbox>
+					</el-col>
+				</el-row>
 				<el-row :gutter="20">
 					<el-col :sm="24" class="mt-4">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_code')}}</label>
@@ -153,14 +161,6 @@
 					<el-col :sm="24" :md="12" class="mb-3" v-for="item in postForm.attribute_list" :key="item.id">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger"> * </span>{{ item.name }}</label>
 						<el-input-number class="w-100" v-model="item.value" :step="1" :min="0"/>
-					</el-col>
-				</el-row>
-				<el-row :gutter="20">
-					<el-col :sm="12" class="mt-2">
-						<el-checkbox v-model="postForm.is_all_agent">{{$t('mix.table_is_all_agent')}}</el-checkbox>
-					</el-col>
-					<el-col :sm="12" class="mt-2">
-						<el-checkbox v-model="postForm.is_eligible">{{$t('mix.table_is_eligible')}}</el-checkbox>
 					</el-col>
 				</el-row>
 				<el-row :gutter="20">
@@ -309,14 +309,17 @@ export default {
 			ajaxTitles:[{
                 prop:"name",
                 label:this.$t('mix.table_name'),
+				align:'center',
                 width:'100',
 			},{
                 prop:"period",
                 label:this.$t('mix.table_period'),
+				align:'center',
                 width:'100',
 			},{
                 prop:"status",
                 label:this.$t('mix.table_account_status'),
+				align:'center',
                 width:'150',
 			}],
 			postForm:{
@@ -388,17 +391,17 @@ export default {
 						prop: "name",
 						label: this.$t('mix.table_name'),
 						width:'150',
-						align: 'center'
+						align:'center',
 					},{
 						prop:"period",
 						label:this.$t('mix.table_period'),
 						width:'100',
-						align: 'center'
+						align:'center',
 					},{
 						prop:"amount",
 						label:this.$t('mix.table_amount'),
 						width:'150',
-						align: 'center'
+						align:'center',
 					}]
 					
 					data.attributeList.forEach((element) => {
@@ -621,9 +624,27 @@ export default {
 		},statusRow(id, status){
 			if(this.$p.permissionChecker('userMemberStatus') && this.loading == false){
 				this.loading = true
-				this.$confirm(this.$t('msg.msg_confirmation'), this.$t('msg.prompt'), {
-					confirmButtonText: this.$t('button.yes'),
-					cancelButtonText: this.$t('button.no'),
+				let confirmationTitle = '';
+				let confirmationMessage = '';
+				let confirmButtonName = '';
+				let cancelButtonName = '';
+
+				if (status == 1) {
+					confirmationTitle = this.$t('msg.prompt');
+					confirmationMessage = this.$t('msg.msg_confirmation');
+					confirmButtonName = this.$t('button.yes');
+					cancelButtonName = this.$t('button.no');
+				} else if (status == 0) {
+					confirmationTitle = this.$t('msg.stop_using');
+					confirmationMessage = `${this.$t('msg.msg_status_off_desc_1')} <br><br> ${this.$t('msg.msg_status_off_desc_2')}`;
+					confirmButtonName = this.$t('button.confirm');
+					cancelButtonName = this.$t('button.cancel');
+				}
+
+				this.$confirm(confirmationMessage, confirmationTitle, {
+					confirmButtonText: confirmButtonName,
+					cancelButtonText: cancelButtonName,
+					dangerouslyUseHTMLString: true,
 					customClass: 'input-dialog',
 					showInput: (this.securityCheck == 1), 
 					inputPlaceholder: this.$t('mix.table_security'),
@@ -654,7 +675,8 @@ export default {
 						this.preloader(false)
 					})
 				}).catch(() => {
-					this.loading = false          
+					this.loading = false  
+					this.initial()        
 				})
 			}
 			
