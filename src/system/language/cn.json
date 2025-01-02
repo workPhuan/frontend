@@ -694,6 +694,8 @@
 		"table_loan_time":						"贷款次数",
 		"table_early_repay":					"提前结清次数",
 		"table_today_overdue":					"今日到期未还笔数",
+		"table_emergency_contacts":				"紧急联络人",
+		"table_call_records":					"通讯录",
 		"table_system_statistic":				"系统统计",
 		"table_recently_statistic":				"最近{day}天数据统计",
 		"table_name":							"名字",
