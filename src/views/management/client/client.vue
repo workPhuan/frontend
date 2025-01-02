@@ -45,7 +45,7 @@
                     </template>
                     
                     <template v-for="title in ajaxTitles" :key="title.prop">
-                        <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" :sortable="title.prop == 'total_loan' ? true : false">
+                        <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" :sortable="title.prop == 'total_loan' || title.prop == 'loan_time' || title.prop == 'total_overdue' || title.prop == 'total_repay' ? true : false">
                             <template #header>
                                 <p class="search-label">{{title.label}}</p>
                             </template>
@@ -230,10 +230,12 @@ export default{
                 prop:"loan_time",
                 label:this.$t('mix.table_loan_time'),
                 width:'120',
+				sortable: true,
 			},{
                 prop:"total_overdue",
                 label:this.$t('mix.table_total_overdue'),
                 width:'120',
+				sortable: true,
 			},{
                 prop:"total_loan",
                 label:this.$t('mix.table_total_loan'),
@@ -243,6 +245,7 @@ export default{
                 prop:"total_repay",
                 label:this.$t('mix.table_total_repay'),
                 width:'120',
+				sortable: true,
 			},{
                 prop:"action",
                 label:this.$t('mix.table_action'),
@@ -502,6 +505,7 @@ export default{
 			this.$router.push('/management/client/client/info');
 			storeTempID.master_id = master_id
 		},handleSortChange({ column, prop, order }){
+			this.searchData.column = prop
 			this.searchData.order = order
 			this.initial()
 		},
