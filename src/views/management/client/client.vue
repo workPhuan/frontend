@@ -37,7 +37,7 @@
 					</div>
 				</div>
 
-				<el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+				<el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @sort-change="handleSortChange">
                     <template #empty v-if="tableData.length=='0'">
                         <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
                         <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
@@ -45,7 +45,7 @@
                     </template>
                     
                     <template v-for="title in ajaxTitles" :key="title.prop">
-                        <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+                        <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" :sortable="title.prop == 'total_loan' ? true : false">
                             <template #header>
                                 <p class="search-label">{{title.label}}</p>
                             </template>
@@ -238,6 +238,7 @@ export default{
                 prop:"total_loan",
                 label:this.$t('mix.table_total_loan'),
                 width:'120',
+				sortable: true,
 			},{
                 prop:"total_repay",
                 label:this.$t('mix.table_total_repay'),
@@ -500,7 +501,10 @@ export default{
 		},getClientRow(master_id) {
 			this.$router.push('/management/client/client/info');
 			storeTempID.master_id = master_id
-		}
+		},handleSortChange({ column, prop, order }){
+			this.searchData.order = order
+			this.initial()
+		},
 	},created(){
         this.postData.language = this.$m.getItem('currentLang')??'en'
 		this.securityCheck = this.$m.getItem('securityCheck')
