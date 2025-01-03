@@ -4,6 +4,8 @@
 			<el-button style="cursor: pointer;" class="custom-button" type="info" @click="returnToPage()">
 				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{"Back to " + $t('menu.package_order_summary')}}
 			</el-button>
+            <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.agent_id)">{{$t('mix.table_agent_info')}}</el-button>
+
 		</div>
 		
 		<div class="page-body p-3">
@@ -15,13 +17,13 @@
                     <el-descriptions>
                         <el-descriptions-item :label="$t('mix.table_code')">{{ orderDetail.code }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_created_at')">{{ orderDetail.created_at }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_status')">{{ orderDetail.status_name }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_product')">{{ orderDetail.product_name }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_status')"><el-tag :type="orderDetail.status_color">{{ orderDetail.status_name }}</el-tag></el-descriptions-item>                        <el-descriptions-item :label="$t('mix.table_product')">{{ orderDetail.product_name }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_period')">{{ orderDetail.period }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_agent')">{{ orderDetail.agent_name }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ orderDetail.loan_amount }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_payment_period')">{{ orderDetail.payment_period }}</el-descriptions-item>
                     </el-descriptions>
+
                      </div>
                 <el-tabs type="border-card" @tab-click="loadTable">
                     <el-tab-pane key="application" :label="$t('mix.table_application_details')">   
@@ -86,32 +88,38 @@
                         <el-descriptions-item :label="$t('mix.table_education')">{{ clientDetail.education }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_line_id')">{{ clientProfile.line_id }}</el-descriptions-item>
                 </el-descriptions>
-                <div>
-                    <img :src="clientProfile.icpass_front_url" class="w-r-2 h-auto me-2"/>
-                    <div class="d-flex flex-column">
-                        <p class="p-0 m-0">{{ $t('mix.table_icpass_front_url') }}</p>
-                    </div>
-
-                    <img :src="clientProfile.icpass_back_url" class="w-r-2 h-auto me-2"/>
-                    <div class="d-flex flex-column">
-                        <p class="p-0 m-0">{{ $t('mix.table_icpass_back_url') }}</p>
-                    </div>
-
-                    <img :src="clientProfile.icpass_holding_url" class="w-r-2 h-auto me-2"/>
-                    <div class="d-flex flex-column">
-                        <p class="p-0 m-0">{{ $t('mix.table_icpass_holding_url') }}</p>
-                    </div>
-
-                    <img :src="clientProfile.application_img_url" class="w-r-2 h-auto me-2"/>
-                    <div class="d-flex flex-column">
-                        <p class="p-0 m-0">{{ $t('mix.table_application_img_url') }}</p>
-                    </div>
-
-                    <img :src="clientProfile.contract_img_url" class="w-r-2 h-auto me-2"/>
-                    <div class="d-flex flex-column">
-                        <p class="p-0 m-0">{{ $t('mix.table_contract_img_url') }}</p>
-                    </div>
-                </div>
+                <el-descriptions>
+                    <el-descriptions-item>
+                        <img :src="clientProfile.icpass_front_url" class="w-r-2 h-auto me-2"/>
+                        <div class="d-flex flex-column">
+                            <p class="p-0 m-0">{{ $t('mix.table_icpass_front_url') }}</p>
+                        </div>
+                    </el-descriptions-item>
+                    <el-descriptions-item>
+                        <img :src="clientProfile.icpass_back_url" class="w-r-2 h-auto me-2"/>
+                        <div class="d-flex flex-column">
+                            <p class="p-0 m-0">{{ $t('mix.table_icpass_back_url') }}</p>
+                        </div>
+                    </el-descriptions-item>
+                    <el-descriptions-item>
+                        <img :src="clientProfile.icpass_holding_url" class="w-r-2 h-auto me-2"/>
+                        <div class="d-flex flex-column">
+                            <p class="p-0 m-0">{{ $t('mix.table_icpass_holding_url') }}</p>
+                        </div>
+                    </el-descriptions-item>
+                    <el-descriptions-item>
+                        <img :src="clientProfile.application_img_url" class="w-r-2 h-auto me-2"/>
+                        <div class="d-flex flex-column">
+                            <p class="p-0 m-0">{{ $t('mix.table_application_img_url') }}</p>
+                        </div>
+                    </el-descriptions-item>
+                    <el-descriptions-item>
+                        <img :src="clientProfile.contract_img_url" class="w-r-2 h-auto me-2"/>
+                        <div class="d-flex flex-column">
+                            <p class="p-0 m-0">{{ $t('mix.table_contract_img_url') }}</p>
+                        </div>
+                    </el-descriptions-item>
+                </el-descriptions>
             </el-card>
         </div>
 
@@ -123,8 +131,8 @@
                     <el-descriptions-item :label="$t('mix.table_company_address')">{{ clientDetail.company_address }}</el-descriptions-item>
                     <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ clientDetail.company_phone_mobile }}</el-descriptions-item>
                     <el-descriptions-item :label="$t('mix.table_position')">{{ clientDetail.position }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_experience')">{{ clientDetail.experience }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_salary')">{{ clientDetail.salary }}</el-descriptions-item>
+                    <el-descriptions-item :label="$t('mix.table_experience')">{{ clientDetail.experience }} {{ $t('mix.table_year') }}</el-descriptions-item>
+                    <el-descriptions-item :label="$t('mix.table_salary')">{{ clientDetail.salary }} {{ $t('mix.table_month') }}</el-descriptions-item>
                 </el-descriptions>
                 <div>
                     <img :src="clientDetail.staff_id_url" class="w-r-2 h-auto me-2"/>
@@ -253,6 +261,26 @@
 
             </el-card>
         </div>
+
+        <el-dialog v-model="modalList.agentinfo" :title="$t('mix.table_agent_info')" :before-close="clearPostForm">
+            <el-form label-position="top" label-width="auto" @submit.native.prevent>
+                <el-row :gutter="20">
+                    
+                    <el-col :sm="12" class="mb-3">
+                        <label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_admin_agent')}}</label>
+                        <el-select class="custom-input mt-1 w-100" v-model="postForm.agent_id" :placeholder="$t('menu.management_admin_agent')">
+                            <el-option v-for="(list,index) in agentList" :key="index" :label="list.name" :value="list.master_id">{{list.name}}</el-option>
+                        </el-select>
+                    </el-col>
+
+                </el-row>
+
+                <div class="d-flex justify-content-center align-item-center">
+                    <el-button class="custom-button success font-8 pt-3 pb-3" @click="toAgentInfoPage(this.postForm.agent_id)" :loading="loading">{{$t('button.submit')}}</el-button>
+                    <el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.agentinfo = false,clearPostForm()">{{$t('button.close')}}</el-button>
+                </div>
+            </el-form>
+        </el-dialog>
 	</div>
 </template>
 
@@ -479,7 +507,7 @@ export default {
 		getInitial(){
             this.searchData.pagination = 1
 			this.loading = true
-			this.postData.id = storeTempID;
+			this.postData.id = storeTempID.order_id;
             console.log()
 			this.postData.data = JSON.stringify(this.postData)
 			var result = this.$m.postMethod('package/order/detail',this.postData)
@@ -495,7 +523,7 @@ export default {
 				this.initial()
 			})
 		},initial(){
-			this.searchData.id = storeTempID;
+			this.searchData.id = storeTempID.order_id;
 			this.loading = true
 
 			this.postData.data = JSON.stringify(this.searchData)
@@ -515,7 +543,7 @@ export default {
 		})
 		},loadTable(tab) {
             this.loading = true;
-            this.postData.id = storeTempID;
+            this.postData.id = storeTempID.order_id;
             this.postData.data = JSON.stringify(this.postData);
             this.modalList = {
                 basicAjaxTable: false,
@@ -762,126 +790,26 @@ export default {
 					this.preloader(false)
 				});
 			}
-		},getEditRow(id) {
-			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
-				this.loading = true;
-				this.submitForm.id = id
-				this.postData.data = JSON.stringify(this.submitForm);
-				var result = this.$m.postMethod("management/chat/group/edit", this.postData);
-				result.then((value) => {
-					var data = value.data;
-
-					if (value.valid) {
-						
-						this.postForm = data.thisDetail
-						this.packageList = data.packageList
-						this.modalList.editRow = true
-					}
-					this.loading = false
-				});
-			}
-		},
-		editRow() {
-			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
+		},getAgentRow(id){
+            if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
 				this.loading = true
-				this.preloader(true)
-				var formData = new FormData()
-				formData.append('file',this.imagePickerFile)
-				formData.append('data',JSON.stringify(this.postForm))
-				var result = this.$m.postMethod("management/chat/group/DBedit", formData)
-
-				result.then((value) => {
-					var data = value.data
-
-					if (value.valid) {
-						this.$message({
-							message: data.returnMsg,
-							type: "success"
-						});
-						
-						this.modalList.editRow = false
-						this.clearPostForm()
-						this.initial()
-					} else {
-						this.$m.popupErrorMessage(data.returnMsg,this)
-					}
-
-					this.loading = false
-					this.preloader(false)
-				});
-			}
-		},statusRow(currentData){
-			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
-				this.loading = true
-				this.submitForm.id = currentData.id
-				this.submitForm.status = currentData.status
+				this.submitForm.agent_id = id
 				this.postData.data = JSON.stringify(this.submitForm)
-				
-				var formData = new FormData()
-				formData.append('data', this.postData.data)
-				formData.append('language', this.postData.language)
-
-				var result = this.$m.postMethod('management/chat/group/DBstatus',formData)
+				var result = this.$m.postMethod('package/order/summary/getAgent',this.postData)
 				result.then((value) => {
 					var data = value.data
-					if(value.valid){
-						this.$message({
-							message: data.returnMsg,
-							type: 'success'
-						});
-					}else{					
-						this.$m.popupErrorMessage(data.returnMsg,this)
-					}
-					this.clearPostForm()
-					this.initial()
-					this.loading = false
-				});
-			}
-		},deleteRow(id) {
-			if(this.$p.permissionChecker('userChatGroupDelete') && this.loading == false){
-				var valid = true
-				if(id == 'multiple'){
-					if(this.postForm.selectedIds.length < 1){
-						valid = false
-					}
-				}
-				
-				if(valid){
-					this.loading = true
-					this.$confirm(this.$t('msg.msg_delete'), this.$t('msg.prompt'), {
-						confirmButtonText: this.$t('button.yes'),
-						cancelButtonText: this.$t('button.no'),
-						customClass: 'input-dialog',
-						showInput: (this.securityCheck == 1), 
-						inputPlaceholder: this.$t('mix.table_security'),
-						inputType: 'password',
-					}).then(({value}) => {
-						this.postForm.security = value
-						this.postForm.id = id
-						this.postData.data = JSON.stringify(this.postForm);
-						var result = this.$m.postMethod("management/chat/group/DBdelete", this.postData);
-						result.then((value) => {
-							var data = value.data
-							if (value.valid) {
-								this.$message({
-									type: "success",
-									message: data.returnMsg
-								});
 
-								this.initial()
-								this.loading = false
-							} else {
-								this.$m.popupErrorMessage(data.returnMsg,this)
-								this.loading = false
-							}
-						});
-					}).catch(() => {
-						this.loading = false;         
-					});
-				}else{
-					this.$message.error(this.$t('error.msg_checkbox_select'))
-				}
+					if(value.valid){
+						this.agentList = data.agentList
+						this.modalList.agentinfo = true
+						this.loading = false
+					}
+					this.loading = false
+				})
 			}
+        },toAgentInfoPage(id){
+			storeTempID.agent_id = id
+			this.$router.push('/management/admin/agentinfo');
 		},initialImage(){
 			this.imagePickerFile = ''
 			this.imagePickerFileUrl = ''
@@ -916,12 +844,13 @@ export default {
 			this.postForm.selectedIds = selection.map((row) => row.id)
 		}
 	},created(){
+        console.log(storeTempID.order_id);
         this.postData.language = this.$m.getItem('currentLang')??'en'
 		this.securityCheck = this.$m.getItem('securityCheck')
-        if(storeTempID.value != '' && storeTempID.value != undefined){
-            this.getInitial()
+        if(storeTempID.order_id == '' || storeTempID.order_id == undefined){
+            this.$router.push('/package/order/summary')
         }else{
-            this.$router.push('/package/order/detail')
+            this.getInitial()
         }
 	}
 };

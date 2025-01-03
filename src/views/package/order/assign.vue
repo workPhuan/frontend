@@ -66,7 +66,9 @@
 
 
 							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="toOrderDetail(scope.row.id)">{{$t('button.order_info')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="toClientDetail(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
+
 								<el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete') && selectedRows.length < 2" class="custom-button primary m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
 							</template>
 						</el-table-column>
@@ -79,9 +81,7 @@
 						<el-row :gutter="20">
 						<div :style="{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }">
 							<div v-for="(agent, index) in agentList" :key="agent.master_id">
-								<el-checkbox v-model="selectedAgents" :label="agent.master_id">
-									{{ agent.name }}
-								</el-checkbox>
+								<el-checkbox v-model="selectedAgents" :label="agent.master_id">{{ agent.name }}</el-checkbox>
 							</div>
 						</div>
 						</el-row>
@@ -258,9 +258,6 @@ export default {
 					this.loading = false
 				}
 			});
-		},setTempID(id) {
-			storeTempID.value = id;  
-			this.$router.push('/package/order/detail');  
 		},
 		clearPostForm(done){
 			this.postForm.code = []
@@ -373,9 +370,13 @@ export default {
 					this.$message.error(this.$t('error.msg_checkbox_select'))
 				}
 			}
-		},setTempID(id) {
-			storeTempID.value = id;  
+		},toOrderDetail(id) {
+			storeTempID.order_id = id;  
 			this.$router.push('/package/order/detail');  
+		},toClientDetail(id) {
+			storeTempID.master_id = id; 
+ 
+			this.$router.push('/management/client/client/info');
 		},initialImage(){
 			this.imagePickerFile = ''
 			this.imagePickerFileUrl = ''

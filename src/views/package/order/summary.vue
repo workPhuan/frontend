@@ -28,7 +28,7 @@
 							<el-option v-for="item in searchStatusList" :label="item.name" :value="item.id">{{item.name}}</el-option>
 						</el-select>
                         <el-select class="custom-input fixed-width-200 m-2" size="large" v-model="searchData.agent_id" :placeholder="$t('mix.table_agent')" clearable filterable @change="initial()">
-							<el-option v-for="item in searchAgentList" :label="item.name" :value="item.id">{{item.name}}</el-option>
+							<el-option v-for="item in searchAgentList" :label="item.name" :value="item.master_id">{{item.name}}</el-option>
 						</el-select>
 						
 						<el-button class="custom-button plain m-2 h-r-2-5 pe-4 ps-4" @click="initial()" :loading="loading"><i class="fa-light fa-search me-2"></i>{{$t('button.search')}}</el-button>
@@ -51,19 +51,37 @@
 							</template>
 
 							<template v-if="title.prop == 'status_name'" #default="scope">
-								<el-tag 
-									:type="scope.row.status_color">
-									{{ scope.row.status_name }}
-								</el-tag>
+								<el-tag :type="scope.row.status_color">{{ scope.row.status_name }}</el-tag>
 							</template>
 
-
 							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="toOrderDetail(scope.row.id)">{{$t('button.order_info')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="toClientDetail(scope.row.master_id)">{{$t('button.client_info')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.agent_id)">{{$t('mix.table_agent_info')}}</el-button>
 							</template>
 						</el-table-column>
 					</template>
 				</el-table>
+
+				<el-dialog v-model="modalList.agentinfo" :title="$t('mix.table_agent_info')" :before-close="clearPostForm">
+					<el-form label-position="top" label-width="auto" @submit.native.prevent>
+						<el-row :gutter="20">
+							
+							<el-col :sm="12" class="mb-3">
+								<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_admin_agent')}}</label>
+								<el-select class="custom-input mt-1 w-100" v-model="postForm.agent_id" :placeholder="$t('menu.management_admin_agent')">
+									<el-option v-for="(list,index) in agentList" :key="index" :label="list.name" :value="list.master_id">{{list.name}}</el-option>
+								</el-select>
+							</el-col>
+
+						</el-row>
+
+						<div class="d-flex justify-content-center align-item-center">
+							<el-button class="custom-button success font-8 pt-3 pb-3" @click="toAgentInfoPage(this.postForm.agent_id)" :loading="loading">{{$t('button.submit')}}</el-button>
+							<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.agentinfo = false,clearPostForm()">{{$t('button.close')}}</el-button>
+						</div>
+					</el-form>
+				</el-dialog>
 
 				<pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
 			</el-card>
@@ -221,9 +239,33 @@ export default {
 					this.loading = false
 				}
 			});
-		},setTempID(id) {
-		storeTempID.value = id;  
+		},toOrderDetail(id) {
+		storeTempID.order_id = id;  
 		this.$router.push('/package/order/detail');  
+		},toClientDetail(id) {
+		console.log(id);
+		storeTempID.master_id = id;
+		this.$router.push('/management/client/client/info');
+		},getAgentRow(id){
+            if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
+				this.loading = true
+				this.submitForm.agent_id = id
+				this.postData.data = JSON.stringify(this.submitForm)
+				var result = this.$m.postMethod('package/order/summary/getAgent',this.postData)
+				result.then((value) => {
+					var data = value.data
+
+					if(value.valid){
+						this.agentList = data.agentList
+						this.modalList.agentinfo = true
+						this.loading = false
+					}
+					this.loading = false
+				})
+			}
+        },toAgentInfoPage(id){
+			storeTempID.agent_id = id
+			this.$router.push('/management/admin/agentinfo');
 		},
 		clearPostForm(done){
 			this.postForm.code = []
@@ -282,81 +324,6 @@ export default {
 					
 					this.loading = false
 					this.preloader(false)
-				});
-			}
-		},getEditRow(id) {
-			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
-				this.loading = true;
-				this.submitForm.id = id
-				this.postData.data = JSON.stringify(this.submitForm);
-				var result = this.$m.postMethod("management/chat/group/edit", this.postData);
-				result.then((value) => {
-					var data = value.data;
-
-					if (value.valid) {
-						
-						this.postForm = data.thisDetail
-						this.packageList = data.packageList
-						this.modalList.editRow = true
-					}
-					this.loading = false
-				});
-			}
-		},
-		editRow() {
-			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
-				this.loading = true
-				this.preloader(true)
-				var formData = new FormData()
-				formData.append('file',this.imagePickerFile)
-				formData.append('data',JSON.stringify(this.postForm))
-				var result = this.$m.postMethod("management/chat/group/DBedit", formData)
-
-				result.then((value) => {
-					var data = value.data
-
-					if (value.valid) {
-						this.$message({
-							message: data.returnMsg,
-							type: "success"
-						});
-						
-						this.modalList.editRow = false
-						this.clearPostForm()
-						this.initial()
-					} else {
-						this.$m.popupErrorMessage(data.returnMsg,this)
-					}
-
-					this.loading = false
-					this.preloader(false)
-				});
-			}
-		},statusRow(currentData){
-			if(this.$p.permissionChecker('userChatGroupEdit') && this.loading == false){
-				this.loading = true
-				this.submitForm.id = currentData.id
-				this.submitForm.status = currentData.status
-				this.postData.data = JSON.stringify(this.submitForm)
-				
-				var formData = new FormData()
-				formData.append('data', this.postData.data)
-				formData.append('language', this.postData.language)
-
-				var result = this.$m.postMethod('management/chat/group/DBstatus',formData)
-				result.then((value) => {
-					var data = value.data
-					if(value.valid){
-						this.$message({
-							message: data.returnMsg,
-							type: 'success'
-						});
-					}else{					
-						this.$m.popupErrorMessage(data.returnMsg,this)
-					}
-					this.clearPostForm()
-					this.initial()
-					this.loading = false
 				});
 			}
 		},deleteRow(id) {
