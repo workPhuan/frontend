@@ -833,6 +833,8 @@
 		"table_is_block":						"Is Block",
 		"table_time_start":						"Start Time",
 		"table_time_end":						"End Time",
+		"table_year":							"Year(s)",
+		"table_month":							"Month(s)",
 		"table_is_withdraw":					"Withdraw Status",
 		"table_id": 		       	     		"ID",
 		"table_join_at": 						"Join at",
