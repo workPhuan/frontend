@@ -4,7 +4,7 @@
 			<label>
 				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{$t('menu.package_order_assign')}}
 			</label>
-
+			<el-button v-if="selectedRows.length >= 2 && $p.permissionChecker('userChatGroupDelete')"  class="custom-button primary m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.batch_assign')}}</el-button>
 		</div>
 		
 		<div class="page-body p-3">
@@ -67,7 +67,7 @@
 
 							<template v-if="title.prop == 'action'" #default="scope">
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
-								<el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
+								<el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete') && selectedRows.length < 2" class="custom-button primary m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
 							</template>
 						</el-table-column>
 					</template>

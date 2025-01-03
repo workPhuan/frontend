@@ -23,18 +23,32 @@
                         <el-descriptions-item :label="$t('mix.table_payment_period')">{{ orderDetail.payment_period }}</el-descriptions-item>
                     </el-descriptions>
                      </div>
-                <el-tabs type="border-card">
+                <el-tabs type="border-card" @tab-click="loadTable">
                     <el-tab-pane key="application" :label="$t('mix.table_application_details')">   
-                            <el-button class="custom-button plain" @click="loadTable('basic')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.basic_information')}}</el-button>
-                            <el-button class="custom-button plain" @click="loadTable('job')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.job_information')}}</el-button>
-                            <el-button class="custom-button plain" @click="loadTable('bank')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.bank_information')}}</el-button>
-                            <el-button class="custom-button plain" @click="loadTable('contact')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.contact_information')}}</el-button>
-                            <el-button class="custom-button plain" @click="loadTable('message')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.message_information')}}</el-button>
-                            <el-button class="custom-button plain" @click="loadTable('location')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.location_information')}}</el-button>
+                        <el-button class="custom-button plain" @click="loadTable('basic')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.basic_information')}}</el-button>
+                        <el-button class="custom-button plain" @click="loadTable('job')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.job_information')}}</el-button>
+                        <el-button class="custom-button plain" @click="loadTable('bank')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.bank_information')}}</el-button>
+                        <el-button class="custom-button plain" @click="loadTable('contact')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.contact_information')}}</el-button>
+                        <el-button class="custom-button plain" @click="loadTable('message')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.message_information')}}</el-button>
+                        <el-button class="custom-button plain" @click="loadTable('location')" :loading="loading" v-if="$p.permissionChecker('userChatRoleAdd')">{{$t('button.location_information')}}</el-button>
                     </el-tab-pane>
 
                     <el-tab-pane key="record" :label="$t('mix.table_order_records')">
-                        
+                        <el-table :data="orderTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
+                            <template #empty v-if="callTableData.length=='0'">
+                                <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                            </template>
+                            
+                            <template v-for="title in ajaxOrderTitles" :key="title.prop">
+                                <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
+                                    <template #header>
+                                        <p class="search-label">{{title.label}}</p>
+                                    </template>
+                                </el-table-column>
+                            </template>
+                        </el-table>
                     </el-tab-pane>
                 </el-tabs>
 			</el-card>
@@ -264,6 +278,8 @@ export default {
             contactTableData: [],
             callTableData: [],
             messageTableData: [],
+            orderTableData: [],
+
 
 			total: 0,
 			errors: [],
@@ -377,6 +393,37 @@ export default {
 				label:this.$t("mix.table_content"),
 				width: "270",
                 align:'left'
+			}],
+            ajaxOrderTitles: [{
+				prop:"created_at",
+				label:this.$t("mix.table_created_at"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"old_status",
+				label:this.$t("mix.table_order_status"),
+				width: "150",
+				align:'center'
+			},{
+				prop:"action",
+				label:this.$t("mix.table_action"),
+				width: "150",
+				align:'center'
+			},{
+				prop:"handler",
+				label:this.$t("mix.table_handler"),
+				width: "120",
+                align:'center'
+			},{
+				prop:"agent",
+				label:this.$t("mix.table_agent"),
+				width: "120",
+                align:'center'
+			},{
+				prop:"current_status",
+				label:this.$t("mix.table_status_change"),
+				width: "120",
+                align:'center'
 			}],
 			ajaxSearch: [{
 				prop:"name",
@@ -494,9 +541,10 @@ export default {
                 this.messageData()
 
             } else if (tab === 'location') {
-                table = 'package/order/detail/locationAjaxTable';
-                this.modalList.locationAjaxTable = true;
                 this.locationData()
+
+            } else if (tab.index == 1) {
+                this.orderData()
 
             } else {
                 this.loading = false;
@@ -640,6 +688,24 @@ export default {
                 if (value.valid) {
                     this.clientDetail = data.clientDetail;
                     this.modalList.locationAjaxTable = true
+                }
+                this.loading = false;
+            })
+		},orderData(){
+            this.loading = true
+
+            this.postData.data = JSON.stringify(this.searchData)
+
+            var result = this.$m.postMethod('package/order/detail/orderAjaxTable',this.postData)
+            result.then((value) => {
+                var data = value.data
+                
+                if (value.valid) {
+                    this.orderTableData = data.datatable.data
+                    this.total = parseInt(data.datatable.total_number)
+                    this.listQuery.page = parseInt(data.datatable.current_pagination)
+                    this.listQuery.limit = parseInt(data.datatable.limit)
+                    this.loading = false
                 }
                 this.loading = false;
             })
