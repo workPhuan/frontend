@@ -882,6 +882,8 @@
 		"table_birthdate": 		     			"Date of birth",
 		"table_address": 		     			"Address",
 		"table_current_address": 		     	"Current Address",
+		"table_application_address": 		    "Application Address",
+		"table_home_address": 				    "Home Address",
 		"table_company_name":					"Company Name",
 		"table_company_address":				"Company Address",
 		"table_company_phone_mobile":			"Company Phone Mobile",

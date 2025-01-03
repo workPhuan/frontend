@@ -188,15 +188,14 @@
 
         <div v-if="modalList.messageAjaxTable" class="page-body p-3">
             <el-card shadow="never">
-                <el-text class="mx-1">{{$t('mix.table_call_records')}}</el-text>
                 <el-table :data="messageTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
-					<template #empty v-if="callTableData.length=='0'">
+					<template #empty v-if="messageTableData.length=='0'">
 						<img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
 						<div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
 						<div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
 					</template>
 					
-					<template v-for="title in ajaxCallTitles" :key="title.prop">
+					<template v-for="title in ajaxMessageTitles" :key="title.prop">
 						<el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
 							<template #header>
 								<p class="search-label">{{title.label}}</p>
@@ -216,14 +215,20 @@
 
         <div v-if="modalList.locationAjaxTable" class="page-body p-3">
             <el-card shadow="never">
-                
+                <el-text class="mx-1">{{$t('mix.table_home_address')}}</el-text>
+                <br>
                 <el-descriptions>
-                    <el-descriptions-item :label="$t('mix.table_company_name')">{{ clientDetail.company_name }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_company_address')">{{ clientDetail.company_address }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ clientDetail.company_phone_mobile }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_position')">{{ clientProfile.position }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_experience')">{{ clientDetail.experience }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_salary')">{{ clientProfile.salary }}</el-descriptions-item>
+                    <el-descriptions-item :label="$t('mix.table_state')">{{ clientDetail.state }}</el-descriptions-item>
+                    <el-descriptions-item :label="$t('mix.table_city')">{{ clientDetail.city}}</el-descriptions-item>
+                    <el-descriptions-item :label="$t('mix.table_address')">{{ clientDetail.address }}</el-descriptions-item>
+                </el-descriptions>
+                <el-text class="mx-1">{{$t('mix.table_application_address')}}</el-text>
+                <br>
+
+                <el-descriptions>
+                    <el-descriptions-item :label="$t('mix.table_state')">{{ clientDetail.state_application }}</el-descriptions-item>
+                    <el-descriptions-item :label="$t('mix.table_city')">{{ clientDetail.city_application }}</el-descriptions-item>
+                    <el-descriptions-item :label="$t('mix.table_address')">{{ clientDetail.address_application }}</el-descriptions-item>
                 </el-descriptions>
 
             </el-card>
@@ -354,22 +359,22 @@ export default {
 			}],
             ajaxMessageTitles: [{
 				prop:"created_at",
-				label:this.$t("mix.table_name"),
+				label:this.$t("mix.table_created_at"),
 				width: "100",
 				align:'center'
 			},{
 				prop:"name",
-				label:this.$t("mix.table_phone_mobile"),
+				label:this.$t("mix.table_name"),
 				width: "150",
 				align:'center'
 			},{
 				prop:"phone_mobile",
-				label:this.$t("mix.table_start_at"),
+				label:this.$t("mix.table_phone_mobile"),
 				width: "150",
 				align:'center'
 			},{
 				prop:"content",
-				label:this.$t("mix.table_duration"),
+				label:this.$t("mix.table_content"),
 				width: "270",
                 align:'left'
 			}],
@@ -633,10 +638,8 @@ export default {
                 var data = value.data
                 
                 if (value.valid) {
-                    this.clientProfile = data.clientProfile;
                     this.clientDetail = data.clientDetail;
                     this.modalList.locationAjaxTable = true
-
                 }
                 this.loading = false;
             })
