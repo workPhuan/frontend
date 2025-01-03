@@ -4,8 +4,6 @@
 			<el-button style="cursor: pointer;" class="custom-button" type="info" @click="returnToPage()">
 				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{"Back to " + $t('menu.package_order_summary')}}
 			</el-button>
-            <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.agent_id)">{{$t('mix.table_agent_info')}}</el-button>
-
 		</div>
 		
 		<div class="page-body p-3">
@@ -22,6 +20,9 @@
                         <el-descriptions-item :label="$t('mix.table_agent')">{{ orderDetail.agent_name }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ orderDetail.loan_amount }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_payment_period')">{{ orderDetail.payment_period }}</el-descriptions-item>
+                        <el-descriptions-item>
+                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(orderDetail.agent_id)">{{$t('mix.table_agent_info')}}</el-button>
+                        </el-descriptions-item>
                     </el-descriptions>
 
                      </div>
@@ -795,7 +796,7 @@ export default {
 				this.loading = true
 				this.submitForm.agent_id = id
 				this.postData.data = JSON.stringify(this.submitForm)
-				var result = this.$m.postMethod('package/order/summary/getAgent',this.postData)
+				var result = this.$m.postMethod('package/order/detail/getAgent',this.postData)
 				result.then((value) => {
 					var data = value.data
 
