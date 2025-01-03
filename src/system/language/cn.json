@@ -685,7 +685,9 @@
 		"management_product_item_add":			"创建产品",
 		"management_product_item_edit":			"修改产品",
 		"app_tools_householding":				"持有类型",
-		"app_tools_marital":					"婚姻"
+		"app_tools_marital":					"婚姻",
+		"app_tools_state":						"县市",
+		"app_tools_city":						"市区"
 	},"login":{
 		"table_signin":							"登入",
 		"table_welcome_back":					"欢迎回到{appname}管理平台",

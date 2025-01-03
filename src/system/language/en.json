@@ -782,7 +782,9 @@
 		"management_product_item_add":			"Add Product",
 		"management_product_item_edit":			"Edit Product",
 		"app_tools_householding":				"House Holding",
-		"app_tools_marital":					"Marital"
+		"app_tools_marital":					"Marital",
+		"app_tools_state":						"State",
+		"app_tools_city":						"City"
 	},"login":{
 		"table_signin":                         "Sign In",
 		"table_welcome_back":                   "{appname} management platform",

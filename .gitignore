@@ -1,0 +1,4 @@
+*.zip
+*.rar
+/dist
+/node_modules
