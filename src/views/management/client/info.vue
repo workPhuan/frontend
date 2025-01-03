@@ -86,18 +86,19 @@
                     <el-tab-pane key="basic" :label="$t('mix.table_basic_info')">
                         <el-card shadow="never">
                             <el-descriptions>
-                                    <el-descriptions-item :label="$t('mix.table_name')">{{ userDetails.master_id }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_marital_status')">{{ userDetails.marital_id }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_phone_mobile')">{{ userDetails.phone_mobile }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_child')">{{ userDetails.child_number }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_icpass')">{{ userDetails.icpass }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_current_address')">{{ userDetails.current_address }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_gender')">{{ userDetails.gender_id }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_house_holding')">{{ userDetails.house_holding_id }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_birthdate')">{{ userDetails.dob }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_address')">{{ userDetails.address }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_education')">{{ userDetails.education_id }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_line_id')">{{ userDetails.line_id }}</el-descriptions-item>
+                                    {{ console.log(basicDetails.house_holding_id) }}
+                                    <el-descriptions-item :label="$t('mix.table_name')">{{ basicDetails.master_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_marital_status')">{{ basicDetails.marital_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_phone_mobile')">{{ basicDetails.phone_mobile }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_child')">{{ basicDetails.child_number }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_icpass')">{{ basicDetails.icpass }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_current_address')">{{ basicDetails.current_address }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_gender')">{{ basicDetails.gender_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_house_holding')">{{ basicDetails.house_holding_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_birthdate')">{{ basicDetails.dob }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_address')">{{ basicDetails.address }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_education')">{{ basicDetails.education_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_line_id')">{{ basicDetails.line_id }}</el-descriptions-item>
                             </el-descriptions>
                             <el-descriptions>
                                 <el-descriptions-item>
@@ -137,12 +138,13 @@
                     <el-tab-pane key="work" :label="$t('mix.table_work_info')">
                         <el-card shadow="never">
                             <el-descriptions>
-                                <el-descriptions-item :label="$t('mix.table_company_name')">{{ userDetails.company_name }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_company_address')">{{ userDetails.company_address }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ userDetails.company_phone_mobile }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_position')">{{ userDetails.position }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_experience')">{{ userDetails.experience }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_salary')">{{ userDetails.salary }}</el-descriptions-item>
+                                {{ console.log(this.workDetails) }}
+                                <el-descriptions-item :label="$t('mix.table_company_name')"> {{workDetails.company_name}} </el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_company_address')">{{ workDetails.company_address }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ workDetails.company_phone_mobile }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_position')">{{ workDetails.position }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_experience')">{{ workDetails.experience }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_salary')">{{ workDetails.salary }}</el-descriptions-item>
                             </el-descriptions>
                             <el-descriptions>
                                 <el-descriptions-item>
@@ -164,10 +166,10 @@
                     <el-tab-pane key="bank" :label="$t('mix.table_bank_info')">
                         <el-card shadow="never">
                             <el-descriptions>
-                                <el-descriptions-item>{{$t('mix.table_bank_name')}} : {{ userDetails.bank_id }}</el-descriptions-item>
-                                <el-descriptions-item>{{$t('mix.table_branch_bank')}} : {{ userDetails.bank_name }}</el-descriptions-item>
-                                <el-descriptions-item>{{$t('mix.table_bank_account_holder')}} : {{ userDetails.bank_account_holder }}</el-descriptions-item>
-                                <el-descriptions-item>{{$t('mix.table_bank_account_no')}} : {{ userDetails.bank_account_no }}</el-descriptions-item>
+                                <el-descriptions-item>{{$t('mix.table_bank_name')}} : {{ bankDetails.bank_id }}</el-descriptions-item>
+                                <el-descriptions-item>{{$t('mix.table_branch_bank')}} : {{ bankDetails.bank_name }}</el-descriptions-item>
+                                <el-descriptions-item>{{$t('mix.table_bank_account_holder')}} : {{ bankDetails.bank_account_holder }}</el-descriptions-item>
+                                <el-descriptions-item>{{$t('mix.table_bank_account_no')}} : {{ bankDetails.bank_account_no }}</el-descriptions-item>
                             </el-descriptions>
                         </el-card>
                     </el-tab-pane>
@@ -226,36 +228,53 @@
                         </el-card>
                         
                     </el-tab-pane>
-
                     <el-tab-pane key="message" :label="$t('mix.table_message_log')">
+                        <el-card shadow="never">
+                            <el-table :data="messageTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
+                                <template #empty v-if="messageTableData.length=='0'">
+                                    <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                    <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                    <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                                </template>
+                                
+                                <template v-for="title in ajaxMessageTitles" :key="title.prop">
+                                    <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
+                                        <template #header>
+                                            <p class="search-label">{{title.label}}</p>
+                                        </template>
+
+                                        <template v-if="title.prop == 'action'" #default="scope">
+                                            <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
+                                            <el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
+                                        </template>
+                                    </el-table-column>
+                                </template>
+                            </el-table>
+                            <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+
+                        </el-card>
                         
                     </el-tab-pane>
 
                     <el-tab-pane key="location" :label="$t('mix.table_location_info')">
                         <el-card shadow="never">
+                            <el-text class="mx-1">{{$t('mix.table_home_address')}}</el-text>
+                            <br>
                             <el-descriptions>
-                                <el-descriptions-item :label="$t('mix.table_company_name')">{{ userDetails.company_name }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_company_address')">{{ userDetails.company_address }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ userDetails.company_phone_mobile }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_position')">{{ userDetails.position }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_experience')">{{ userDetails.experience }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_salary')">{{ userDetails.salary }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_state')">{{ clientDetail.state }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_city')">{{ clientDetail.city}}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_address')">{{ clientDetail.address }}</el-descriptions-item>
                             </el-descriptions>
-                            <div class="d-flex align-items-center">
-                                <img :src="userDetails.staff_id_url" class="w-r-2 h-auto me-2"/>
-                                <div class="d-flex flex-column">
-                                    <p class="p-0 m-0">$t('mix.staff_id_url')</p>
-                                </div>
-                            </div>
+                            <el-text class="mx-1">{{$t('mix.table_application_address')}}</el-text>
+                            <br>
 
-                            <div class="d-flex align-items-center">
-                                <img :src="userDetails.bussiness_card_url" class="w-r-2 h-auto me-2"/>
-                                <div class="d-flex flex-column">
-                                    <p class="p-0 m-0">$t('mix.bussiness_card_url')</p>
-                                </div>
-                            </div>
+                            <el-descriptions>
+                                <el-descriptions-item :label="$t('mix.table_state')">{{ clientDetail.state_application }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_city')">{{ clientDetail.city_application }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_address')">{{ clientDetail.address_application }}</el-descriptions-item>
+                            </el-descriptions>
 
-                        </el-card>
+                        </el-card>  
                     </el-tab-pane>
                 </el-tabs>
             </el-card>
@@ -475,6 +494,11 @@ export default {
 			},
             is_blacklist: '',
             userDetails: [],
+            basicDetails: [],
+            workDetails: [],
+            bankDetails: [],
+            messageTableData: [],
+            locationDetails: [],
             accountDetails: [],
             agentList: [],
 			postForm:{},
@@ -605,7 +629,7 @@ export default {
 			result.then((value) => {
 				var data = value.data
 				if(value.valid){
-                    this.userDetails = data.userDetails
+                    this.basicDetails = data.userDetails
 				}
 				this.loading = false
 			})
@@ -618,7 +642,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
-                    this.userDetails = data.userDetails
+                    this.workDetails = data.userDetails
 				}
 				this.loading = false
 			})
@@ -631,7 +655,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
-                    this.userDetails = data.userDetails
+                    this.bankDetails = data.userDetails
 				}
 				this.loading = false
 			})
@@ -677,6 +701,25 @@ export default {
                 this.loading = false;
             })
 
+		},messageData(){
+            this.loading = true
+
+            this.postData.data = JSON.stringify(this.searchData)
+
+            var result = this.$m.postMethod('package/order/detail/messageAjaxTable',this.postData)
+            result.then((value) => {
+                var data = value.data
+                
+                if (value.valid) {
+                    this.messageTableData = data.datatable.data
+                    this.total = parseInt(data.datatable.total_number)
+                    this.listQuery.page = parseInt(data.datatable.current_pagination)
+                    this.listQuery.limit = parseInt(data.datatable.limit)
+
+                    this.loading = false
+                }
+                this.loading = false;
+            })
 		},locationDetails(data){
             this.loading = true
 			this.searchData.master_id = storeTempID.master_id
@@ -686,10 +729,7 @@ export default {
 				var data = value.data
 
 				if(value.valid){
-					this.tableData = data.datatable.data
-					this.total = parseInt(data.datatable.total_number)
-					this.listQuery.page = parseInt(data.datatable.current_pagination)
-					this.listQuery.limit = parseInt(data.datatable.limit)
+					this.locationDetails = data.userDetails
 				}
 				this.loading = false
 			})
@@ -775,7 +815,6 @@ export default {
         },toClientPage(){
 			this.$router.push('/management/client/client');
 		},toAgentInfoPage(id){
-            console.log(id)
 			this.$router.push('/management/client/client/agentinfo');
             storeTempID.agent_id = id
 		},getAgentRow(id){

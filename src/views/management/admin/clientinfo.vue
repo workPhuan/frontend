@@ -71,7 +71,7 @@
                                     </template>
                                     
                                     <template v-if="title.prop == 'action'" #default="scope">
-                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="toAgentPage(scope.row.agent_id)">{{$t('mix.table_agent_info')}}</el-button>
+                                        <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.agent_id)">{{$t('mix.table_agent_info')}}</el-button>
                                     </template>
                                 </el-table-column>
                             </template>
@@ -230,6 +230,25 @@
             </el-card>
 		</div>
 	
+        <el-dialog v-model="modalList.agentinfo" :title="$t('mix.table_agent_info')" :before-close="clearPostForm">
+			<el-form label-position="top" label-width="auto" @submit.native.prevent>
+				<el-row :gutter="20">
+					
+					<el-col :sm="12" class="mb-3">
+						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_admin_agent')}}</label>
+						<el-select class="custom-input mt-1 w-100" v-model="postForm.agent_id" :placeholder="$t('menu.management_admin_agent')">
+							<el-option v-for="(list,index) in agentList" :key="index" :label="list.name" :value="list.agent_id">{{list.name}}</el-option>
+						</el-select>
+					</el-col>
+
+				</el-row>
+
+                <div class="d-flex justify-content-center align-item-center">
+                    <el-button class="custom-button success font-8 pt-3 pb-3" @click="toAgentInfoPage(this.postForm.agent_id)" :loading="loading">{{$t('button.submit')}}</el-button>
+                    <el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
+                </div>
+            </el-form>
+        </el-dialog>
 		
 	</div>
 </template>
@@ -607,7 +626,24 @@ export default {
 			})
         },toAgentInfoPage(){
 			this.$router.push('/management/admin/agentinfo');
-		},getAddRow(){
+            storeTempID.agent_id = id
+		},getAgentRow(id){
+            if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
+				this.loading = true
+				this.submitForm.agent_id = id
+				this.postData.data = JSON.stringify(this.submitForm)
+				var result = this.$m.postMethod('management/agent/clientinfo/getAgent',this.postData)
+				result.then((value) => {
+					var data = value.data
+
+					if(value.valid){
+						this.agentList = data.agentList
+						this.modalList.agentinfo = true
+					}
+					this.loading = false
+				})
+			}
+        },getAddRow(){
 			if(this.$p.permissionChecker('adminAdminAdd') && this.loading == false){
 				this.loading = true
 				this.postData.data = JSON.stringify(this.postForm)
