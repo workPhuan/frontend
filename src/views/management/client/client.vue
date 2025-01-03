@@ -21,13 +21,13 @@
 							</template>
 						</el-input>
 						
-						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.name" :placeholder="$t('mix.table_please_enter')+$t('mix.table_phone')" @keyup.enter.native="initial()">
+						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.phone_mobile" :placeholder="$t('mix.table_please_enter')+$t('mix.table_phone')" @keyup.enter.native="initial()">
 							<template #prepend>
 								<label>{{$t('mix.table_phone')}}</label>
 							</template>
 						</el-input>
 
-                        <el-input class="custom-input fixed-width-200 m-2" v-model="searchData.name" :placeholder="$t('mix.table_please_enter')+$t('mix.table_icpass')" @keyup.enter.native="initial()">
+                        <el-input class="custom-input fixed-width-200 m-2" v-model="searchData.icpass" :placeholder="$t('mix.table_please_enter')+$t('mix.table_icpass')" @keyup.enter.native="initial()">
 							<template #prepend>
 								<label>{{$t('mix.table_icpass')}}</label>
 							</template>

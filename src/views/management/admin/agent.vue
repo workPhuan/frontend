@@ -15,9 +15,11 @@
 					<legend>{{$t('mix.table_filter')}}</legend>
 					<div class="p-3 d-flex flex-wrap">
 
-						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.agent_id" :placeholder="$t('menu.management_agent_agent')" clearable @change="initial()" size="large">
-							<el-option v-for="item in searchAgentList" :label="item.login" :value="item.master_id">{{item.login}}</el-option>
-						</el-select>
+						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.name" :placeholder="$t('mix.table_please_enter')+$t('mix.table_username')" @keyup.enter.native="initial()">
+							<template #prepend>
+								<label>{{$t('mix.table_username')}}</label>
+							</template>
+						</el-input>
 						
 						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.status" :placeholder="$t('mix.table_status')" clearable @change="initial()" size="large">
 							<el-option :label="$t('mix.table_enabled')" value="normal">{{$t('mix.table_enabled')}}</el-option>
@@ -42,10 +44,8 @@
 							</template>
 
 							<template v-if="title.prop == 'status'" #default="scope">
-								<p class="p-0 m-0 mb-2">{{$t('mix.table_account_status')}}: 
-									<el-tag v-if="scope.row.status == 'normal'" type="success">{{$t('mix.table_normal')}}</el-tag>
-									<el-tag v-else type="danger">{{$t('mix.table_suspended')}}</el-tag>
-								</p>
+								<el-tag v-if="scope.row.status == 'normal'" type="success">{{$t('mix.table_normal')}}</el-tag>
+								<el-tag v-else type="danger">{{$t('mix.table_suspended')}}</el-tag>
 							</template>
 							
 							<template v-if="title.prop == 'action'" #default="scope">
@@ -105,7 +105,7 @@
 						</el-select>
 					</el-col>
 					
-					<el-col :sm="12" class="mb-3 d-flex justify-content-between">
+					<el-col :sm="12" class="mt-4">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_is_view_other')}}</label>
 						<div>
 							<el-switch v-model="postForm.is_view_other_agent" active-value="1" inactive-value="0"></el-switch>
@@ -119,9 +119,11 @@
 						</el-select>
 					</el-col>
 
-					<el-col :sm="12" class="mb-3 d-flex justify-content-between">
+					<el-col :sm="12" class="mt-4">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-						<el-switch v-model="postForm.status" active-value="1" inactive-value="0"></el-switch>
+						<div>
+							<el-switch v-model="postForm.status" active-value="1" inactive-value="0"></el-switch>
+						</div>
 					</el-col>
 
 					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
@@ -322,15 +324,15 @@ export default{
 			ajaxTitles:[{
                 prop:"no",
                 label:this.$t('mix.table_id'),
-                width:'50',
+                width:'70',
 			},{
                 prop:"name",
                 label:this.$t('mix.table_username'),
-                width:'100',
+                width:'90',
 			},{
                 prop:"status",
                 label:this.$t('mix.table_status'),
-                width:'120',
+                width:'80',
 			},{
                 prop:"total_order",
                 label:this.$t('mix.table_total_order'),
@@ -708,11 +710,15 @@ export default{
 			}
 			
 			this.initial()
-		},getAgentRow(id) {
-			this.$router.push('/management/admin/agentorder');
+		},getAgentRow(agent,master) {
+			this.$router.push('/management/admin/agentinfo');
 			// this.$m.setItem('group_id',id)
 			storeTempID.agent_id = agent
 			storeTempID.master_id = master
+		},handleSortChange({ column, prop, order }){
+			this.searchData.column = prop
+			this.searchData.order = order
+			this.initial()
 		}
 	},created(){
         this.postData.language = this.$m.getItem('currentLang')??'en'

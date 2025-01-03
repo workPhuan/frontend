@@ -1,6 +1,7 @@
 .info-container{
     padding-bottom: 0.7rem;
     display: flex;
+    justify-content: space-between;
 }
 
 .info{
@@ -22,7 +23,7 @@
 }
 
 .info-box{
-    width: 75%;
+    width: 70%;
     display: flex;
     justify-content: space-between;
 }
@@ -35,4 +36,12 @@
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
+}
+
+.blacklist{
+    display: flex;
+}
+
+.blacklist p{
+    padding-right: 0.2rem;
 }

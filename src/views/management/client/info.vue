@@ -1,60 +1,60 @@
 <template>
 	<div class="page-container">
 		<div class="page-header">
-			<el-button style="cursor: pointer;" class="custom-button" type="info" @click="toClientPage()">
+			<el-button style="cursor: pointer;" class="custom-button" type="info" @click="toAgentInfoPage()">
 				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{"Back to " + $t('menu.management_client_client')}}
 			</el-button>
 		</div>
 		
 		<div class="page-body p-3">
             <el-card shadow="never">
-                <h5 class="mb-3">{{$t('button.client_info')}}</h5>
-                <div class="info-container">
-                    <div class="info">
-                        <div class="tag">
-                            <p>{{$t('mix.table_name')}} :</p>
-                            <p>{{ $t('mix.table_icpass')}} :</p>
-                            <p>{{ $t('mix.table_phone') }}:</p>
+                <div>
+                    <h5 class="mb-3">{{$t('button.client_info')}}</h5>
+                    <div class="info-container">
+                        <div class="info">
+                            <div class="tag">
+                                <p>{{$t('mix.table_name')}} :</p>
+                                <p>{{ $t('mix.table_icpass')}} :</p>
+                                <p>{{ $t('mix.table_phone') }} :</p>
+                            </div>
+                            <div class="detail">
+                                <div class="blacklist">
+                                    <p>{{ accountDetails.icpass }}</p>
+                                    <el-button v-if="accountDetails.is_blacklist == 0" type="info" size="small"  @click="addBlackList(accountDetails.master_id)" >{{$t('button.blacklist')}}</el-button>
+                                    <el-button v-else-if="accountDetails.is_blacklist == 1" type="info" size="small"  @click="addBlackList(accountDetails.master_id)" >{{$t('button.cancel_blacklist')}}</el-button>
+                                </div>
+                                <p>{{ accountDetails.name }}</p>
+                                <p>{{ accountDetails.phone_mobile }}</p></div>
                         </div>
-                        <div class="detail">
-                            <p>{{ accountDetails.name }}</p>
-                            <p>{{ accountDetails.icpass }}</p>
-                            <p>{{ accountDetails.phone_mobile }}</p>
+                        <div class="info-box">
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_loan_time') }}</p>
+                                <p>{{ accountDetails.total_order }}</p>
+                            </div>
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_total_overdue') }}</p>
+                                <p>{{ accountDetails.total_overdue }}</p>
+                            </div>
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_total_loan') }}</p>
+                                <p>{{ accountDetails.total_loan }}</p>
+                            </div>
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_total_repay') }}</p>
+                                <p>{{ accountDetails.total_repay }}</p>
+                            </div>
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_early_repay') }}</p>
+                                <p>0</p>
+                            </div>
+                            <div class="details-box">
+                                <p>{{ $t('mix.table_today_overdue') }}</p>
+                                <p>0</p>
+                            </div>
                         </div>
                     </div>
-                    <div style="padding-right: 5px;">
-                        <el-button v-if="accountDetails.is_blacklist == 0" type="info" size="small"  @click="addBlackList(accountDetails.master_id)" >{{$t('button.blacklist')}}</el-button>
-                        <el-button v-else-if="accountDetails.is_blacklist == 1" type="info" size="small"  @click="addBlackList(accountDetails.master_id)" >{{$t('button.cancel_blacklist')}}</el-button>
-                    </div>
-                    
-                    <div class="info-box">
-                        <div class="details-box">
-                            <p>{{ $t('mix.table_loan_time') }}</p>
-                            <p>{{ accountDetails.total_order }}</p>
-                        </div>
-                        <div class="details-box">
-                            <p>{{ $t('mix.table_total_overdue') }}</p>
-                            <p>{{ accountDetails.total_overdue }}</p>
-                        </div>
-                        <div class="details-box">
-                            <p>{{ $t('mix.table_total_loan') }}</p>
-                            <p>{{ accountDetails.total_loan }}</p>
-                        </div>
-                        <div class="details-box">
-                            <p>{{ $t('mix.table_total_repay') }}</p>
-                            <p>{{ accountDetails.total_repay }}</p>
-                        </div>
-                        <div class="details-box">
-                            <p>{{ $t('mix.table_early_repay') }}</p>
-                            <p>0</p>
-                        </div>
-                        <div class="details-box">
-                            <p>{{ $t('mix.table_today_overdue') }}</p>
-                            <p>0</p>
-                        </div>
-                    </div>
-                </div>
 
+                </div>
                 <el-tabs type="border-card" @tab-click="loadTable">
                     <el-tab-pane key="loan" :label="$t('mix.table_loan_record')">
                         <el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
@@ -86,19 +86,19 @@
                     <el-tab-pane key="basic" :label="$t('mix.table_basic_info')">
                         <el-card shadow="never">
                             <el-descriptions>
-                                    {{ console.log(basicDetails.house_holding_id) }}
-                                    <el-descriptions-item :label="$t('mix.table_name')">{{ basicDetails.master_id }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_marital_status')">{{ basicDetails.marital_id }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_phone_mobile')">{{ basicDetails.phone_mobile }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_child')">{{ basicDetails.child_number }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_icpass')">{{ basicDetails.icpass }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_current_address')">{{ basicDetails.current_address }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_gender')">{{ basicDetails.gender_id }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_house_holding')">{{ basicDetails.house_holding_id }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_birthdate')">{{ basicDetails.dob }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_address')">{{ basicDetails.address }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_education')">{{ basicDetails.education_id }}</el-descriptions-item>
-                                    <el-descriptions-item :label="$t('mix.table_line_id')">{{ basicDetails.line_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_name')">{{ userDetails.master_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_marital_status')">{{ userDetails.marital_id }}</el-descriptions-item>
+                                    <br>
+                                    <el-descriptions-item :label="$t('mix.table_phone_mobile')">{{ userDetails.phone_mobile }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_child')">{{ userDetails.child_number }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_icpass')">{{ userDetails.icpass }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_current_address')">{{ userDetails.current_address }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_gender')">{{ userDetails.gender_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_house_holding')">{{ userDetails.house_holding_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_birthdate')">{{ userDetails.dob }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_address')">{{ userDetails.address }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_education')">{{ userDetails.education_id }}</el-descriptions-item>
+                                    <el-descriptions-item :label="$t('mix.table_line_id')">{{ userDetails.line_id }}</el-descriptions-item>
                             </el-descriptions>
                             <el-descriptions>
                                 <el-descriptions-item>
@@ -138,8 +138,7 @@
                     <el-tab-pane key="work" :label="$t('mix.table_work_info')">
                         <el-card shadow="never">
                             <el-descriptions>
-                                {{ console.log(this.workDetails) }}
-                                <el-descriptions-item :label="$t('mix.table_company_name')"> {{workDetails.company_name}} </el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_company_name')">{{ workDetails.company_name }}</el-descriptions-item>
                                 <el-descriptions-item :label="$t('mix.table_company_address')">{{ workDetails.company_address }}</el-descriptions-item>
                                 <el-descriptions-item :label="$t('mix.table_company_phone_mobile')">{{ workDetails.company_phone_mobile }}</el-descriptions-item>
                                 <el-descriptions-item :label="$t('mix.table_position')">{{ workDetails.position }}</el-descriptions-item>
@@ -151,13 +150,13 @@
                                     <label>
                                         <p class="p-0 m-0">{{$t('mix.table_staff_id_url')}}</p>
                                     </label>
-                                    <img :src="userDetails.staff_id_url" class="w-r-2 h-auto me-2"/>
+                                    <img :src="workDetails.staff_id_url" class="w-r-2 h-auto me-2"/>
                                 </el-descriptions-item>
                                 <el-descriptions-item>
                                     <label>
                                         <p class="p-0 m-0">{{$t('mix.table_bussiness_card_url')}}</p>
                                     </label>
-                                    <img :src="userDetails.bussiness_card_url" class="w-r-2 h-auto me-2"/>
+                                    <img :src="workDetails.bussiness_card_url" class="w-r-2 h-auto me-2"/>
                                 </el-descriptions-item>
                             </el-descriptions>
                         </el-card>
@@ -175,85 +174,74 @@
                     </el-tab-pane>
                     
                     <el-tab-pane key="contact" :label="$t('mix.table_contact_info')">
-                        <card shadow="never">
-                            <el-text class="mx-1">{{$t('mix.table_emergency_contacts')}}</el-text>
-                            <el-table :data="contactTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange">
-                                <template #empty v-if="contactTableData.length=='0'">
-                                    <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-                                    <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-                                </template>
-                                
-                                <el-table-column type="selection" width="55"></el-table-column>
-                                <template v-for="title in ajaxContactTitles" :key="title.prop">
-                                    <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
-                                        <template #header>
-                                            <p class="search-label">{{title.label}}</p>
-                                        </template>
-                                     
-
-                                        <template v-if="title.prop == 'action'" #default="scope">
-                                            <el-button v-if="$p.permissionChecker('toolAttributeEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
-                                            <el-button v-if="$p.permissionChecker('toolAttributeDelete')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
-                                        </template>
-                                    </el-table-column>
-                                </template>
-                            </el-table>
-                            <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
-                        </card>
-
                         <el-card shadow="never">
-                            <el-text class="mx-1">{{$t('mix.table_call_records')}}</el-text>
-                            <el-table :data="callTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange">
+                                <el-text class="mx-1">{{$t('mix.table_emergency_contacts')}}</el-text>
+                                <el-table :data="contactTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
                                     <template #empty v-if="callTableData.length=='0'">
+                                        <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
                                         <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
                                         <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
                                     </template>
                                     
-                                    <el-table-column type="selection" width="55"></el-table-column>
-                                    <template v-for="title in callAjaxTitles" :key="title.prop">
-                                        <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+                                    <template v-for="title in ajaxContactTitles" :key="title.prop">
+                                        <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
                                             <template #header>
                                                 <p class="search-label">{{title.label}}</p>
                                             </template>
-                                         
-    
+
                                             <template v-if="title.prop == 'action'" #default="scope">
-                                                <el-button v-if="$p.permissionChecker('toolAttributeEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
-                                                <el-button v-if="$p.permissionChecker('toolAttributeDelete')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
+                                                <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
+                                                <el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
+                                            </template>
+                                        </el-table-column>
+                                    </template>
+                                </el-table>
+                            </el-card>
+
+                            <el-card shadow="never">
+                                <el-text class="mx-1">{{$t('mix.table_call_records')}}</el-text>
+                                <el-table :data="callTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
+                                    <template #empty v-if="callTableData.length=='0'">
+                                        <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                        <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                        <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                                    </template>
+                                    
+                                    <template v-for="title in ajaxCallTitles" :key="title.prop">
+                                        <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
+                                            <template #header>
+                                                <p class="search-label">{{title.label}}</p>
                                             </template>
                                         </el-table-column>
                                     </template>
                                 </el-table>
                                 <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
-                        </el-card>
-                        
+    
+                            </el-card>
                     </el-tab-pane>
+
                     <el-tab-pane key="message" :label="$t('mix.table_message_log')">
-                        <el-card shadow="never">
-                            <el-table :data="messageTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
-                                <template #empty v-if="messageTableData.length=='0'">
-                                    <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
-                                    <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-                                    <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-                                </template>
-                                
-                                <template v-for="title in ajaxMessageTitles" :key="title.prop">
-                                    <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
-                                        <template #header>
-                                            <p class="search-label">{{title.label}}</p>
-                                        </template>
-
-                                        <template v-if="title.prop == 'action'" #default="scope">
-                                            <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
-                                            <el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
-                                        </template>
-                                    </el-table-column>
-                                </template>
-                            </el-table>
-                            <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
-
-                        </el-card>
-                        
+                        <div>
+                            <el-card shadow="never">
+                                <el-table :data="messageTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
+                                    <template #empty v-if="messageTableData.length=='0'">
+                                        <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
+                                        <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+                                        <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+                                    </template>
+                                    
+                                    <template v-for="title in ajaxMessageTitles" :key="title.prop">
+                                        <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type" >
+                                            <template #header>
+                                                <p class="search-label">{{title.label}}</p>
+                                            </template>
+                                        </el-table-column>
+                                    </template>
+                                </el-table>
+                                <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+    
+                            </el-card>
+                        </div>
                     </el-tab-pane>
 
                     <el-tab-pane key="location" :label="$t('mix.table_location_info')">
@@ -261,20 +249,20 @@
                             <el-text class="mx-1">{{$t('mix.table_home_address')}}</el-text>
                             <br>
                             <el-descriptions>
-                                <el-descriptions-item :label="$t('mix.table_state')">{{ clientDetail.state }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_city')">{{ clientDetail.city}}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_address')">{{ clientDetail.address }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_city')">{{ LocationDetails.city }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_town')">{{ LocationDetails.town}}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_address')">{{ LocationDetails.address }}</el-descriptions-item>
                             </el-descriptions>
                             <el-text class="mx-1">{{$t('mix.table_application_address')}}</el-text>
                             <br>
 
                             <el-descriptions>
-                                <el-descriptions-item :label="$t('mix.table_state')">{{ clientDetail.state_application }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_city')">{{ clientDetail.city_application }}</el-descriptions-item>
-                                <el-descriptions-item :label="$t('mix.table_address')">{{ clientDetail.address_application }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_city')">{{ LocationDetails.city_application }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_town')">{{ LocationDetails.town_application }}</el-descriptions-item>
+                                <el-descriptions-item :label="$t('mix.table_address')">{{ LocationDetails.address_application }}</el-descriptions-item>
                             </el-descriptions>
 
-                        </el-card>  
+                        </el-card>
                     </el-tab-pane>
                 </el-tabs>
             </el-card>
@@ -321,8 +309,10 @@ export default {
 			loading: true,
 			errors: [],
             tableData: [],
-            contactTableData: [],
+            tableData1: [],
             callTableData: [],
+            messageTableData: [],
+            contactTableData: [],
             total: 0,
             searchData:Object.assign({}, searchForm),
 			submitForm: {
@@ -443,23 +433,28 @@ export default {
                 label:this.$t('mix.table_action'),
                 width:'120',
 			}],
-            ajaxContactTitles: [{
+            ajaxMessageTitles: [{
+				prop:"created_at",
+				label:this.$t("mix.table_created_at"),
+				width: "100",
+				align:'center'
+			},{
 				prop:"name",
 				label:this.$t("mix.table_name"),
-				width: "100",
+				width: "150",
 				align:'center'
 			},{
 				prop:"phone_mobile",
 				label:this.$t("mix.table_phone_mobile"),
-				width: "100",
+				width: "150",
 				align:'center'
 			},{
-				prop:"relation",
-				label:this.$t("mix.table_relation"),
-				width: "100",
-				align:'center'
+				prop:"content",
+				label:this.$t("mix.table_content"),
+				width: "270",
+                align:'left'
 			}],
-            callAjaxTitles: [{
+            ajaxCallTitles: [{
 				prop:"name",
 				label:this.$t("mix.table_name"),
 				width: "100",
@@ -480,30 +475,41 @@ export default {
 				width: "100",
                 align:'center'
 			}],
+            ajaxContactTitles: [{
+				prop:"name",
+				label:this.$t("mix.table_name"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"phone_mobile",
+				label:this.$t("mix.table_phone_mobile"),
+				width: "100",
+				align:'center'
+			},{
+				prop:"relation",
+				label:this.$t("mix.table_relation"),
+				width: "100",
+				align:'center'
+			}],
             postForm:{
 				password: "",
                 confirm_password: "",
                 is_view_other: '',
-                agent_id: '',
                 status: '',
-                is_blacklist: '',
 				security: "",
 				userDetails: "",
 				name:[],
 				selectedIds:[],
 			},
-            is_blacklist: '',
             userDetails: [],
-            basicDetails: [],
-            workDetails: [],
-            bankDetails: [],
-            messageTableData: [],
-            locationDetails: [],
             accountDetails: [],
-            agentList: [],
+            LocationDetails: [],
+            workDetails:[],
+            bankDetails:[],
+            is_blacklist: 0,
 			postForm:{},
 			modalList:{},
-            agentDetail:[],
+            userDetails:[],
 			languageList:JSON.parse(this.$m.getItem('languageList')),
 			categoryList: [],
 			securityCheck: 0
@@ -520,7 +526,6 @@ export default {
 				var data = value.data
 				if(value.valid){
                     this.accountDetails = data.userDetails
-                    this.is_blacklist = data.userDetails.is_blacklist
 				}
 				this.initial()
 			})
@@ -535,7 +540,6 @@ export default {
 				var data = value.data
 
 				if(value.valid){
-                    this.userDetails = data.userDetails
 					this.tableData = data.datatable.data
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
@@ -564,7 +568,7 @@ export default {
 				this.loading = true;
 				this.submitForm.master_id = id
 				this.postData.data = JSON.stringify(this.submitForm);
-				var result = this.$m.postMethod("management/agent/agentinfo/resetPassword", this.postData);
+				var result = this.$m.postMethod("management/client/info/resetPassword", this.postData);
 				result.then((value) => {
 					var data = value.data;
 
@@ -580,7 +584,7 @@ export default {
 				this.loading = true
 				this.preloader(true)
                 this.postData.data = JSON.stringify(this.postForm)
-				var result = this.$m.postMethod("management/agent/agentinfo/DBresetPassword",this.postData)
+				var result = this.$m.postMethod("management/client/info/DBresetPassword",this.postData)
 
 				result.then((value) => {
 					var data = value.data
@@ -615,8 +619,8 @@ export default {
             }else if(tab.index == 3){
                 this.bankDetails(this.postData.data)
             }else if(tab.index == 4){
-                this.contactData(this.postData.data)
-                this.callData(this.postData.data)
+                this.contactData()
+                this.callData()
             }else if(tab.index == 5){
                 this.messageLog(this.postData.data)
             }else if(tab.index == 6){
@@ -624,12 +628,18 @@ export default {
             }
         },clientDetails(data){
             this.loading = true
+			this.searchData.master_id = storeTempID.master_id
 			this.postData.data = data
 			var result = this.$m.postMethod('management/client/info/clientDetails',this.postData)
 			result.then((value) => {
 				var data = value.data
+
 				if(value.valid){
-                    this.basicDetails = data.userDetails
+                    this.userDetails = data.userDetails
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
 				}
 				this.loading = false
 			})
@@ -643,6 +653,10 @@ export default {
 
 				if(value.valid){
                     this.workDetails = data.userDetails
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
 				}
 				this.loading = false
 			})
@@ -656,31 +670,14 @@ export default {
 
 				if(value.valid){
                     this.bankDetails = data.userDetails
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
 				}
 				this.loading = false
 			})
-        },contactData(){
-            this.loading = true
-
-            this.postData.data = JSON.stringify(this.searchData)
-
-            var result = this.$m.postMethod('management/client/info/contactAjaxTable',this.postData)
-            result.then((value) => {
-                var data = value.data
-                
-                if (value.valid) {
-                    this.contactTableData = data.datatable.data
-                    this.total = parseInt(data.datatable.total_number)
-                    this.listQuery.page = parseInt(data.datatable.current_pagination)
-                    this.listQuery.limit = parseInt(data.datatable.limit)
-                    this.modalList.contactAjaxTable = true
-
-                    this.loading = false
-                }
-                this.loading = false;
-            })
-
-		},callData(){
+        },callData(){
             this.loading = true
 
             this.postData.data = JSON.stringify(this.searchData)
@@ -701,121 +698,61 @@ export default {
                 this.loading = false;
             })
 
-		},messageData(){
+		},contactData(){
             this.loading = true
 
             this.postData.data = JSON.stringify(this.searchData)
 
-            var result = this.$m.postMethod('package/order/detail/messageAjaxTable',this.postData)
+            var result = this.$m.postMethod('management/client/info/contactAjaxTable',this.postData)
             result.then((value) => {
                 var data = value.data
                 
                 if (value.valid) {
-                    this.messageTableData = data.datatable.data
+                    this.contactTableData = data.datatable.data
                     this.total = parseInt(data.datatable.total_number)
                     this.listQuery.page = parseInt(data.datatable.current_pagination)
                     this.listQuery.limit = parseInt(data.datatable.limit)
+                    this.modalList.contactAjaxTable = true
 
                     this.loading = false
                 }
                 this.loading = false;
             })
-		},locationDetails(data){
+
+		},messageLog(data){
             this.loading = true
 			this.searchData.master_id = storeTempID.master_id
 			this.postData.data = data
-			var result = this.$m.postMethod('management/client/info/locationDetails',this.postData)
+			var result = this.$m.postMethod('management/client/info/messageAjaxTable',this.postData)
 			result.then((value) => {
 				var data = value.data
 
 				if(value.valid){
-					this.locationDetails = data.userDetails
+					this.tableData = data.datatable.data
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
 				}
 				this.loading = false
 			})
-        },addBlackList(id){
-            if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
-                this.loading = true
-                if(this.accountDetails.is_blacklist == 0){this.$confirm(this.$t('msg.msg_join_blacklist_desc'), this.$t('msg.join_blacklist'), {
-						confirmButtonText: this.$t('button.yes'),
-						cancelButtonText: this.$t('button.no'),
-						customClass: 'input-dialog',
-						showInput: (this.securityCheck == 1), 
-						inputPlaceholder: this.$t('mix.table_security'),
-						inputType: 'password',
-					}).then(({value}) => {
-                        this.loading = true
-                        this.submitForm.master_id = id;
-                        this.is_blacklist = 1
-                        this.submitForm.is_blacklist = this.is_blacklist;
-                        this.postData.data = JSON.stringify(this.submitForm)
-                        
-                        var formData = new FormData();
-                        formData.append('data', this.postData.data);
-                        formData.append('language', this.postData.language);
-        
-                        
-                        var result = this.$m.postMethod('management/client/info/DBaddBlackList',formData)
-                        result.then((value) => {
-                        var data = value.data
-                        if(value.valid){
-                            this.$message({
-                                message: data.returnMsg,
-                                type: 'success'
-                            });
-                        }else{					
-                            this.$m.popupErrorMessage(data.returnMsg,this)
-                        }
-                        this.clearPostForm()
-                        this.getInitial()
-                        this.loading = false
-                        });
+        },locationDetails(data){
+            this.loading = true
+			this.searchData.master_id = storeTempID.master_id
+			this.postData.data = data
+			var result = this.$m.postMethod('management/client/info/locationAjaxTable',this.postData)
+			result.then((value) => {
+				var data = value.data
 
-                    })
-                }else{
-                    this.submitForm.master_id = id;
-                    this.submitForm.status = status;
-                    this.postData.data = JSON.stringify(this.submitForm)
-                    
-                    var formData = new FormData()
-                    formData.append('data', this.postData.data)
-                    formData.append('language', this.postData.language)
-
-                    var result = this.$m.postMethod('management/agent/agentinfo/DBstatus',formData)
-                    result.then((value) => {
-                        this.loading = true
-                        this.submitForm.master_id = id;
-                        this.is_blacklist = 0
-                        this.submitForm.is_blacklist = this.is_blacklist;
-                        this.postData.data = JSON.stringify(this.submitForm)
-                        
-                        var formData = new FormData();
-                        formData.append('data', this.postData.data);
-                        formData.append('language', this.postData.language);
-        
-                        
-                        var result = this.$m.postMethod('management/client/info/DBaddBlackList',formData)
-                        result.then((value) => {
-                        var data = value.data
-                        if(value.valid){
-                            this.$message({
-                                message: data.returnMsg,
-                                type: 'success'
-                            });
-                        }else{					
-                            this.$m.popupErrorMessage(data.returnMsg,this)
-                        }
-                        this.clearPostForm()
-                        this.getInitial()
-                        this.loading = false
-                        });
-                    });
-                }
-			};
-        },toClientPage(){
-			this.$router.push('/management/client/client');
-		},toAgentInfoPage(id){
-			this.$router.push('/management/client/client/agentinfo');
+				if(value.valid){
+					this.LocationDetails = data.clientDetail
+					this.total = parseInt(data.datatable.total_number)
+					this.listQuery.page = parseInt(data.datatable.current_pagination)
+					this.listQuery.limit = parseInt(data.datatable.limit)
+				}
+				this.loading = false
+			})
+        },toAgentInfoPage(){
+			this.$router.push('/management/admin/agentinfo');
             storeTempID.agent_id = id
 		},getAgentRow(id){
             if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
@@ -899,7 +836,7 @@ export default {
                         formData.append('language', this.postData.language);
         
                         
-                        var result = this.$m.postMethod('management/agent/agentinfo/DBstatus',formData)
+                        var result = this.$m.postMethod('management/agent/info/DBstatus',formData)
                         result.then((value) => {
                         var data = value.data
                         if(value.valid){
@@ -928,7 +865,7 @@ export default {
 				formData.append('data', this.postData.data)
 				formData.append('language', this.postData.language)
 
-				var result = this.$m.postMethod('management/agent/agentinfo/DBviewOther',formData)
+				var result = this.$m.postMethod('management/agent/info/DBviewOther',formData)
 				result.then((value) => {
 					var data = value.data
 					if(value.valid){
@@ -960,7 +897,7 @@ export default {
 					this.postForm.master_id = masterID
 					this.postData.data = JSON.stringify(this.postForm)
 
-					var result = this.$m.postMethod('management/admin/admin/DBstatus',this.postData)
+					var result = this.$m.postMethod('management/agent/info/DBstatus',this.postData)
 
 					result.then((value) => {
 						var data = value.data
@@ -983,7 +920,75 @@ export default {
 				})
 			}
 			
-		},paginationChange(value){
+		},addBlackList(){
+            if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
+                this.loading = true
+                if(this.accountDetails.is_blacklist == 0){this.$confirm(this.$t('msg.msg_join_blacklist_desc'), this.$t('msg.join_blacklist'),{
+						confirmButtonText: this.$t('button.yes'),
+						cancelButtonText: this.$t('button.no'),
+						customClass: 'input-dialog',
+						showInput: (this.securityCheck == 1), 
+						inputPlaceholder: this.$t('mix.table_security'),
+						inputType: 'password',
+					}).then(({value}) => {
+                        this.loading = true
+                        this.submitForm.master_id = id;
+                        this.is_blacklist = 1
+                        this.submitForm.is_blacklist = this.is_blacklist;
+                        this.postData.data = JSON.stringify(this.submitForm)
+                        
+                        var formData = new FormData();
+                        formData.append('data', this.postData.data);
+                        formData.append('language', this.postData.language);
+        
+                        
+                        var result = this.$m.postMethod('management/client/info/DBaddBlackList',formData)
+                        result.then((value) => {
+                        var data = value.data
+                        if(value.valid){
+                            this.$message({
+                                message: data.returnMsg,
+                                type: 'success'
+                            });
+                        }else{					
+                            this.$m.popupErrorMessage(data.returnMsg,this)
+                        }
+                        this.clearPostForm()
+                        this.getInitial()
+                        this.loading = false
+                        });
+
+                    })
+                }else{
+                    this.loading = true
+                    this.submitForm.master_id = id;
+                    this.is_blacklist = 0
+                        this.submitForm.is_blacklist = this.is_blacklist;
+                    this.postData.data = JSON.stringify(this.submitForm)
+                    
+                    var formData = new FormData()
+                    formData.append('data', this.postData.data)
+                    formData.append('language', this.postData.language)
+
+                    var result = this.$m.postMethod('management/client/info/DBaddBlackList',formData)
+                    result.then((value) => {
+                        
+                        var data = value.data
+                        if(value.valid){
+                            this.$message({
+                                message: data.returnMsg,
+                                type: 'success'
+                            });
+                        }else{					
+                            this.$m.popupErrorMessage(data.returnMsg,this)
+                        }
+                        this.clearPostForm()
+                        this.getInitial()
+                        this.loading = false
+                    });
+                }
+			};
+        },paginationChange(value){
 			if(value.page != ""){
 				this.searchData.pagination = value.page
 			}
