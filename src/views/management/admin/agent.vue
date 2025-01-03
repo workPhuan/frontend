@@ -15,11 +15,9 @@
 					<legend>{{$t('mix.table_filter')}}</legend>
 					<div class="p-3 d-flex flex-wrap">
 
-						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.name" :placeholder="$t('mix.table_please_enter')+$t('mix.table_username')" @keyup.enter.native="initial()">
-							<template #prepend>
-								<label>{{$t('mix.table_username')}}</label>
-							</template>
-						</el-input>
+						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.agent_id" :placeholder="$t('menu.management_agent_agent')" clearable @change="initial()" size="large">
+							<el-option v-for="item in searchAgentList" :label="item.login" :value="item.master_id">{{item.login}}</el-option>
+						</el-select>
 						
 						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.status" :placeholder="$t('mix.table_status')" clearable @change="initial()" size="large">
 							<el-option :label="$t('mix.table_enabled')" value="normal">{{$t('mix.table_enabled')}}</el-option>
@@ -44,12 +42,14 @@
 							</template>
 
 							<template v-if="title.prop == 'status'" #default="scope">
-								<el-tag v-if="scope.row.status == 'normal'" type="success">{{$t('mix.table_normal')}}</el-tag>
-								<el-tag v-else type="danger">{{$t('mix.table_suspended')}}</el-tag>
+								<p class="p-0 m-0 mb-2">{{$t('mix.table_account_status')}}: 
+									<el-tag v-if="scope.row.status == 'normal'" type="success">{{$t('mix.table_normal')}}</el-tag>
+									<el-tag v-else type="danger">{{$t('mix.table_suspended')}}</el-tag>
+								</p>
 							</template>
 							
 							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.agent_id,scope.row.master_id)">{{$t('button.info')}}</el-button>
+								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="getAgentRow(scope.row.agent_id)">{{$t('button.info')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button primary m-1" @click="getEditRow(scope.row.id)">{{$t('button.edit')}}</el-button>
 								<el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button danger m-1" @click="deleteRow(scope.row.id)">{{$t('button.delete')}}</el-button>
 							</template>
@@ -105,11 +105,9 @@
 						</el-select>
 					</el-col>
 					
-					<el-col :sm="12" class="mt-4">
+					<el-col :sm="12" class="mb-3 d-flex justify-content-between">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_is_view_other')}}</label>
-						<div>
-							<el-switch v-model="postForm.is_view_other" active-value="1" inactive-value="0"></el-switch>
-						</div>
+						<el-switch v-model="postForm.is_view_other" active-value="1" inactive-value="0"></el-switch>
 					</el-col>
 					
 					<el-col :sm="12" class="mb-3">
@@ -119,11 +117,9 @@
 						</el-select>
 					</el-col>
 
-					<el-col :sm="12" class="mt-4">
+					<el-col :sm="12" class="mb-3 d-flex justify-content-between">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('mix.table_status')}}</label>
-						<div>
-							<el-switch v-model="postForm.status" active-value="1" inactive-value="0"></el-switch>
-						</div>
+						<el-switch v-model="postForm.status" active-value="1" inactive-value="0"></el-switch>
 					</el-col>
 
 					<el-col :sm="24" class="mb-3" v-if="securityCheck == 1">
@@ -301,40 +297,35 @@ export default{
 			ajaxTitles:[{
                 prop:"no",
                 label:this.$t('mix.table_id'),
-                width:'70',
+                width:'50',
 			},{
                 prop:"login",
                 label:this.$t('mix.table_username'),
-                width:'90',
+                width:'100',
 			},{
                 prop:"status",
                 label:this.$t('mix.table_status'),
-                width:'80',
+                width:'120',
 			},{
                 prop:"total_order",
                 label:this.$t('mix.table_total_order'),
-                width:'90',
-				align: 'center',
+                width:'100',
 			},{
                 prop:"total_client",
                 label:this.$t('mix.table_total_client'),
-                width:'90',
-				align: 'center'
+                width:'100',
 			},{
                 prop:"total_loan",
-                label:this.$t('mix.table_total_loan')+' NT$',
+                label:this.$t('mix.table_total_loan'),
                 width:'100',
-				align: 'center'
 			},{
                 prop:"total_repay",
-                label:this.$t('mix.table_total_repay')+' NT$',
-                width:'130',
-				align: 'center'
+                label:this.$t('mix.table_total_repay'),
+                width:'120',
 			},{
                 prop:"total_overdue",
                 label:this.$t('mix.table_total_overdue'),
                 width:'100',
-				align: 'center'
 			},{
                 prop:"action",
                 label:this.$t('mix.table_action'),
@@ -588,11 +579,10 @@ export default{
 			}
 			
 			this.initial()
-		},getAgentRow(agent,master) {
-			this.$router.push('/management/admin/agentinfo');
+		},getAgentRow(id) {
+			this.$router.push('/management/admin/agentorder');
 			// this.$m.setItem('group_id',id)
-			storeTempID.agent_id = agent
-			storeTempID.master_id = master
+			storeTempID.agent_id = id
 		}
 	},created(){
         this.postData.language = this.$m.getItem('currentLang')??'en'
