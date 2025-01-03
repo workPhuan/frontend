@@ -779,7 +779,9 @@
 		"product_management":					"Product Management",
 		"product_item_list":					"Product Item List",
 		"management_product_item_add":			"Add Product",
-		"management_product_item_edit":			"Edit Product"
+		"management_product_item_edit":			"Edit Product",
+		"app_tools_householding":				"House Holding",
+		"app_tools_marital":					"Marital"
 	},"login":{
 		"table_signin":                         "Sign In",
 		"table_welcome_back":                   "{appname} management platform",

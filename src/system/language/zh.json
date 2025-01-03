@@ -679,7 +679,9 @@
 		"product_management":					"產品管理",
 		"product_item_list":					"產品清單",
 		"management_product_item_add":			"创建產品",
-		"management_product_item_edit":			"修改產品"
+		"management_product_item_edit":			"修改產品",
+		"app_tools_householding":				"持有類型",
+		"app_tools_marital":					"婚姻"
 	},"login":{
 		"table_signin":							"登入",
 		"table_welcome_back":					"歡迎回到{appname}管理平臺",

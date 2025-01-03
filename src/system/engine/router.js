@@ -82,6 +82,10 @@ export const mainRoutes = [
 				meta: {title:'menu.app_tools_marital',icon:'flag',permission: 'DSC81L', parents:'app'},
 				component: () => import('@/views/app/tools/marital.vue'),
 			},{
+				path: '/app/tools/householding',
+				meta: {title:'menu.app_tools_householding',icon:'flag',permission: 'DSC81L', parents:'app'},
+				component: () => import('@/views/app/tools/householding.vue'),
+			},{
 				path: '/app/tools/country',
 				meta: {title:'menu.app_tools_country',icon:'earth-asia',permission: 'RZYSSQ', parents:'app'},
 				component: () => import('@/views/app/tools/country.vue'),
