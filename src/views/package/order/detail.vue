@@ -18,7 +18,7 @@
                         <el-descriptions-item :label="$t('mix.table_status')">{{ orderDetail.status_name }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_product')">{{ orderDetail.product_name }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_period')">{{ orderDetail.period }}</el-descriptions-item>
-                        <el-descriptions-item :label="$t('mix.table_agent')">{{ orderDetail.name }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_agent')">{{ orderDetail.agent_name }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_loan_amount')">{{ orderDetail.loan_amount }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_payment_period')">{{ orderDetail.payment_period }}</el-descriptions-item>
                     </el-descriptions>
@@ -34,7 +34,7 @@
                     </el-tab-pane>
 
                     <el-tab-pane key="record" :label="$t('mix.table_order_records')">
-                        <el-table :data="orderTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange" v-model="selectedRows">
+                        <el-table :data="orderTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true" @selection-change="handleSelectionChange">
                             <template #empty v-if="callTableData.length=='0'">
                                 <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
                                 <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
@@ -46,6 +46,21 @@
                                     <template #header>
                                         <p class="search-label">{{title.label}}</p>
                                     </template>
+                                    
+                                    <template v-if="title.prop == 'old_status'" #default="scope">
+                                        <el-tag 
+                                            :type="scope.row.old_status_color">
+                                            {{ scope.row.old_status }}
+                                        </el-tag>
+                                    </template>
+
+                                    <template v-if="title.prop == 'current_status'" #default="scope">
+                                        <el-tag 
+                                            :type="scope.row.current_status_color">
+                                            {{ scope.row.current_status }}
+                                        </el-tag>
+                                    </template>
+
                                 </el-table-column>
                             </template>
                         </el-table>
@@ -61,15 +76,15 @@
                         <el-descriptions-item :label="$t('mix.table_name')">{{ clientDetail.name }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_marital_status')">{{ clientDetail.marital_status }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_phone_mobile')">{{ clientDetail.phone_mobile }}</el-descriptions-item>
-                        <!-- <el-descriptions-item :label="$t('mix.table_child')">{{ clientProfile.child_number }}</el-descriptions-item> -->
+                        <el-descriptions-item :label="$t('mix.table_child')">{{ clientProfile.child_number }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_icpass')">{{ clientDetail.icpass }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_current_address')">{{ clientProfile.current_address }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_gender')">{{ clientDetail.gender }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_house_holding')">{{ clientDetail.house_holding }}</el-descriptions-item>
-                        <!-- <el-descriptions-item :label="$t('mix.table_birthdate')">{{ clientProfile.dob }}</el-descriptions-item> -->
-                        <!-- <el-descriptions-item :label="$t('mix.table_address')">{{ clientProfile.address }}</el-descriptions-item> -->
+                        <el-descriptions-item :label="$t('mix.table_birthdate')">{{ clientProfile.dob }}</el-descriptions-item>
+                        <el-descriptions-item :label="$t('mix.table_address')">{{ clientProfile.address }}</el-descriptions-item>
                         <el-descriptions-item :label="$t('mix.table_education')">{{ clientDetail.education }}</el-descriptions-item>
-                        <!-- <el-descriptions-item :label="$t('mix.table_line_id')">{{ clientProfile.line_id }}</el-descriptions-item> -->
+                        <el-descriptions-item :label="$t('mix.table_line_id')">{{ clientProfile.line_id }}</el-descriptions-item>
                 </el-descriptions>
                 <div>
                     <img :src="clientProfile.icpass_front_url" class="w-r-2 h-auto me-2"/>
@@ -153,15 +168,6 @@
                                 <p class="search-label">{{title.label}}</p>
                             </template>
 
-
-                            <!-- <template v-if="title.prop == 'code'" #default="scope">
-                                <el-link type="primary" @click="setTempID(scope.row.id)">{{ scope.row.code }}</el-link>
-                                <el-tooltip content="Copy" placement="top">
-                                    <el-icon class="ml-3 clickable-icon" @click="copy($m.getItem('system_id')), $m.copyMessage($t('msg.msg_copy_success'))"></el-icon>
-                                </el-tooltip>
-                            </template> -->
-
-
                             <template v-if="title.prop == 'action'" #default="scope">
                                 <el-button v-if="$p.permissionChecker('userChatRoleEdit')" class="custom-button success m-1" @click="setTempID(scope.row.id)">{{$t('button.info')}}</el-button>
                                 <el-button v-if="selectedRowId.includes(scope.row.id) && $p.permissionChecker('userChatGroupDelete')" class="custom-button danger m-1" @click="getAssignRow(selectedRows), modalList.getAssignRow = true">{{$t('button.assign')}}</el-button>							
@@ -232,16 +238,16 @@
                 <el-text class="mx-1">{{$t('mix.table_home_address')}}</el-text>
                 <br>
                 <el-descriptions>
-                    <el-descriptions-item :label="$t('mix.table_state')">{{ clientDetail.state }}</el-descriptions-item>
-                    <el-descriptions-item :label="$t('mix.table_city')">{{ clientDetail.city}}</el-descriptions-item>
+                    <el-descriptions-item :label="$t('mix.table_city')">{{ clientDetail.city }}</el-descriptions-item>
+                    <el-descriptions-item :label="$t('mix.table_town')">{{ clientDetail.town}}</el-descriptions-item>
                     <el-descriptions-item :label="$t('mix.table_address')">{{ clientDetail.address }}</el-descriptions-item>
                 </el-descriptions>
                 <el-text class="mx-1">{{$t('mix.table_application_address')}}</el-text>
                 <br>
 
                 <el-descriptions>
-                    <el-descriptions-item :label="$t('mix.table_state')">{{ clientDetail.state_application }}</el-descriptions-item>
                     <el-descriptions-item :label="$t('mix.table_city')">{{ clientDetail.city_application }}</el-descriptions-item>
+                    <el-descriptions-item :label="$t('mix.table_town')">{{ clientDetail.town_application }}</el-descriptions-item>
                     <el-descriptions-item :label="$t('mix.table_address')">{{ clientDetail.address_application }}</el-descriptions-item>
                 </el-descriptions>
 
@@ -550,21 +556,6 @@ export default {
                 this.loading = false;
                 return;
             }
-
-            // this.$m.postMethod(table, this.postData)
-            //     .then((value) => {
-            //         var data = value.data;
-
-            //         if (value.valid) {
-            //             this.clientProfile = data.clientProfile;
-            //             this.clientDetail = data.clientDetail;
-            //             // this.tableData1 = data.datatable.data
-            //             // this.tableData2 = data.datatable.data
-                        
-            //         }
-            //         this.loading = false;
-
-            //     })
         },basicData(){
 			this.loading = true
 

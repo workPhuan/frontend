@@ -50,26 +50,10 @@
 								<p class="search-label">{{title.label}}</p>
 							</template>
 
-							<!-- <template v-if="title.prop == 'status'" #default="scope">
-								<el-tag v-if="scope.row.status == 'normal'" type="success">{{$t('mix.table_normal')}}</el-tag>
-								<el-tag v-else type="danger">{{$t('mix.table_suspended')}}</el-tag>
-							</template> -->
-
-							<!-- <template v-if="title.prop == 'status_name'" #default="scope">
-								<div class="status-label text-center" :style="'border: 1px solid '+scope.row.status_color+';color:'+scope.row.status_color">
-								{{scope.row.status_name}}
-								</div>
-							</template> -->
-
 							<template v-if="title.prop == 'status_name'" #default="scope">
-								<el-tag v-if="scope.row.status_name === 'Complete'" type="success" class="status-label">
-									{{scope.row.status_name}}
-								</el-tag>
-								<el-tag v-else-if="scope.row.status_name === 'Pending'" type="warning" class="status-label">
-									{{scope.row.status_name}}
-								</el-tag>
-								<el-tag v-else type="warning" class="status-label">
-									{{scope.row.status_name}}
+								<el-tag 
+									:type="scope.row.status_color">
+									{{ scope.row.status_name }}
 								</el-tag>
 							</template>
 
