@@ -157,7 +157,7 @@
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.package_setting_product')}}</label>
 						<div v-for="(list,index) in productList" :key="index" :label="list.name" :value="list.id">
-							<el-checkbox v-model="postForm.productList" :label="list.name" />
+							<el-checkbox v-model="postForm.productList[index]" :label="list.name" />
 						</div>
 					</el-col>
 
@@ -377,7 +377,7 @@ export default{
 				payment_method: '',
 				repayment_method: '',
 				is_view_other_agent: 0,
-				productList : {},
+				productList : [],
 				status: 0,
 			},
 			permissionList:[],
@@ -502,6 +502,9 @@ export default{
 					if(value.valid){
 						this.productList = data.productList
 						this.paymentList = data.paymentList
+						data.productList.forEach((val)=>{
+							this.postForm.productList.push(val)
+						})
 						this.postForm.master_id = id
 						this.postForm = data.thisDetail
 						this.postForm.is_view_other_agent = parseInt(data.thisDetail.is_view_other_agent)
