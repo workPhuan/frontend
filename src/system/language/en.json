@@ -782,7 +782,13 @@
 		"management_product_item_add":			"Add Product",
 		"management_product_item_edit":			"Edit Product",
 		"app_tools_householding":				"House Holding",
+		"app_tools_householding_add":			"Add House Holding",
+		"app_tools_householding_edit":			"Edit House Holding",
+		"app_tools_householding_delete":		"Delete House Holding",
 		"app_tools_marital":					"Marital",
+		"app_tools_marital_add":				"Add Marital",
+		"app_tools_marital_edit":				"Edit Marital",
+		"app_tools_marital_delete":				"Delete Marital",
 		"app_tools_state":						"State",
 		"app_tools_city":						"City"
 	},"login":{

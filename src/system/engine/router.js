@@ -90,6 +90,14 @@ export const mainRoutes = [
 				meta: {title:'menu.app_tools_country',icon:'earth-asia',permission: 'RZYSSQ', parents:'app'},
 				component: () => import('@/views/app/tools/country.vue'),
 			},{
+				path: '/app/tools/state',
+				meta: {title:'menu.app_tools_state',icon:'earth-asia',permission: 'RZYSSQ', parents:'app'},
+				component: () => import('@/views/app/tools/state.vue'),
+			},{
+				path: '/app/tools/city',
+				meta: {title:'menu.app_tools_city',icon:'earth-asia',permission: 'RZYSSQ', parents:'app'},
+				component: () => import('@/views/app/tools/city.vue'),
+			},{
 				path: '/app/tools/role',
 				meta: {title:'menu.app_tools_role',icon:'user',permission: '4JNCD4', parents:'app'},
 				component: () => import('@/views/app/tools/role.vue'),
