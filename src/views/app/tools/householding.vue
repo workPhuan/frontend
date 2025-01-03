@@ -2,11 +2,11 @@
 	<div class="page-container">
 		<div class="page-header">
 			<label>
-				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{$t('menu.app_tools_attribute')}}
+				<i class="fa-solid fa-arrow-right-to-bracket pe-2"></i> {{$t('menu.app_tools_householding')}}
 			</label>
 			<div class="page-toolbar">
-				<el-button class="custom-button plain" @click="getAddRow()" :loading="loading" v-if="$p.permissionChecker('toolAttributeAdd')">{{$t('menu.app_tools_attribute_add')}}</el-button>
-				<el-button class="custom-button plain" @click="deleteRow('multiple')" :loading="loading" v-if="$p.permissionChecker('toolAttributeDelete')">{{$t('menu.app_tools_attribute_delete')}}</el-button>
+				<el-button class="custom-button plain" @click="getAddRow()" :loading="loading" v-if="$p.permissionChecker('toolAttributeAdd')">{{$t('menu.app_tools_householding_add')}}</el-button>
+				<el-button class="custom-button plain" @click="deleteRow('multiple')" :loading="loading" v-if="$p.permissionChecker('toolAttributeDelete')">{{$t('menu.app_tools_householding_delete')}}</el-button>
 			</div>
 		</div>
 		
@@ -71,7 +71,7 @@
 			</el-card>
 		</div>
 		
-		<el-dialog v-model="modalList.addRow" :title="$t('menu.app_tools_attribute_add')" :before-close="clearPostForm">
+		<el-dialog v-model="modalList.addRow" :title="$t('menu.app_tools_householding_add')" :before-close="clearPostForm">
 			<el-form label-position="top" label-width="auto" @submit.native.prevent>
 				<el-row :gutter="20">
 					<el-col :span="24" class="mb-3">
@@ -129,7 +129,7 @@
 			</template>
         </el-dialog>
 		
-		<el-dialog v-model="modalList.editRow" :title="$t('menu.app_tools_attribute_edit')" :before-close="clearPostForm">
+		<el-dialog v-model="modalList.editRow" :title="$t('menu.app_tools_householding_edit')" :before-close="clearPostForm">
 			<el-form label-position="top" label-width="auto" @submit.native.prevent>
 				<el-row :gutter="20">
 					<el-col :span="24" class="mb-3">

@@ -681,7 +681,13 @@
 		"management_product_item_add":			"创建產品",
 		"management_product_item_edit":			"修改產品",
 		"app_tools_householding":				"持有類型",
+		"app_tools_householding_add":			"添加持有類型",
+		"app_tools_householding_edit":			"编辑持有類型",
+		"app_tools_householding_delete":		"删除持有類型",
 		"app_tools_marital":					"婚姻",
+		"app_tools_marital_add":				"添加婚姻",
+		"app_tools_marital_edit":				"编辑婚姻",
+		"app_tools_marital_delete":				"删除婚姻",
 		"app_tools_state":						"縣市",
 		"app_tools_city":						"市區"
 	},"login":{
