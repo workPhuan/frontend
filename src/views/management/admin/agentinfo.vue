@@ -90,39 +90,39 @@
                         </div>
                         
                         <div class="page-body p-3">
-                            <el-table :data="tableData1" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
-                                <template #empty v-if="tableData.length=='0'">
-                                    <img class="ajaxtable-empty-img pt-5" src="@/assets/img/common/search-1.svg">
-                                    <div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
-                                    <div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
-                                </template>
-                                
-                                <template v-for="title in ajaxTitles2" :key="title.prop">
-                                    <el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
-                                        <template #header>
-                                            <div class="d-flex">
-                                                <p class="search-label">{{title.label}}</p>
-                                                <el-tooltip>
-                                                    <template #content>
-                                                        <div v-html="amountHoverDesc"></div>
-                                                    </template>
-                                                    <i style="margin-left: 5px;" v-if="title.prop === 'amount'" class="far fa-exclamation-circle"></i>
-                                                </el-tooltip>
-                                            </div>
-                                        </template>
-                                        <template v-if="title.prop == 'status'" #default="scope">
-                                            <el-switch v-model="scope.row.status" active-value="1" inactive-value="0" :disabled="scope.row.is_edit === false"  @change="statusRow(scope.row.id,scope.row.status)"></el-switch>
-                                        </template>
+							<el-table :data="itemTableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
+								<template #empty v-if="itemTableData.length=='0'">
+									<div class="ajaxtable-empty-title">{{$t('msg.msg_ajaxtable_empty')}}</div>
+									<div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
+								</template>
+								
+								<template v-for="title in itemAjaxTitles" :key="title.prop">
+									<el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
+										<template #header>
+											<div class="d-flex">
+												<p class="search-label">{{title.label}}</p>
+												<el-tooltip>
+													<template #content>
+														<div v-html="amountHoverDesc"></div>
+													</template>
+													<i style="margin-left: 5px;" v-if="title.prop === 'amount'" class="far fa-exclamation-circle"></i>
+												</el-tooltip>
+											</div>
+										</template>
+										<template v-if="title.prop == 'status'" #default="scope">
+											<el-switch v-model="scope.row.status" active-value="1" inactive-value="0" :disabled="scope.row.is_edit === false"  @change="statusRow(scope.row.id,scope.row.status)"></el-switch>
+										</template>
 
-                                        <template v-if="title.prop == 'action'" #default="scope">
-                                            <el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary" @click="getEditRow(scope.row.id)">{{$t('menu.management_product_item_edit')}}</el-button>
-                                        </template>
-                                    </el-table-column>
-                                </template>
-                            </el-table>
+										<template v-if="title.prop == 'action'" #default="scope">
+											<el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary" @click="getEditRow(scope.row.id)">{{$t('menu.management_product_item_edit')}}</el-button>
+										</template>
+									</el-table-column>
+								</template>
+							</el-table>
 
-                            <pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
-                        </div>
+							<pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
+						</div>
+
                     </el-tab-pane>
 
                     <el-tab-pane key="expense" :label="$t('menu.agent_expense')">
@@ -176,6 +176,23 @@
 				</div>
 			</template>
 		</el-dialog>
+
+		<el-dialog v-model="modalList.addRow" :title="$t('menu.management_product_item_add')" :before-close="clearPostForm" class="dialog-md">
+			<el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
+				<el-template :gutter="20">
+					<div v-for="(list,index) in productList" :key="index" :label="list.name" :value="list.id">
+						<el-checkbox v-model="postForm.productList" :label="list.name" />
+					</div>
+				</el-template>
+			</el-form>
+			
+			<template #footer>
+				<div class="d-flex justify-content-center align-item-center">
+					<el-button class="custom-button success font-8 pt-3 pb-3" @click="addRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
+					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.addRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
+				</div>
+			</template>
+		</el-dialog>
 		
 	</div>
 </template>
@@ -199,6 +216,7 @@ export default {
 			errors: [],
             tableData: [],
             tableData1: [],
+			itemTableData: [],
             total: 0,
             searchData:Object.assign({}, searchForm),
 			submitForm: {
@@ -314,9 +332,26 @@ export default {
                 label:this.$t('mix.table_expense'),
                 width:'120',
 			}],
+			itemAjaxTitles:[{
+                prop:"name",
+                label:this.$t('mix.table_name'),
+				align:'center',
+                width:'100',
+			},{
+                prop:"period",
+                label:this.$t('mix.table_period'),
+				align:'center',
+                width:'100',
+			},{
+                prop:"status",
+                label:this.$t('mix.table_account_status'),
+				align:'center',
+                width:'150',
+			}],
             postForm:{
 				password: "",
                 confirm_password: "",
+				productList:[],
                 is_view_other: '',
                 status: '',
 				security: "",
@@ -324,6 +359,7 @@ export default {
 				name:[],
 				selectedIds:[],
 			},
+			productList: [],
 			postForm:{},
 			modalList:{},
             agentDetail:[],
@@ -365,18 +401,16 @@ export default {
 				this.loading = false
 			})
 		},clearPostForm(done){
-			this.postForm.code = ""
-			this.postForm.group_id = ""
-			this.postForm.group_name = ""
-			this.postForm.username = ""
-			this.postForm.account_package_id = ""
-			this.postForm.status = 1
-			this.postForm.img_url = ''
-			this.imagePickerFileUrl = ''
-			this.imagePickerFile = ''
-			this.postForm.security = ""
-			this.postForm.userDetails = ""
-			
+				this.password = ''
+                this.confirm_password = ''
+				this.productList = []
+                this.is_view_other = ''
+                this.status = ''
+				this.security = ''
+				this.userDetails = ''
+				this.name = ''
+				this.selectedIds = ''
+
 			if(done != undefined){
 				done()
 			}
@@ -462,12 +496,13 @@ export default {
 				var data = value.data
 
 				if(value.valid){
-					this.tableData1 = data.datatable.data
+					this.itemTableData = data.datatable.data
+					console.log(this.itemTableData)
 					this.total = parseInt(data.datatable.total_number)
 					this.listQuery.page = parseInt(data.datatable.current_pagination)
 					this.listQuery.limit = parseInt(data.datatable.limit)
 
-					this.ajaxTitles2 = [{
+					this.itemAjaxTitles = [{
 						prop: "name",
 						label: this.$t('mix.table_name'),
 						width:'150',
@@ -489,7 +524,7 @@ export default {
 						this.tempTitle.label = element.name
 						this.tempTitle.width = 100
 						this.tempTitle.align = 'center'
-						this.ajaxTitles2.push(this.tempTitle)
+						this.itemAjaxTitles.push(this.tempTitle)
 					
 					})
 					this.tempTitle = {}
@@ -497,14 +532,14 @@ export default {
 					this.tempTitle.label = this.$t('mix.table_status'),
 					this.tempTitle.width = 100
 					this.tempTitle.align = 'center'
-					this.ajaxTitles2.push(this.tempTitle)
+					this.itemAjaxTitles.push(this.tempTitle)
 
 					this.tempTitle = {}
 					this.tempTitle.prop = "action",
 					this.tempTitle.label = this.$t('mix.table_action'),
 					this.tempTitle.width = 100
 					this.tempTitle.align = 'center'
-					this.ajaxTitles2.push(this.tempTitle)
+					this.itemAjaxTitles.push(this.tempTitle)
 				}
 				this.loading = false
 			})
@@ -536,12 +571,12 @@ export default {
 			if(this.$p.permissionChecker('adminAdminAdd') && this.loading == false){
 				this.loading = true
 				this.postData.data = JSON.stringify(this.postForm)
-				var result = this.$m.postMethod('package/product/item/add',this.postData)
+				var result = this.$m.postMethod('management/agent/agentinfo/add',this.postData)
 				result.then((value)=>{
 					var data = value.data
 
 					if(value.valid){
-						this.attributeList = data.attributeList
+						this.productList = data.productList
 						this.postForm.attribute_list = this.attributeList
 						this.modalList.addRow = true
 						this.loading = false

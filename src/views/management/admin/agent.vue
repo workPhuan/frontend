@@ -87,7 +87,7 @@
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.package_setting_product')}}</label>
 						<div v-for="(list,index) in productList" :key="index" :label="list.name" :value="list.id">
-							<el-checkbox v-model="checked3" :label="list.name" />
+							<el-checkbox v-model="postForm.productList" :label="list.name" />
 						</div>
 						
 						<template #footer>
@@ -101,7 +101,7 @@
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_payment_method')}}</label>
 						<el-select class="custom-input mt-1 w-100" v-model="postForm.payment_method" :placeholder="$t('menu.management_agent_payment_method')" size="large">
-							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.value">{{list.name}}</el-option>
+							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.id">{{list.name}}</el-option>
 						</el-select>
 					</el-col>
 					
@@ -115,7 +115,7 @@
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_repayment_method')}}</label>
 						<el-select class="custom-input mt-1 w-100" v-model="postForm.repayment_method" :placeholder="$t('menu.management_agent_repayment_method')" size="large">
-							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.value">{{list.name}}</el-option>
+							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.id">{{list.name}}</el-option>
 						</el-select>
 					</el-col>
 
@@ -141,7 +141,7 @@
 			</template>
 		</el-dialog>
 
-		<el-dialog v-model="modalList.editRow" :title="$t('menu.management_admin_agent_edit')" :before-close="clearEditPostForm" class="dialog-md">
+		<el-dialog v-model="modalList.editRow" :title="$t('menu.management_admin_agent_edit')" :before-close="clearPostForm" class="dialog-md">
 			<el-form label-position="top" label-width="auto" @submit.native.prevent class="submit-form">
 				<el-row :gutter="20">
 					<el-col :sm="12" class="mb-3">
@@ -157,21 +157,20 @@
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.package_setting_product')}}</label>
 						<div v-for="(list,index) in productList" :key="index" :label="list.name" :value="list.id">
-							<el-checkbox v-model="checked3" :label="list.name" />
+							<el-checkbox v-model="postForm.productList" :label="list.name" />
 						</div>
 					</el-col>
 
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_payment_method')}}</label>
 						<el-select class="custom-input mt-1 w-100" v-model="postForm.payment_method" :placeholder="$t('menu.management_agent_payment_method')" size="large">
-							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.value">{{list.name}}</el-option>
+							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.id">{{list.name}}</el-option>
 						</el-select>
 					</el-col>
 					
 					<el-col :sm="12" class="mt-4">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_is_view_other')}}</label>
 						<div>
-							{{ console.log(postForm) }}
 							<el-switch v-model="postForm.is_view_other_agent" active-value="1" inactive-value="0"></el-switch>
 						</div>
 					</el-col>
@@ -179,7 +178,7 @@
 					<el-col :sm="12" class="mb-3">
 						<label class="text-theme font-8 fw-bold"><span class="text-danger">*</span> {{$t('menu.management_agent_repayment_method')}}</label>
 						<el-select class="custom-input mt-1 w-100" v-model="postForm.repayment_method" :placeholder="$t('menu.management_agent_repayment_method')" size="large">
-							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.value">{{list.name}}</el-option>
+							<el-option v-for="(list,index) in paymentList" :key="index" :label="list.name" :value="list.id">{{list.name}}</el-option>
 						</el-select>
 					</el-col>
 
@@ -200,7 +199,7 @@
 			<template #footer>
 				<div class="d-flex justify-content-center align-item-center">
 					<el-button class="custom-button success font-8 pt-3 pb-3" @click="editRow()" :loading="loading">{{$t('button.save_data')}}</el-button>
-					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearEditPostForm()">{{$t('button.close')}}</el-button>
+					<el-button class="custom-button danger font-8 pt-3 pb-3" @click="modalList.editRow = false,clearPostForm()">{{$t('button.close')}}</el-button>
 				</div>
 			</template>
 		</el-dialog>
@@ -378,7 +377,7 @@ export default{
 				payment_method: '',
 				repayment_method: '',
 				is_view_other_agent: 0,
-				productList : [],
+				productList : {},
 				status: 0,
 			},
 			permissionList:[],
@@ -393,6 +392,7 @@ export default{
 			},
             defaultRole: '',
 			productList: [],
+			paymentList: [],
             agentList: [],
             searchAgentList: [],
             streamerList: [],
@@ -445,17 +445,6 @@ export default{
 			if(done != undefined){
 				done()
 			}
-		},clearEditPostForm(done){
-				name = ''
-				payment_method = ''
-				repayment_method = ''
-				is_view_other_agent = 0
-				productList = []
-				status = 0
-			
-			if(done != undefined){
-				done()
-			}
 		},getAddRow(){
 			if(this.$p.permissionChecker('userChatRoleEdit') && this.loading == false){
 				this.loading = true
@@ -465,6 +454,7 @@ export default{
 					var data = value.data
 
 					if(value.valid){
+						this.paymentList = data.paymentList
 						this.productList = data.productList
 						this.modalList.addRow = true
 						this.loading = false
@@ -510,6 +500,8 @@ export default{
 					var data = value.data
 
 					if(value.valid){
+						this.productList = data.productList
+						this.paymentList = data.paymentList
 						this.postForm.master_id = id
 						this.postForm = data.thisDetail
 						this.postForm.is_view_other_agent = parseInt(data.thisDetail.is_view_other_agent)
@@ -536,7 +528,7 @@ export default{
 						})
 						
 						this.modalList.editRow = false
-						this.clearEditPostForm()
+						this.clearPostForm()
 						this.initial()
 					}else{					
 						this.$m.popupErrorMessage(data.returnMsg,this)

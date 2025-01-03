@@ -982,7 +982,7 @@ export default {
 					this.preloader(false)
 				})
 			}
-		},addBlackList(){
+		},addBlackList(id){
             if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
                 this.loading = true
                 if(this.accountDetails.is_blacklist == 0){this.$confirm(this.$t('msg.msg_join_blacklist_desc'), this.$t('msg.join_blacklist'),{
