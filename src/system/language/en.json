@@ -201,6 +201,7 @@
 		"cancel":								"Cancel",
 		"info":									"Info",
 		"blacklist":							"Add Blacklist",
+		"cancel_blacklist":						"Cancel Blacklist",
 		"order_info":							"Order Info",
 		"client_info":							"Client Info",
 		"add_client":							"Add Client",

@@ -14,14 +14,17 @@
                         <div class="tag">
                             <p>{{$t('mix.table_name')}} :</p>
                             <p>{{ $t('mix.table_icpass')}} :</p>
-                            <p>{{ $t('mix.table_phone') }} :</p>
+                            <p>{{ $t('mix.table_phone') }}:</p>
                         </div>
                         <div class="detail">
                             <p>{{ accountDetails.name }}</p>
                             <p>{{ accountDetails.icpass }}</p>
                             <p>{{ accountDetails.phone_mobile }}</p>
-                            <el-button type="info" size="small"  @click="addBlackList(storeTempID.master_id)" >{{$t('button.blacklist')}}</el-button>
                         </div>
+                    </div>
+                    <div style="padding-right: 5px;">
+                        <el-button v-if="accountDetails.is_blacklist == 0" type="info" size="small"  @click="addBlackList(accountDetails.master_id)" >{{$t('button.blacklist')}}</el-button>
+                        <el-button v-else-if="accountDetails.is_blacklist == 1" type="info" size="small"  @click="addBlackList(accountDetails.master_id)" >{{$t('button.cancel_blacklist')}}</el-button>
                     </div>
                     
                     <div class="info-box">
@@ -464,11 +467,13 @@ export default {
                 is_view_other: '',
                 agent_id: '',
                 status: '',
+                is_blacklist: '',
 				security: "",
 				userDetails: "",
 				name:[],
 				selectedIds:[],
 			},
+            is_blacklist: '',
             userDetails: [],
             accountDetails: [],
             agentList: [],
@@ -491,6 +496,7 @@ export default {
 				var data = value.data
 				if(value.valid){
                     this.accountDetails = data.userDetails
+                    this.is_blacklist = data.userDetails.is_blacklist
 				}
 				this.initial()
 			})
@@ -598,13 +604,8 @@ export default {
 			var result = this.$m.postMethod('management/client/info/clientDetails',this.postData)
 			result.then((value) => {
 				var data = value.data
-                console.log(value)
 				if(value.valid){
                     this.userDetails = data.userDetails
-					this.tableData = data.datatable.data
-					this.total = parseInt(data.datatable.total_number)
-					this.listQuery.page = parseInt(data.datatable.current_pagination)
-					this.listQuery.limit = parseInt(data.datatable.limit)
 				}
 				this.loading = false
 			})
@@ -618,10 +619,6 @@ export default {
 
 				if(value.valid){
                     this.userDetails = data.userDetails
-					this.tableData = data.datatable.data
-					this.total = parseInt(data.datatable.total_number)
-					this.listQuery.page = parseInt(data.datatable.current_pagination)
-					this.listQuery.limit = parseInt(data.datatable.limit)
 				}
 				this.loading = false
 			})
@@ -635,10 +632,6 @@ export default {
 
 				if(value.valid){
                     this.userDetails = data.userDetails
-					this.tableData = data.datatable.data
-					this.total = parseInt(data.datatable.total_number)
-					this.listQuery.page = parseInt(data.datatable.current_pagination)
-					this.listQuery.limit = parseInt(data.datatable.limit)
 				}
 				this.loading = false
 			})
@@ -700,10 +693,10 @@ export default {
 				}
 				this.loading = false
 			})
-        },addBlackList(){
+        },addBlackList(id){
             if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
                 this.loading = true
-                if(status == 'suspended'){this.$confirm(this.$t('msg.msg_suspend_account'), this.$t('msg.suspended'), {
+                if(this.accountDetails.is_blacklist == 0){this.$confirm(this.$t('msg.msg_join_blacklist_desc'), this.$t('msg.join_blacklist'), {
 						confirmButtonText: this.$t('button.yes'),
 						cancelButtonText: this.$t('button.no'),
 						customClass: 'input-dialog',
@@ -713,7 +706,8 @@ export default {
 					}).then(({value}) => {
                         this.loading = true
                         this.submitForm.master_id = id;
-                        this.submitForm.status = status;
+                        this.is_blacklist = 1
+                        this.submitForm.is_blacklist = this.is_blacklist;
                         this.postData.data = JSON.stringify(this.submitForm)
                         
                         var formData = new FormData();
@@ -721,7 +715,7 @@ export default {
                         formData.append('language', this.postData.language);
         
                         
-                        var result = this.$m.postMethod('management/agent/agentinfo/DBstatus',formData)
+                        var result = this.$m.postMethod('management/client/info/DBaddBlackList',formData)
                         result.then((value) => {
                         var data = value.data
                         if(value.valid){
@@ -749,6 +743,19 @@ export default {
 
                     var result = this.$m.postMethod('management/agent/agentinfo/DBstatus',formData)
                     result.then((value) => {
+                        this.loading = true
+                        this.submitForm.master_id = id;
+                        this.is_blacklist = 0
+                        this.submitForm.is_blacklist = this.is_blacklist;
+                        this.postData.data = JSON.stringify(this.submitForm)
+                        
+                        var formData = new FormData();
+                        formData.append('data', this.postData.data);
+                        formData.append('language', this.postData.language);
+        
+                        
+                        var result = this.$m.postMethod('management/client/info/DBaddBlackList',formData)
+                        result.then((value) => {
                         var data = value.data
                         if(value.valid){
                             this.$message({
@@ -761,6 +768,7 @@ export default {
                         this.clearPostForm()
                         this.getInitial()
                         this.loading = false
+                        });
                     });
                 }
 			};

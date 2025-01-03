@@ -580,7 +580,7 @@ export default {
 		},userStatusRow(id,status){
 			if(this.$p.permissionChecker('toolAttributeEdit') && this.loading == false){
                 this.loading = true
-                if(status == 'suspended'){this.$confirm(this.$t('msg.msg_suspend_account'), this.$t('msg.suspended'), {
+                if(status == 'suspended'){this.$confirm(this.$t('msg.msg_join_blacklist_desc'), this.$t('msg.join_blacklist'), {
 						confirmButtonText: this.$t('button.yes'),
 						cancelButtonText: this.$t('button.no'),
 						customClass: 'input-dialog',
