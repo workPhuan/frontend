@@ -36,28 +36,26 @@
 						<div class="ajaxtable-empty-desc">{{$t('msg.msg_ajaxtable_desc_empty')}}</div>
 					</template>
 					
-					<template v-for="title in ajaxTitles" :key="title.prop">
-						<el-table-column :prop="title.prop" :label="title.label" :min-width="title.width" :align="title.align" :type="title.type">
-							<template #header>
-								<div class="d-flex">
-									<p class="search-label">{{title.label}}</p>
-									<el-tooltip>
-										<template #content>
-											<div v-html="amountHoverDesc"></div>
-										</template>
-										<i style="margin-left: 5px;" v-if="title.prop === 'amount'" class="far fa-exclamation-circle"></i>
-									</el-tooltip>
-								</div>
-							</template>
-							<template v-if="title.prop == 'status'" #default="scope">
-								<el-switch v-model="scope.row.status" active-value="1" inactive-value="0" :disabled="scope.row.is_edit === false"  @change="statusRow(scope.row.id,scope.row.status)"></el-switch>
-							</template>
+					<el-table-column v-for="title in ajaxTitles" :prop="title.prop" :label="title.label" :key="title.prop" :min-width="title.width" :align="title.align" :type="title.type">
+						<template #header>
+							<div>
+								{{title.label}}
+								<el-tooltip>
+									<template #content>
+										<div v-html="amountHoverDesc"></div>
+									</template>
+									<i style="margin-left: 5px;" v-if="title.prop === 'amount'" class="far fa-exclamation-circle"></i>
+								</el-tooltip>
+							</div>
+						</template>
+						<template v-if="title.prop == 'status'" #default="scope">
+							<el-switch v-model="scope.row.status" active-value="1" inactive-value="0" :disabled="scope.row.is_edit === false"  @change="statusRow(scope.row.id,scope.row.status)"></el-switch>
+						</template>
 
-							<template v-if="title.prop == 'action'" #default="scope">
-								<el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary" @click="getEditRow(scope.row.id)">{{$t('menu.management_product_item_edit')}}</el-button>
-							</template>
-						</el-table-column>
-					</template>
+						<template v-if="title.prop == 'action'" #default="scope">
+							<el-button v-if="$p.permissionChecker('adminAdminEdit')" class="custom-button primary" @click="getEditRow(scope.row.id)">{{$t('menu.management_product_item_edit')}}</el-button>
+						</template>
+					</el-table-column>
 				</el-table>
 
 				<pagination class="mt-3" v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @paginationChange="paginationChange"/>
@@ -382,7 +380,7 @@ export default {
 					this.ajaxTitles = [{
 						prop: "name",
 						label: this.$t('mix.table_name'),
-						width:'150',
+						width:'105',
 						align:'center',
 					},{
 						prop:"period",
@@ -400,7 +398,7 @@ export default {
 						this.tempTitle = {}
 						this.tempTitle.prop = element.name
 						this.tempTitle.label = element.name
-						this.tempTitle.width = 100
+						this.tempTitle.width = element.width
 						this.tempTitle.align = 'center'
 						this.ajaxTitles.push(this.tempTitle)
 					})
@@ -414,7 +412,7 @@ export default {
 					this.tempTitle = {}
 					this.tempTitle.prop = "action",
 					this.tempTitle.label = this.$t('mix.table_action'),
-					this.tempTitle.width = 100
+					this.tempTitle.width = 130
 					this.tempTitle.align = 'center'
 					this.ajaxTitles.push(this.tempTitle)
 				}
