@@ -11,31 +11,23 @@
 		
 		<div class="page-body p-3">
 			<el-card shadow="never">
-				<!-- <div class="page-filter">
+				<div class="page-filter">
 					<legend>{{$t('mix.table_filter')}}</legend>
 					<div class="p-3 d-flex flex-wrap">
-						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.login" :placeholder="$t('mix.table_please_enter')+$t('mix.table_username')" @keyup.enter.native="initial()">
+						<el-input class="custom-input fixed-width-200 m-2" v-model="searchData.name" :placeholder="$t('mix.table_please_enter')+$t('mix.table_name')" @keyup.enter.native="initial()">
 							<template #prepend>
-								<label>{{$t('mix.table_username')}}</label>
+								<label>{{$t('mix.table_name')}}</label>
 							</template>
 						</el-input>
 						
 						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.status" :placeholder="$t('mix.table_status')" clearable @change="initial()" size="large">
-							<el-option :label="$t('mix.table_enabled')" value="normal">{{$t('mix.table_enabled')}}</el-option>
-							<el-option :label="$t('mix.table_disabled')" value="suspended">{{$t('mix.table_disabled')}}</el-option>
+							<el-option :label="$t('mix.table_enabled')" value="1">{{$t('mix.table_enabled')}}</el-option>
+							<el-option :label="$t('mix.table_disabled')" value="0">{{$t('mix.table_disabled')}}</el-option>
 						</el-select>
-
-						<el-select class="custom-input fixed-width-200 m-2" v-model="searchData.role_id" :placeholder="$t('mix.table_role')" clearable @change="initial()" size="large">
-							<el-option v-for="item in searchRoleList" :label="item.name" :value="item.id">{{item.name}}</el-option>
-						</el-select>
-						
-						<div class="fixed-width-200">
-							<el-date-picker class="custom-input fixed-width-200 m-2" v-model="searchData.date_range" type="daterange" range-separator="-" :start-placeholder="$t('general.date_start')" :end-placeholder="$t('general.date_end')" @change="initial()" />
-						</div>
 						
 						<el-button class="custom-button plain m-2 h-r-2-5 pe-4 ps-4" @click="initial()" :loading="loading"><i class="fa-light fa-search me-2"></i>{{$t('button.search')}}</el-button>
 					</div>
-				</div> -->
+				</div>
 
 				<el-table :data="tableData" v-loading="loading" class="custom-table mt-3" ref="tableTest" :show-header="true">
 					<template #empty v-if="tableData.length=='0'">

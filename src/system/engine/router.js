@@ -78,6 +78,10 @@ export const mainRoutes = [
 				meta: {title:'menu.app_tools_attribute',icon:'flag',permission: 'DSC81L', parents:'app'},
 				component: () => import('@/views/app/tools/attribute.vue'),
 			},{
+				path: '/app/tools/marital',
+				meta: {title:'menu.app_tools_marital',icon:'flag',permission: 'DSC81L', parents:'app'},
+				component: () => import('@/views/app/tools/marital.vue'),
+			},{
 				path: '/app/tools/country',
 				meta: {title:'menu.app_tools_country',icon:'earth-asia',permission: 'RZYSSQ', parents:'app'},
 				component: () => import('@/views/app/tools/country.vue'),
